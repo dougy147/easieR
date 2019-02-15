@@ -1,22 +1,22 @@
 AN.C.OVA <-
   function(option=T, longdata=NULL, inter=NULL, intra=NULL, VD=NULL, cov=NULL, desires=c("Donnees completes","Identification des outliers", "Donnees sans valeur influente"),
            desires2=c("Modele parametrique","Modele lineaire mixte"),ES="ges", sauvegarde=F, SumS=3, p.adjust=NULL, type.cont="aucun"){
-    # option : logique, si TRUE, permet de specifier a l'aide de boîtes de dialogue les options suivantes : desires, desires2, sauvegarde, SumS, ES par des boîtes de dialogue, 
+    # option : logique, si TRUE, permet de specifier a l'aide de boîtes de dialogue les options suivantes : desires, desires2, sauvegarde, SumS, ES par des boîtes de dialogue,
     #          Dans le cas contraire, ce sont les valeurs specifiees ou celles par defaut qui sont utilisees
     # longdata : donnees en format long (necessaire le cas pour anova a groupes independants)
-    # inter : variables intergroupes 
+    # inter : variables intergroupes
     # intra : variables intragroupes
     # VD : variable dependante
     # cov : covariables
     # desires : vecteur avec une plusieurs des possibilites suivantes : c("Donnees completes","Identification des outliers", "Donnees sans valeur influente"). Si desires est specifie
-    # desires2 : 
+    # desires2 :
     # ES : taille d'effet qui doit etre calculee. "ges" pour eta carre generalise, et "pes" pour eta carre partiel
     # sauvegarde : logique, indique si les resultats doivent etre sauvegardes
     # Sums : choix du type des sommes des carres calculees. Peut etre 2 ou 3
     # p.adjust : type de correction de la probabilite si type.cont vaut "Comparaison 2 a 2". La correction peut etre "holm", "hochberg", "hommel", "bonferroni", "BH", "BY","fdr", "none"
-    
+
     packages<-c( "DescTools","outliers", "nortest", "psych", "reshape2", "car", "lawstat", "pgirmess","WRS","svDialogs", "WRS2", "nlme", "afex")
-    if(any(lapply(packages, require, character.only=T))==FALSE)  {install.packages(packages) 
+    if(any(lapply(packages, require, character.only=T))==FALSE)  {install.packages(packages)
       require(packages)}
     large.long<-function(data, VIR){
       data[complete.cases(data[,VIR]),]->data
@@ -60,7 +60,7 @@ AN.C.OVA <-
             dlgForm(setNames(as.list(paste("modalite", 1:N.modalites2[i])), paste("modalite", 1:N.modalites2[i])),
                     paste("Noms des modalites pour", intra[[i]]) )$res->modalites[[i]]
           }
-          
+
         }
         for(i in 1:length(intra)){
           if(i==length(intra)){a<-1} else {
@@ -111,9 +111,9 @@ AN.C.OVA <-
                                     preselect=c("Donnees completes","Identification des outliers", "Donnees sans valeur influente"),
                                     multiple = TRUE, title="Quels Resultats voulez-vous obtenir ?")$res
         if(length(Resultats$desires)==0) return(options.aov(inter=inter, intra=intra))}else Resultats$desires<-"Donnees completes"
-      
-      
-      
+
+
+
       if(any(Resultats$desires2=="Modele parametrique")){
         writeLines("la taille d'effet la plus frequente est le eta carre partiel - pes.
                    La taille d'effet la plus precise est le eta carre generalise - ges")
@@ -148,7 +148,7 @@ AN.C.OVA <-
         contr.poly(3)->cont.exemple$Polynomiaux
         contr.treatment(3, contrasts = TRUE, sparse = FALSE)->cont.exemple$comparaison.ligne.de.base
         print(cont.exemple)
-        
+
         for (i in 1:length(interintra)){
           if(i>1) {
             type.cont2<- dlgList(c("orthogonaux", "orthogonaux inverses", "polynomiaux","comparaison a une ligne de base", "specifier les contrastes"),
@@ -180,17 +180,17 @@ AN.C.OVA <-
               if(ortho==FALSE) {dlgMessage("Les contrastes doivent respecter l orthogonalite. Voulez-vous continuer ?", "yesno")$res->cont
                 if(cont=="no") return(contrastes.ez(longdata=longdata, inter=inter, intra=intra ))  }
               contrastes[[i]]<-contrastes3
-              
+
             }
-            
+
           }
-          
+
           dimnames(contrastes[[i]])[[2]]<-paste("contraste", 1:(nlevels(longdata[,interintra[i]])-1), sep=".")
           dimnames(contrastes[[i]])[[1]]<-levels(longdata[,interintra[i]])
         }
         names(contrastes)<-interintra
         Resultats$contrastes<-contrastes
-        
+
       }
       if(type.cont== "Comparaison 2 a 2"){
         list()->p.adjust
@@ -201,8 +201,8 @@ AN.C.OVA <-
       }
       return(Resultats)
     }
-    
-    
+
+
     .e <- environment()
     Resultats<-list()
     if(!is.null(c(inter,intra))) {type.v<-c()
@@ -211,7 +211,7 @@ AN.C.OVA <-
     } else { writeLines("Veuillez preciser le(s) type(s) de variable(s) que vous souhaitez inclure dans l'analyse.")
       type.v<-dlgList(c("Groupes independants", "Mesure repetee", "Covariables"), multiple = TRUE, title="Quel-s type-s de variables?")$res
       if(length(type.v)==0) return(analyse())}
-    
+
     if(any(type.v== "Groupes independants") & any(type.v== "Mesure repetee")) plan<-"Plan mixte" else {
       if(all(type.v!="Mesure repetee") & any(type.v== "Groupes independants"))plan<-"Groupes independants" else {
         if(any(type.v=="Mesure repetee") & all(type.v!= "Groupes independants")) plan<-"Mesure repetee"
@@ -229,7 +229,7 @@ AN.C.OVA <-
       data[[2]]->data
       listes<-data.frame(paste(names(data), "(format :", sapply(data, class), ")", sep=" "), names(data))
     }
-    
+
     if(is.null(c(inter,intra))) {
       if(plan=="Groupes independants"){data->longdata
         data<-NULL
@@ -241,7 +241,7 @@ AN.C.OVA <-
         VIR<-"autres"
         while(any(VIR=="autres")){
           writeLines("veuillez selectionner les variables OU les modalites de la (des) variables a mesure(s) repetee(s).")
-          VIR<-dlgList(paste(names(data), "(format :", sapply(data, class), ")", sep=" "), multiple = TRUE, 
+          VIR<-dlgList(paste(names(data), "(format :", sapply(data, class), ")", sep=" "), multiple = TRUE,
                        title="Mesures repetees")$res
           if(length(VIR)==0) return(AN.C.OVA())
           subset(listes, listes[,1] %in% VIR)[,2]->VIR
@@ -265,10 +265,10 @@ AN.C.OVA <-
             if(length(VIR)==1) {
               writeLines("Pour un facteur en mesure repetee, il faut au moins deux colonnes")
               VIR<-"autres"}
-            if(length(setdiff(sapply(data[,VIR], class), c("numeric","integer")))!=0 ){ 
+            if(length(setdiff(sapply(data[,VIR], class), c("numeric","integer")))!=0 ){
               writeLines("Si vos donnees sont en format large, les mesures doivent toutes etre numeriques ou des integers.")
-              VIR<-"autres" 
-              
+              VIR<-"autres"
+
             }
             if( all(sapply(data[,VIR], class)%in% c("numeric", "integer"))) {
               data[complete.cases(data[,VIR]),]->data
@@ -279,18 +279,18 @@ AN.C.OVA <-
         if(plan=="Mesure repetee") inter<-NULL
       }
     }
-    
-    if(plan=="Groupes independants"|plan=="Plan mixte"){ 
+
+    if(plan=="Groupes independants"|plan=="Plan mixte"){
       if(plan=="Groupes independants") intra<-NULL
       setdiff(names(longdata), c("IDeasy", "variable", "value", intra))->diffs
       inter<-"autres donnees"
-      while(inter=="autres donnees"){ 
+      while(inter=="autres donnees"){
         writeLines("Veuillez choisir les variable-s a groupes independants")
-        if(length(diffs)==1) {inter<-dlgList(paste(diffs, "(format :",class(longdata[,diffs]),")"), multiple = TRUE, 
+        if(length(diffs)==1) {inter<-dlgList(paste(diffs, "(format :",class(longdata[,diffs]),")"), multiple = TRUE,
                                              title="Variables a groupes independants")$res} else {
-                                               inter<-dlgList(paste(diffs, "(format :", sapply(longdata[,diffs], class), ")", sep=" "), multiple = TRUE, 
+                                               inter<-dlgList(paste(diffs, "(format :", sapply(longdata[,diffs], class), ")", sep=" "), multiple = TRUE,
                                                               title="Variables a groupes independants")$res}
-        
+
         if(length(inter)==0) {
           if(okCancelBox("Vous n avez pas choisi de variable a groupes independants. Voulez-vous continuer  (ok) ou abandonner (annuler) cette analyse ?"))  inter<-"autres donnees" else return(AN.C.OVA())
         }
@@ -300,13 +300,13 @@ AN.C.OVA <-
       if(length(inter)==1){
         if(class(longdata[,inter])!="factor") factor(longdata[,inter])->longdata[,inter]
       }else {
-        if(any(sapply(longdata[,inter],class)!="factor")) lapply(longdata[,inter],factor)->longdata[,inter] 
+        if(any(sapply(longdata[,inter],class)!="factor")) lapply(longdata[,inter],factor)->longdata[,inter]
       }
     }
-    
+
     if(plan=="Groupes independants" || format=="long") {
-      writeLines("Veuillez choisir la variable dependante.") 
-      setdiff(names(longdata), c("IDeasy", "variable", unlist(intra), inter))->diffs 
+      writeLines("Veuillez choisir la variable dependante.")
+      setdiff(names(longdata), c("IDeasy", "variable", unlist(intra), inter))->diffs
       vd.num<-FALSE
       while( vd.num!=TRUE){
         if(length(diffs)==1)  VD<-dlgList(paste(diffs, "(format :", class(longdata[, diffs]), ")", sep=" "), multiple = FALSE, title="Variable dependante")$res else {
@@ -317,19 +317,19 @@ AN.C.OVA <-
         if(!is.element(class(longdata[,VD]), c("integer", "numeric"))) {
           if (okCancelBox("Vous n'avez pas choisi une variable dependante numerique. La variable dependante doit etre numerique. Continuer ?")) vd.num<-FALSE  else return(AN.C.OVA())}else vd.num<-TRUE
       }
-      
+
       if(!is.null(intra)) {
         if( min(table(longdata$IDeasy))!=  max(table(longdata$IDeasy)))  msgBox("Certains participants ont des valeurs manquantes sur les facteurs en mesures repetees. Ils vont etre supprimes des analyses")
-        
+
         while(min(table(longdata$IDeasy))!=  max(table(longdata$IDeasy))){
           names(table(longdata$IDeasy))[which.min(table(longdata$IDeasy))]->mid
           longdata[-which(longdata$IDeasy==mid) , ]->longdata
           factor(longdata$IDeasy)->longdata$IDeasy
-        }       
+        }
       }
     }
-    
-    
+
+
     if(any(type.v=="Covariables")) {
       if(exists("diffs")) setdiff(names(longdata), c("IDeasy", "variable", "value", unlist(intra),VD, inter))->diffs else setdiff(names(longdata), c("IDeasy", "variable", "value",inter, VD, unlist(intra)))->diffs
       writeLines("Veuillez choisir la ou les covariables")
@@ -339,11 +339,11 @@ AN.C.OVA <-
       as.character(cov)->cov
       longdata[complete.cases(longdata[,c(cov)]),]->longdata
     }else cov<-NULL
-    
+
     if(length(intra)==1 & is.null(inter)) nlevels(longdata[,unlist(intra)])->N.modalites2 else {
       if(length(inter)==1 & is.null(intra)) nlevels(longdata[,unlist(inter)])->N.modalites2 else sapply(longdata[,c(inter, unlist(intra))],nlevels)->N.modalites2 }
     if(prod(N.modalites2)>3*length(longdata[,1])) return("Il n'y a pas assez d'observations pour realiser l'analyse. Veuillez verifier vos donnees et vous assurez qu'il y a au moins trois observations par modalite de chaque facteur")
-    
+
     if(option) {options.aov(inter=inter, intra=intra)->options.out
       if(is.null(options.out)) return(AN.C.OVA())
       options.out$desires->desires
@@ -351,40 +351,40 @@ AN.C.OVA <-
       options.out$sauvegarde->sauvegarde
       options.out$ES->ES
       options.out$SumS->SumS}
-    # REVOIR Pour FORMAT LONG      
+    # REVOIR Pour FORMAT LONG
     if(is.null(VD)) VD<-"value"
-    
+
     longdata[complete.cases(longdata[,c(inter,unlist(intra), VD)]),]->longdata
     ftable(longdata[,c(inter,unlist(intra))])->aov.check
     if(any(is.na(aov.check)) || min(aov.check)<3) {msgBox("Certains groupes ont moins de 3 observations. Verifiez vos donnees.")
       return(aov.check)
     }
     if(length(unique(longdata[,VD]))<3) return("La variable dependante a moins de trois valeurs differentes. Verifiez vos donnees ou l'analyse que vous tentez de realiser n'est pas pertinente.")
-    
+
     if(any(desires2%in%c("Modele parametrique","Modele lineaire mixte"))){
       contrastes.ez(longdata, inter=inter, intra=intra)->cont
-      if(is.null(cont)) return(AN.C.OVA()) 
+      if(is.null(cont)) return(AN.C.OVA())
       cont$type.cont->type.cont
       cont$p.adjust->p.adjust
-      cont$contrastes->contrastes    
+      cont$contrastes->contrastes
     } else{
       type.cont<-"aucun"
       p.adjust<-NULL
       contrastes<-NULL
     }
-    
+
     anova2<-function(VD=NULL, inter=NULL, intra=NULL, longdata,  type.cont,p.adjust, SumS, desires2, cov=NULL, contrastes=NULL)   {
-      
+
       list()->Resultats
       cov1<-NULL
-      if(!is.null(cov)) { 
+      if(!is.null(cov)) {
         for(i in 1:length(cov)) {paste0(cov1,cov[i],"+")->cov1}}
-      
-      if(!is.null(inter))  {pred.ind<-inter[1]  
+
+      if(!is.null(inter))  {pred.ind<-inter[1]
       if(length(inter)>1) {
         for(i in 1:(length(inter)-1)){ paste(pred.ind, "*",inter[1+i])->pred.ind}}
       paste0("~1|IDeasy")->random}
-      
+
       if(!is.null(intra))  {
         ez.principal<-intra[[1]]
         erreur<-paste0("+Error(", intra[[1]])
@@ -397,39 +397,39 @@ AN.C.OVA <-
         }
         paste(ez.principal, erreur,"|IDeasy)")->pred.rep
       }
-      
+
       if(!is.null(inter) & !is.null(intra)) paste(pred.ind, "*",pred.rep)->predicteurs else {
         if(!is.null(inter) & is.null(intra)) paste0(pred.ind,"+Error(1|IDeasy)")->predicteurs else pred.rep->predicteurs
       }
-      as.formula(paste0(VD, "~",cov1, predicteurs))->modele  
+      as.formula(paste0(VD, "~",cov1, predicteurs))->modele
       modele->Resultats$"Modele teste"
-      
+
       psych::describeBy(longdata[,VD], longdata[ ,c(inter, unlist(intra))] ,mat=TRUE,type=3)->Resultats$"statistiques descriptives"$indices
       list()->aov.plus.in
       for(i in 1:length(c(inter, unlist(intra)))){
         combn(c(inter, unlist(intra)), i)->facteurs
         for(j in 1:ncol(facteurs)){
           psych::describeBy(longdata[,VD], longdata[ ,facteurs[,j]] ,mat=TRUE,type=3)->sd.aov
-          
+
           if(nrow( facteurs) ==1) paste("Statistiques descriptives de la variable", facteurs[,j])->nsd else {
             paste("Statistiques descriptives de l'interaction entre", facteurs[1,j])->nsd
             for(k in 2: nrow( facteurs)){paste(nsd, ":",  facteurs[k,j])->nsd
             }
-            
+
           }
           sd.aov->aov.plus.in[[nsd]]
         }
       }
       Resultats$"statistiques descriptives"$Information<-"Pour obtenir les statistiques descriptives par facteur, veuillez utiliser aov.plus() "
-      
+
       if(any(Resultats$"statistiques descriptives"$n<2)) {
         "il y a moins de 3 observations pour un des groupes"-> Resultats$"information"
         return(Resultats)
-      }  
-      
+      }
+
       if(any(desires2=="Modele parametrique") | any(desires2=="Modele lineaire mixte")){
-        if(any(Resultats$"statistiques descriptives"$indices$sd==0)) Resultats$Avertissement<-"La variance d'au moins un groupe vaut 0. Les resultats risquent d'etre considerablement biaises"  
-        
+        if(any(Resultats$"statistiques descriptives"$indices$sd==0)) Resultats$Avertissement<-"La variance d'au moins un groupe vaut 0. Les resultats risquent d'etre considerablement biaises"
+
         if(exists("pred.ind") & exists("ez.principal")) paste(pred.ind, "*",ez.principal)->predicteurs else {
           if(exists("pred.ind") & !exists("ez.principal")) pred.ind->predicteurs else ez.principal->predicteurs}
         lm(as.formula(paste0(VD,"~",predicteurs)),na.action=na.exclude, data=longdata)->lm.r1
@@ -442,11 +442,11 @@ AN.C.OVA <-
           names(normalite)<-c("W de Shapiro-Wilk", "valeur.p SW", "D de Lilliefors", "valeur.p Llfrs")
           dimnames(normalite)[1]<-" "
           format(normalite, width = max(sapply(names(normalite), nchar)), justify = "centre")->Resultats$"Tests de normalite"}
-        h<-hist(longdata$residu, breaks=10, density=10, col="black", xlab="residus", main="Distribution des residus") 
-        xfit<-seq(min(longdata$residu),max(longdata$residu),length=40) 
-        yfit<-dnorm(xfit,mean=mean(longdata$residu),sd=sd(longdata$residu)) 
-        yfit <- yfit*diff(h$mids[1:2])*length(longdata$residu) 
-        lines(xfit, yfit, col="darkblue", lwd=2) 
+        h<-hist(longdata$residu, breaks=10, density=10, col="black", xlab="residus", main="Distribution des residus")
+        xfit<-seq(min(longdata$residu),max(longdata$residu),length=40)
+        yfit<-dnorm(xfit,mean=mean(longdata$residu),sd=sd(longdata$residu))
+        yfit <- yfit*diff(h$mids[1:2])*length(longdata$residu)
+        lines(xfit, yfit, col="darkblue", lwd=2)
         if(!is.null(cov) & !is.null(inter)){
           options(contrasts = c("contr.helmert", "contr.poly"))
           for(i in 1:length(cov)){
@@ -460,7 +460,7 @@ AN.C.OVA <-
           Anova(aov.cov, type="III")->aov.cov
           names(aov.cov)<-c("SC", "ddl", "F", "valeur.p")
           aov.cov-> aov.cov->Resultats$"Conditions d'application de l'ancova"$"Test de l'homogeneite des pentes entre les groupes sur la variable dependante"
-          
+
         }
         if(any(desires2=="Modele parametrique")){
           if(!is.null(inter)){
@@ -473,20 +473,20 @@ AN.C.OVA <-
           options(contrasts=c("contr.sum","contr.poly"))
           if(!is.null(cov)) factorize<-FALSE else factorize<-TRUE
           aov_4(as.formula(modele),data=longdata, es_aov=ES, type=SumS,factorize=factorize)->aov.out
-          
+
           if(length(c(inter, unlist(intra)))>1) {
             c(unlist(intra), inter)->intrainter
             graph.modele<-paste0(intrainter[1],"~",intrainter[2])
             if(length(intrainter)>2){paste0(graph.modele, "|",intrainter[3] )->graph.modele
-              if(length(intrainter)>3){ for(i in 4:length(intrainter)){paste0(graph.modele, "*",intrainter[i] )->graph.modele} 
-                
-              }} 
+              if(length(intrainter)>3){ for(i in 4:length(intrainter)){paste0(graph.modele, "*",intrainter[i] )->graph.modele}
+
+              }}
             x11()
             print(emmip(aov.out,as.formula(graph.modele),CIs=T))
           }
-          
-          
-          summary(aov.out)->aov.out2 
+
+
+          summary(aov.out)->aov.out2
           nice(aov.out, correction="none", intercept=T, es=ES,type=SumS)->aov.out
           names(aov.out)<-c("Effet","ddl.num, ddl.denom", "CME", "F", names(aov.out)[5], "valeur.p" )
           #   format(aov.out, width = max(sapply(names(aov.out), nchar)), justify = "centre")->aov.out
@@ -494,7 +494,7 @@ AN.C.OVA <-
           if(!is.null(intra) && any( sapply(longdata[,c(unlist(intra))],nlevels)>2)) {
             round(aov.out2$sphericity.test,5)->Resultats$"test de Mauchly testant la sphericite de la matrice de covariance"
           }
-          
+
           aov.out->Resultats$"Analyse principale"
           if(!is.null(intra) && any( sapply(longdata[,c(unlist(intra))],nlevels)>2)) {data.frame(round(aov.out2$pval.adjustments,5))->GG.HF
             names(GG.HF)<-c("GG.eps", "GG.valeur.p","HF.eps", "HF.valeur.p")
@@ -502,39 +502,39 @@ AN.C.OVA <-
           if(length(inter)==1 & is.null(intra) & is.null(cov)) {oneway.test(as.formula(paste(VD,"~", inter)),data=longdata)->Welch
             round(data.frame("F"=Welch$statistic,"ddl.num"=Welch$parameter[1],"ddl.denom"=Welch$parameter[2],"valeur.p"=Welch$p.value),4)->Welch
             Welch->Resultats$"Anova avec correction de Welch pour variances heterogenes"
-          }  
+          }
         }
-        
+
         if(type.cont=="a priori" | any(desires2== "Modele lineaire mixte")){
           if(type.cont=="a priori" ){
             for(i in 1:length(contrastes)){
               contrastes[[i]]->contrasts(longdata[,names(contrastes)[i]])
             }
-            
+
           }
-          modele.lme<-paste0(VD, "~",cov1, predicteurs) 
+          modele.lme<-paste0(VD, "~",cov1, predicteurs)
           #   paste0("lme(", modele.lme, ", random=", random, ",data=", ifelse(!is.null(intra) , paste0(nom,".format.long"), nom),
           #         ", method='REML')->modele.lme")->Resultats$"Modele lineaire mixte"
-          
-          try(  eval(parse(text=paste0("lme(", modele.lme, ", random=", random, ",data= longdata, method='REML')"))),silent=T)->modele.lme1        
+
+          try(  eval(parse(text=paste0("lme(", modele.lme, ", random=", random, ",data= longdata, method='REML')"))),silent=T)->modele.lme1
           if(class(modele.lme1)=="try-error"){
             while(class(modele.lme1)=="try-error")
               dlgMessage("Le modele n a pas pu converger. Vous pouvez modifier les parametres de convergence ou abandonner. Voulez-vous modifier les parametres de convergence ?", "yesno")$res->modele.lme1
             if(modele.lme1=="yes"){
               Form <- list("maxIter:NUM"=50, "msMaxIter:NUM"=50, "niterEM:NUM"=25)
-              dlgForm(Form, "Parametres du modele LME")$res->Form  
+              dlgForm(Form, "Parametres du modele LME")$res->Form
               if(any(is.na(unlist(Form))))  Form <- list("maxIter:NUM"=50, "msMaxIter:NUM"=50, "niterEM:NUM"=25)
               lmeControl(maxIter=Form$maxIter,msMaxIter=Form$msMaxIter,niterEM=Form$niterEM )->controle
               #try( lme(as.formula(modele.lme), random=as.formula(random), data=longdata, method="REML", control=controle),silent=T)->modele.lme
               try(eval(parse(text=paste0("lme(", modele.lme, ", random=", random, ",data= longdata, method='REML')"))),silent=T)->modele.lme1
-              
+
             }
           }
-          if(class(modele.lme1)=="lme"){ 
+          if(class(modele.lme1)=="lme"){
             modele.lme1->aov.plus.in$modele.lme1
             if(any(desires2== "Modele lineaire mixte")) anova(modele.lme1)->Resultats$"modele lineaire mixte avec comme estimateur le maximum de vraisemblance - REML"
             if(type.cont=="a priori"){
-              contrastes->Resultats$"Contrastes a priori"$"Matrice de coefficients variables"  
+              contrastes->Resultats$"Contrastes a priori"$"Matrice de coefficients variables"
               round(summary(modele.lme1)$tTable,4)->tableT
               data.frame(tableT)->tableT
               names(tableT)<-c("estimateur", "erreur.st", "ddl","valeur.t", "valeur.p")
@@ -543,21 +543,21 @@ AN.C.OVA <-
                 grepl(paste(inter,collapse = "|"), unlist(dimnames(tableT)[1]))->tableT$D.Cohen
                 round( ifelse(tableT$D.Cohen==T, (2*tableT$valeur.t)/(nlevels(longdata$IDeasy)^0.5), tableT$valeur.t/(nlevels(longdata$IDeasy)^0.5)),4)->tableT$D.Cohen
               }else round(tableT$valeur.t/((nlevels(longdata$IDeasy))^0.5),4)->tableT$D.Cohen
-              
+
               tableT[1,"D.Cohen"]<-""
               tableT[1,"R.deux"]<-""
               tableT->Resultats$"Table des contrastes sur le modele lineaire mixte"
             }
           }
-          
-          
+
+
           if(!is.null(intra) & is.null(inter) & is.null(cov) & type.cont=="a priori"){
             longdata[do.call("order", longdata[unlist(intra)]), ]->longdata
             list()->combinaison
             for(i in 1:length(contrastes)){ combn(1:length(contrastes), i)->combinaison[[i]]        }
             Table.contrastes<-c()
             for(i in 1:length(combinaison) ){
-              
+
               for(j in 1:ncol(combinaison[[i]])){
                 M1<-matrix(rep(1, length(longdata[,VD])), ncol=1)
                 for(k in 1:nrow(combinaison[[i]])){
@@ -565,7 +565,7 @@ AN.C.OVA <-
                   for(l in 1:ncol(contrastes[[combinaison[[i]][k,j]]])){
                     rep(contrastes[[combinaison[[i]][k,j]]][,l], each=length(longdata[,VD])/prod(N.modalites2[1:combinaison[[i]][k,j]]), len =length(longdata[,VD]))->coef1
                     cbind(M2,coef1)->M2
-                    
+
                   }
                   M4<-c()
                   for(m in 1:ncol(M1))  {
@@ -573,7 +573,7 @@ AN.C.OVA <-
                       M1[,m]*M2[,n]->M3
                       cbind(M4, M3)->M4
                     }
-                    
+
                   }
                   M4->M1
                 }
@@ -581,24 +581,24 @@ AN.C.OVA <-
                   longdata[,VD]*M1[,o]->coef1
                   t.test(rowSums( matrix(coef1, ncol=prod(N.modalites2))), mu = 0, paired = FALSE, conf.level = 0.95)->C1
                   rbind(Table.contrastes,c(C1$estimate, C1$parameter, C1$statistic, C1$p.value))->Table.contrastes
-                  
+
                 }
               }
-              
+
             }
-            
+
             round(Table.contrastes,4)->Table.contrastes
-            data.frame(Table.contrastes)->Table.contrastes  
+            data.frame(Table.contrastes)->Table.contrastes
             names(Table.contrastes)<-c("estimateur", "ddl","valeur.t", "valeur.p")
             dimnames(Table.contrastes)[[1]]<-dimnames(tableT)[[1]][-1]
             Table.contrastes$valeur.t^2/(Table.contrastes$valeur.t^2+Table.contrastes$ddl)->Table.contrastes$R.deux
             round(Table.contrastes$valeur.t/(nlevels(longdata$IDeasy))^0.5,4)->Table.contrastes$D.Cohen
             Table.contrastes->Resultats$"Table des contrastes imitant les logiciels commerciaux"
-            
-          } 
-          
+
+          }
+
         }
-        
+
         if(type.cont== "Comparaison 2 a 2"){
           c(inter, unlist(intra))->interintra
           list()[1:length(interintra)]->comparaisons
@@ -611,7 +611,7 @@ AN.C.OVA <-
           Resultats$"Comparaisons 2 a 2"<-comparaisons
         }
       }
-      
+
       assign("aov.plus.in",aov.plus.in,envir=.e)
       if(any(desires2=="Modele non parametrique" )){
         if(!is.null(inter)){
@@ -622,11 +622,11 @@ AN.C.OVA <-
           if(eta<0.0001) "<0.001"->KW$eta.2.de.H else KW$eta.2.de.H
           round(KW$H/((length(longdata[,1])^2-1)/(length(longdata[,1])+1)),4)->KW$espilon.carre
           KW->Resultats$"Analyse non parametrique"$"Test de Kruskal-Wallis"
-          
-          if(!is.null(contrastes) && any(rowSums((contrastes[[1]]!=0))==0)) {kruskalmc( as.formula(paste0(VD, "~",inter[1])), 
+
+          if(!is.null(contrastes) && any(rowSums((contrastes[[1]]!=0))==0)) {kruskalmc( as.formula(paste0(VD, "~",inter[1])),
                                                                                         data=longdata, cont='two-tailed')->Resultats$"Analyse non parametrique"$"Test de Kruskal-Wallis - Comparaison a une ligne de base"} else{
-                                                                                          kruskalmc( as.formula( paste0(VD, "~",inter[1])), data=longdata)->Resultats$"Analyse non parametrique"$"Test de Kruskal-Wallis - Comparaison deux a deux"   
-                                                                                          
+                                                                                          kruskalmc( as.formula( paste0(VD, "~",inter[1])), data=longdata)->Resultats$"Analyse non parametrique"$"Test de Kruskal-Wallis - Comparaison deux a deux"
+
                                                                                         }
         }else{
           friedman.test(as.formula(paste(VD,"~", intra[[1]], "|IDeasy" )),data=longdata)->friedman
@@ -637,7 +637,7 @@ AN.C.OVA <-
           friedmanmc(longdata[,VD], longdata[,intra[[1]]], longdata$IDeasy)->Resultats$"Comparaison 2 a 2 pour ANOVA de Friedman"
         }
       }
-      
+
       if(any(desires2=="Statistiques robustes - peut prendre du temps")){
         if(length(inter)==1 & is.null(intra)){
           if(is.null(contrastes)) Contrasts(levels(longdata[,inter]))->contrastes else contrastes[[1]]->contrastes
@@ -667,17 +667,17 @@ AN.C.OVA <-
               names(cont)<-c("Valeur.contraste","erreur.standard","ddl","test","seuil.critique","lim.inf.IC","lim.sup.IC","valeur.p")
               cont->Resultats$"Anova basee sur les moyennes tronquees"$"Contrastes"}
             if(class(cont2)!="try-error") cont2[3]->Resultats$"Anova basee sur les moyennes tronquees"$"Coefficients des contrastes"
-            
+
           }else{
             "Desole, nous n'avons pas pu calcule l'anova sur les moyennes tronquees."->Resultats$"Anova basee sur les moyennes tronquees"
           }
-          
+
         }
-        
-        
-        if(length(inter)==2 & is.null(intra)) { 
-          
-          
+
+
+        if(length(inter)==2 & is.null(intra)) {
+
+
           try( WRS2::t2way(as.formula(paste0(VD, "~",inter[1],"*",inter[2])), data=longdata, tr = 0.2), silent=T)->T2
           if(class(T2)!="try-error"){
             round(matrix(unlist(T2[1:6]), ncol=2, byrow=T),4)->T2
@@ -693,18 +693,18 @@ AN.C.OVA <-
             paste0("WRS2::mcp2a(formula = ", paste0(VD, "~", inter[1], "*", inter[2]), ", data = longdata, est = 'mom', nboot = 599)")->mediane$call
             mediane->Resultats$"Comparaisons post hoc"$"ANOVA sur le M estimator"
           }
-          
+
           try(WRS2::mcp2a(as.formula(paste0(VD, "~",inter[1],"*",inter[2])), data=longdata, est = "median", nboot = 599), silent=T)->mediane
           if(class(mediane)!="try-error") {
             paste0("WRS2::mcp2a(formula = ", paste0(VD, "~", inter[1], "*", inter[2]), ", data = longdata, est = 'median', nboot = 599)")->mediane$call
             mediane->Resultats$"Comparaisons post hoc"$"ANOVA sur la mediane"
           }
         }
-        
+
         if(length(inter)==3 & is.null(intra)){
           try( WRS2::t3way(as.formula(paste0(VD, "~",inter[1],"*",inter[2],"*",inter[3])), data=longdata, tr = 0.2), silent=T)->tronquees
           if(class(tronquees)!="try-error") {paste0("WRS2::t3way(", VD, "~",inter[1],"*",inter[2],"*",inter[3], ", data=longdata, tr = 0.2)")->tronquees$call
-            tronquees->Resultats$'Anova sur les moyennes tronquees'  
+            tronquees->Resultats$'Anova sur les moyennes tronquees'
           }
         }
         if(length(intra)==1 & is.null(inter)){
@@ -719,47 +719,47 @@ AN.C.OVA <-
           try( rmanovab(longdata[,VD],longdata[,intra[[1]]] ,longdata$IDeasy), silent=T)->ANOVA.tr
           if(class(ANOVA.tr)!="try-error"){
             data.frame("Valeur.test"=ANOVA.tr[[1]],"Valeur critique"=ANOVA.tr[[2]], "significativite"=if(ANOVA.tr[[1]]<ANOVA.tr[[2]]){"non significatif"}else"significatif")->ANOVA.tr
-            ANOVA.tr->Resultats$"Statistiques robustes"$"Anova sur moyennes tronquees a 20% avec bootstrap"   
+            ANOVA.tr->Resultats$"Statistiques robustes"$"Anova sur moyennes tronquees a 20% avec bootstrap"
           }else Resultats$"Statistiques robustes"<-"Desole, nous n'avons pas pu calcule l'anova robuste"
-          
+
           if((nlevels(longdata[,intra[[1]]]))>2) {
             try(pairdepb(longdata[,VD],longdata[,intra[[1]]] ,longdata$IDeasy), silent=T)->comp
             if(class(comp)!="try-error") {paste0("pairdepb(y = longdata$", VD, ", groups = longdata$", intra[[1]],", blocks = longdata$IDeasy)" )->comp$call
               comp->Resultats$"Statistiques robustes"$"Comparaisons 2 a 2 sur les moyennes tronquees a 20% avec bootsrap"}else Resultats$"Statistiques robustes"<-"Desole, nous n'avons pas pu calcule l'anova robuste"
           }
-        } 
-        
+        }
+
         if(length(inter)==1 & length(intra)==1){
           as.formula(paste0(VD, "~", predicteurs))->modeleR
           try(WRS2::tsplit( modeleR, IDeasy, data=longdata, tr = 0.2), silent=T)->tronquees
           if(class(tronquees)!="try-error"){
             tronquees$call<- paste0("WRS2::tsplit(", VD,"~", intra[[1]],"*", inter, ", IDeasy, data=longdata, tr = 0.2)")
-            tronquees->Resultats$'Anova sur les moyennes tronquees' # anova mixte sur moyennes tronquÃÂÃÂÃÂÃÂ©es 
+            tronquees->Resultats$'Anova sur les moyennes tronquees' # anova mixte sur moyennes tronquÃÂÃÂÃÂÃÂ©es
             WRS2::sppba(modeleR, IDeasy, data=longdata, est = "mom", avg = TRUE, nboot = 500, MDIS = FALSE)->MoMa # anova sur moyenne oÃÂÃÂÃÂÃÂ¹ on enlÃÂÃÂÃÂÃÂ¨ve les valeurs aberrantes avec bootstrap pour l'effet de A
             WRS2::sppbb(modeleR, IDeasy, data=longdata, est = "mom", nboot = 500)->MoMb# anova avec bootstrap pour l'effet de B
             WRS2::sppbi(modeleR, IDeasy, data=longdata, est = "mom", nboot = 500)->MoMi # # anova avec bootstrap pour l'effet d'interaction
             data.frame("effet"= c(inter,intra[[1]],"interaction"), "valeur.p"=c(MoMa$p.value,MoMb$p.value, MoMi$p.value) )->MoM
             MoM->Resultats$"Anova sur l'estimateur modifie de localisation de Huber"
           }else Resultats$"Statistiques robustes"<-"Desole, nous n'avons pas pu calcule l'anova robuste"
-          
+
         }
-        
+
       }
       return(Resultats)
-    }   
-    
+    }
+
     list()->aov.plus.list
     anova2(VD=VD, inter=inter, intra=intra, longdata=longdata,  type.cont=type.cont, SumS=SumS,
            desires2=desires2, cov=cov, p.adjust=p.adjust, contrastes=contrastes)->complet
     if(any(desires=="Donnees completes")){
       complet->Resultats$"Donnees completes"
       aov.plus.in->aov.plus.list$"Donnees completes"}
-    
-    if(any(desires=="Identification des outliers")|any(desires=="Donnees sans valeur influente")) { 
+
+    if(any(desires=="Identification des outliers")|any(desires=="Donnees sans valeur influente")) {
       if(is.null(longdata$residu)) {"L'analyse n'a pas pu aboutir"->Resultats$"Arret premature de l'analyse"
         return(Resultats)}
       valeurs.influentes(X="residu", critere="Grubbs",z=3.26, data=longdata)->influentes
-      
+
       if(any(desires=="Identification des outliers")) influentes->Resultats$"Valeurs influentes"
       if(any(desires=="Donnees sans valeur influente")){
         if(!is.null(influentes$"observations influentes"$IDeasy)){
@@ -771,15 +771,15 @@ AN.C.OVA <-
           aov.plus.in->aov.plus.list$"Donnees sans valeur influente"
         }
         if(all(desires!="Donnees completes"))  complet->Resultats$"Donnees sans valeur influente"
-        
+
       }
-      
+
     }
     class(aov.plus.list)<-"aovplus"
-    assign("aov.plus.in", aov.plus.list,envir=.GlobalEnv) 
+    assign("aov.plus.in", aov.plus.list,envir=.GlobalEnv)
     ref1(packages)->Resultats$"References des packages utilises pour cette analyse"
     if(sauvegarde==T) save(Resultats=Resultats ,choix =paste("anova sur", nom), env=.e)
-    
+
     ez.html(Resultats)
     return(Resultats)
     }
