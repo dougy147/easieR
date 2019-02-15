@@ -1,6 +1,6 @@
 import.results <-
 function(){
-  fichier <- try(file.choose(), silent=TRUE)
+  fichier <- try(tk_choose.files(), silent=TRUE)
   if(class(fichier)=="try-error") return(donnees())
   dget(fichier)->data1
   fichier<- dlgInput("Quel nom voulez-vous donner au fichier?", "Resultats")$res
