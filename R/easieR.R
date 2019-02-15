@@ -4,9 +4,9 @@ easieR <-
     # 1. l'argument info permettra a terme de choisir les informations qui s'affichent dans la console ou non
     options (warn=1)
     options(scipen=999)
-    test<-try(library(svDialogs,tcltk), silent=T)
+    test<-try(library(svDialogs), silent=T)
     if(class(test)== "try-error") return(ez.install())
-    # require(tcltk)
+    require(tcltk)
     #
     # # 2. installer les packages necessaires et MAJ des packages installes
     # # 2a. packages à installer, par ordre alphabetique
@@ -54,6 +54,24 @@ easieR <-
       if(grepl("mac",  .Platform$pkgType)){
         return(easieR.msg(msg=1))
       }else{
+
+        if(Sys.info()[[1]]=="Linux"){
+           if(grepl("arch",Sys.info()[[2]])){
+             system("sudo pacman -Sy pandoc")}
+           if(grepl("ubuntu",Sys.info()[[2]])||grepl("debian",Sys.info()[[2]])) {system("sudo apt install -y pandoc")}
+                  # Si n est pas arch ni ubuntu/debian
+           else{
+               paste("cd $HOME")->dest   #indique le chemin de telechargement et d installation
+               system(dest)
+               paste(system("curl -s https://api.github.com/repos/jgm/pandoc/releases/latest | grep browser_download_url | grep '[.]gz'",intern=T))->url.pandoc  # recherche derniere version pandoc sur github
+               gsub('^...............................|.$', '', url.pandoc)->url.pandoc     #retire les caracteres superflus .. a ameliorer
+               paste("wget",url.pandoc)->commande
+               system(commande) # telecharge le tarball de la derniere version
+               gsub('^....................................................', '', url.pandoc)->fichier # enregistre nom de fichier .. a ameliorer
+               paste0("tar xvzf ./",fichier," --strip-components 1 -C $HOME")->install.pandoclinux
+               system(install.pandoclinux, intern=F, ignore.stdout=F, ignore.stderr=F, wait=F)
+             }
+        }
 
         install.packages("installr")
         library(installr)
