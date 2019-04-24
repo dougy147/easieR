@@ -227,10 +227,11 @@ test.t <-
       }
     
     norme<-function(X, mu, data, param=c("param", "non param", "robustes"), group=NULL, alternative="two.sided", n.boot=NULL, rscale=0.707){
+      if(class(data)!="data.frame") {data<-data.frame(data)
+                                     names(data)[1]<-X}
       Resultats<-list()
       .e <- environment()
       Resultats$"statistiques descriptives"<-.stat.desc.out(X=X, groupes=NULL, data=data, tr=.1, type=3, plot=F)
-      
       cutoff <- data.frame(x = c(-Inf, Inf), y = mu, cutoff = factor(mu) )
       p2<- ggplot(data)
       p2<-p2+ eval(parse(text=paste0("aes(x=factor(0), y=", X,")"))) + geom_violin()
@@ -242,8 +243,6 @@ test.t <-
       p2<-p2+theme(plot.title = element_text(size = 12))+ggtitle("Moyenne et ecart-type")
       # print(p2)
       Resultats$"statistiques descriptives"$Graphique<-p2
-      
-      
       
       if(!is.null(group)) {Resultats$"statistiques descriptives par groupe"<-.stat.desc.out(X=X, groupes=group, data=data, tr=.1, type=3, plot=T) }
       if(any(param=="param") | any(param=="Test parametrique")){
@@ -393,7 +392,7 @@ test.t <-
             "La troncature sur le M-estimator s'adapte en fonction des caracteristiques de l'echantillon.")->Resultats$infos
         } else Resultats$Robustes<-"Les statistiques robustes n'ont pu etre realisees. Verifiez que le packages WRS est correctement installe"
       }
-      
+   
       return(Resultats)
     }
     apparies<-function(X, Y, data=NULL, param=c("param", "non param", "robustes"),alternative="two.sided", n.boot=NULL, rscale=0.707){
@@ -733,9 +732,13 @@ test.t <-
                "Deux echantillons apparies"=R1$"Donnees completes"<-apparies(X=X1, Y=Y, data=data1, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale),
                "Deux echantillons independants"= R1$"Donnees completes"<-indpdts(X=X1, Y=Y, data=data1, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale))
       }
-      
+
       if(any(outlier=="Identification des valeurs influentes")|any(outlier=="Donnees sans valeur influente")){
-        if(choix=="Comparaison a une norme") data1$residu<-data1[,X1] else data1$residu<-unlist(tapply(data1[,X1], data1[,Y], scale, center=T, scale=F))
+        if(choix=="Comparaison a une norme") {
+          if(class(data1)!="data.frame"){data1<-data.frame(data1)
+                                       names(data1)[1]<-X1}
+          data1$residu<-data1[,X1]
+                                             }else data1$residu<-unlist(tapply(data1[,X1], data1[,Y], scale, center=T, scale=F))
         critere<-ifelse(is.null(z), "Grubbs", "z")
         valeurs.influentes(X="residu", critere=critere,z=z, data=data1)->influentes
       }

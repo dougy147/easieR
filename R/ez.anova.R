@@ -478,7 +478,7 @@ if(reshape.data) Resultats$call.reshape<-ez.history[[length(ez.history)]][[2]]
     writeLines(.ez.anova.msg("msg", 1))
     type.v2<-dlgList(type.v[,index], multiple = TRUE, title=.ez.anova.msg("title", 1))$res
     if(length(type.v2)==0) return(.ez.anova.in())
-    type.v<-type.v[which(type.v[, index]==type.v2),1]
+    type.v<-type.v[which(type.v[, index]%in%type.v2),1]
     if(!any(type.v %in% c("Groupes independants", "Mesures repetees"))) {
       writeLines(.ez.anova.msg("msg",2))
       return(.ez.anova.in())
@@ -608,7 +608,7 @@ if(reshape.data) Resultats$call.reshape<-ez.history[[length(ez.history)]][[2]]
     if(length(between)==1 & is.null(within)) nlevels(data[,unlist(between)])->N.modalites2 else sapply(data[,c(between, unlist(within))],nlevels)->N.modalites2 }
   
   options.out<-.options.aov(between=between, within=within, cov=cov, dial=dial, outlier=outlier, param=param, ES=ES, SumS=SumS, save=save)
-  
+#print(options.out)  
   if(is.null(options.out)) return(.ez.anova.in())
   
   
@@ -628,8 +628,8 @@ if(reshape.data) Resultats$call.reshape<-ez.history[[length(ez.history)]][[2]]
     msgBox(.ez.anova.msg("msg",13))
     return(NULL)
   }
-  
-  if(c( any(options.out$param %in% c("param", "Modele parametrique", "Parametric, param")))){
+#if(any(param %in% c("Modele parametrique", "Parametric", "param")))  
+  if(any(options.out$param %in% c("param", "Modele parametrique", "Parametric", "param"))){
     contrasts<-.contrastes.ez(data=data, between=between, within=within, contrasts=contrasts, dial=dial, p.adjust=p.adjust)
     if(is.null(contrasts)) return(.ez.anova.in()) 
   } else contrasts<-NULL
@@ -655,6 +655,7 @@ if(reshape.data) Resultats$call.reshape<-ez.history[[length(ez.history)]][[2]]
 
 .ez.anova.out<-function(data=NULL, DV=NULL, between=NULL, within=NULL,id=NULL, cov=NULL,  
                         ES="ges", SumS="3", contrasts="none",p.adjust="none", rscaleFixed=0.5 , rscaleRandom= 1, n.boot=1000, param=c("param", "bayes")){
+  data<-data[,c(DV,between, within, id, cov)]
   list()->Resultats
   cov1<-NULL
   if(!is.null(cov)) { 
@@ -712,10 +713,24 @@ if(reshape.data) Resultats$call.reshape<-ez.history[[length(ez.history)]][[2]]
     options(contrasts=c("contr.sum","contr.poly"))
     if(!is.null(cov)) factorize<-FALSE else factorize<-TRUE
     aov.out<-aov_4(as.formula(modele),data=data, es_aov=ES, type=SumS,factorize=factorize)
-    data$residu<-c(aov.out$lm$residuals)
-    
+    residus<-data.frame(aov.out$lm$residuals)
+    residus[,"match"] <-aov.out$data$wide[,id]
+    if(!is.null(within)){ residus<-melt(residus, id.vars="match") 
+                         names(residus)[3]<-"residu"
+                          residus$match<-paste0(residus[,1], residus[,2])
+                          data$match<-paste0(data[,id], data[,within[1]])
+                          if(length(within)>1){
+                             for(i in 2:length(within)){
+                                 data$match<-paste0(data$match, "_", data[,within[i]])
+                                                        }
+                                               }
+                          }else{
+      names(residus)<-c("residu", "match")
+      data$match<-data[,id]
+      }
+
+    data<-merge(x=data, y=residus, by="match")
     Resultats[[.ez.anova.msg("title",31)]]<-.normalite(data=data, X="residu", Y=NULL)
-    
     
     if(!is.null(cov) & !is.null(between)){
       options(contrasts = c("contr.helmert", "contr.poly"))
