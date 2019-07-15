@@ -94,7 +94,7 @@ ez.anova<-function(data=NULL, DV=NULL, between=NULL, within=NULL,id=NULL, cov=NU
   assign("aov.plus.in", aov.plus.list,envir=.GlobalEnv) 
   
   
-if(reshape.data) Resultats$call.reshape<-ez.history[[length(ez.history)]][[2]]
+if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.history)]][[2]])
   
   if(!is.null(between)) between<-paste(unique(between), collapse="','", sep="") 
   if(!is.null(within)) within<-paste(unique(within), collapse="','", sep="") 
@@ -763,29 +763,29 @@ if(reshape.data) Resultats$call.reshape<-ez.history[[length(ez.history)]][[2]]
     }
     
     c(unlist(within), between)->withinbetween
-    if(length(withinbetween)>1) {
       
-      graph.modele<-paste0(withinbetween[1],"~",withinbetween[2])
+      if(length(withinbetween)==1) graph.modele<-paste0("~",withinbetween[1]) else{
+      graph.modele<-paste0(withinbetween[1],"~",withinbetween[2])}
       if(length(withinbetween)>2){paste0(graph.modele, "|",withinbetween[3] )->graph.modele
         if(length(withinbetween)>3){ for(i in 4:length(withinbetween)){paste0(graph.modele, "*",withinbetween[i] )->graph.modele} 
           
         }} 
       
       Resultats$Figure<-emmip(aov.out,as.formula(graph.modele),CIs=T)
-    }
+    
     
     
     aov.out2<-summary(aov.out)
     if(!is.null(within) && any( sapply(data[,c(unlist(within))],nlevels)>2)) {
       aov.out2b<-round(aov.out2$sphericity.test,5)
       aov.out2b<-matrix(aov.out2b, ncol=2)
-      dimnames(aov.out2b)<-dimnames(aov.out2$sphericity.test)
+      dimnames(aov.out2b)<-list(dimnames(aov.out2$sphericity.test)[[1]], c("Stat", "valeur.p"))
       Resultats[[.ez.anova.msg("title",36)]]<-aov.out2b
     }
 
     aov.out3<-aov.out[[1]]
     aov.out3<-data.frame(aov.out3)
-    aov.out3[,6]<-round.ps(aov.out3[,6])
+#    aov.out3[,6]<-round.ps(aov.out3[,6])
     if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
       names(aov.out3)<-c("ddl.num", "ddl.denom", "CME", "F", ES, "valeur.p" )
     }
@@ -812,7 +812,9 @@ if(reshape.data) Resultats$call.reshape<-ez.history[[length(ez.history)]][[2]]
     
     if(!is.list(contrasts) && contrasts %in% c("pairwise",  "Comparaison 2 a 2" )){
       pair<-pairs(em.out, adjust=p.adjust)
-      Resultats[[.ez.anova.msg("title",39)]]<-summary(pair)
+      pair<-summary(pair)
+      names(pair)[which(names(pair)=="p.value")]<-"valeur.p"
+      Resultats[[.ez.anova.msg("title",39)]]<-pair
     }
     
     
@@ -865,7 +867,7 @@ if(reshape.data) Resultats$call.reshape<-ez.history[[length(ez.history)]][[2]]
       table.cont<-summary(emmean.out)
       Resultats[[.ez.anova.msg("title",40)]][[.ez.anova.msg("title",41)]]<-contrasts
       if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-        names(table.cont)<-c("contraste","estimateur", "erreur.st", "ddl","t", "p")}
+        names(table.cont)<-c("contraste","estimateur", "erreur.st", "ddl","t", "valeur.p")}
       table.cont$R.2<-round(table.cont$t^2/(table.cont$t^2+table.cont$ddl),4)
       if(!is.null(between)) {
         grepl(paste(between,collapse = "|"),  table.cont[,1])->table.cont$D.Cohen
@@ -921,7 +923,7 @@ if(reshape.data) Resultats$call.reshape<-ez.history[[length(ez.history)]][[2]]
         round(Table.contrasts,4)->Table.contrasts
         data.frame(Table.contrasts)->Table.contrasts  
         if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-          names(Table.contrasts)<-c("estimateur", "ddl","t", "p")}else names(Table.contrasts)<-c("estimate", "df","t", "p.value")
+          names(Table.contrasts)<-c("estimateur", "ddl","t", "valeur.p")}else names(Table.contrasts)<-c("estimate", "df","t", "p.value")
         
         
         dimnames(Table.contrasts)[[1]]<-table.cont[,1]
@@ -994,10 +996,10 @@ if(reshape.data) Resultats$call.reshape<-ez.history[[length(ez.history)]][[2]]
       ans<-frdAllPairsExactTest(y=data[,DV],groups=data[,within], blocks=data[,id], p.adjust = p.adjust)
       comp<-expand.grid(dimnames(ans$p.value))
       comp<- paste0(comp[,1],"-", comp[,2])
-      F.MC<-data.frame(D.exact.test=c(ans$statistic), p=c(ans$p.value))
+      F.MC<-data.frame(D.exact.test=c(ans$statistic), valeur.p=c(ans$p.value))
        dimnames(F.MC)[[1]]<-comp
        F.MC<-F.MC[complete.cases(F.MC),]
-      F.MC$p<-round.ps(F.MC$p)
+#      F.MC$p<-round.ps(F.MC$p)
       Resultats[[.ez.anova.msg("title",45)]][[.ez.anova.msg("title",48)]]<-F.MC
       
       
@@ -1078,22 +1080,40 @@ if(reshape.data) Resultats$call.reshape<-ez.history[[length(ez.history)]][[2]]
         c(names(data[,between]), paste(names(data[,between])[1],":",names(data[,between])[2]))->dimnames(T2)[[1]]
         Resultats[[.ez.anova.msg("title",52)]][[.ez.anova.msg("title",51)]]<-T2
       }
-      try(
-        Resultats[[.ez.anova.msg("title",53)]][[.ez.anova.msg("title",51)]]<-WRS2::pbad2way(as.formula(paste0(DV, "~",between[1],"*",between[2])),
-                                                                                            data=data, est = "mom", nboot = n.boot),silent=T)
-      try( Resultats[[.ez.anova.msg("title",50)]][[.ez.anova.msg("title",51)]]<-WRS2::pbad2way(as.formula(paste0(DV, "~",between[1],"*",between[2])), 
-                                                                                               data=data, est = "median", nboot = n.boot),silent=T)
+      mom<-try(
+        WRS2::pbad2way(as.formula(paste0(DV, "~",between[1],"*",between[2])),data=data, est = "mom", nboot = n.boot),silent=T)
+      if(class(mom)!="try-error")  {
+        mom<-matrix(unlist(mom[c(2,4,6)]), ncol=1)
+        dimnames(mom)<-list(c(between, paste0(between[1], ":",between[2])),c("valeur.p"))
+         Resultats[[.ez.anova.msg("title",53)]][[.ez.anova.msg("title",51)]]<-mom
+      }
+     
+       mom<-try(
+     WRS2::pbad2way(as.formula(paste0(DV, "~",between[1],"*",between[2])),data=data, est = "median", nboot = n.boot),silent=T)
+  if(class(mom)!="try-error")  {
+    mom<-matrix(unlist(mom[c(2,4,6)]), ncol=1)
+    dimnames(mom)<-list(c(between, paste0(between[1], ":",between[2])),c("valeur.p"))
+    Resultats[[.ez.anova.msg("title",50)]][[.ez.anova.msg("title",51)]]<-mom
+  }
       
       try(WRS2::mcp2a(as.formula(paste0(DV, "~",between[1],"*",between[2])), data=data, est = "mom", nboot = n.boot), silent=T)->mediane
       if(class(mediane)!="try-error") {
-        mediane$call<-NULL
-        Resultats[[.ez.anova.msg("title",53)]][[.ez.anova.msg("title",42)]]<-mediane
+        comp<-data.frame(psihat=c(mediane[[1]][[1]][[1]], mediane[[1]][[2]][[1]] , mediane[[1]][[3]][[1]]), 
+                 valeur.p=c(mediane[[1]][[1]][[3]], mediane[[1]][[2]][[3]] , mediane[[1]][[3]][[3]]))
+        med<-cbind(comp, matrix(c(mediane[[1]][[1]][[2]], mediane[[1]][[2]][[2]] , mediane[[1]][[3]][[2]]), ncol=2, byrow=T))
+        names(med)<-c("psihat", "valeur.p", "lim.inf","lim.sup")
+        dimnames(med)[[1]]<-names(mediane[[2]])
+        Resultats[[.ez.anova.msg("title",53)]][[.ez.anova.msg("title",42)]]<-med
       }
       
       try(mediane<-WRS2::mcp2a(as.formula(paste0(DV, "~",between[1],"*",between[2])), data=data, est = "median", nboot = n.boot), silent=T)
       if(class(mediane)!="try-error") {
-        mediane$call<-NULL
-        Resultats[[.ez.anova.msg("title",50)]][[.ez.anova.msg("title",42)]]<-mediane
+        comp<-data.frame(psihat=c(mediane[[1]][[1]][[1]], mediane[[1]][[2]][[1]] , mediane[[1]][[3]][[1]]), 
+                 valeur.p=c(mediane[[1]][[1]][[3]], mediane[[1]][[2]][[3]] , mediane[[1]][[3]][[3]]))
+        med<-cbind(comp, matrix(c(mediane[[1]][[1]][[2]], mediane[[1]][[2]][[2]] , mediane[[1]][[3]][[2]]), ncol=2, byrow=T))
+        names(med)<-c("psihat", "valeur.p", "lim.inf","lim.sup")
+        dimnames(med)[[1]]<-names(mediane[[2]])
+        Resultats[[.ez.anova.msg("title",50)]][[.ez.anova.msg("title",42)]]<-med
       }
     }
     
@@ -1128,12 +1148,13 @@ if(reshape.data) Resultats$call.reshape<-ez.history[[length(ez.history)]][[2]]
     } 
     
     if(length(between)==1 & length(within)==1){
-      modeleR<-as.formula(paste0(DV, "~", within,"*", between))
+      modeleR<-as.formula(paste0(DV, "~", between,"*",  within))
       try(WRS2::tsplit( as.formula(modeleR), data[,id], data=data, tr = 0.2), silent=T)->tronquees
       if(class(tronquees)!="try-error"){
-        tronquees2<-matrix(unlist(tronquees)[c(1:12)],ncol=4, byrow=T)
+        tronquees2<-matrix(unlist(unlist(tronquees)[c(1:12)]),ncol=4, byrow=T)
+        tronquees2<-data.frame(tronquees2)
         rownames(tronquees2)<-c(tronquees$varnames[2] , tronquees$varnames[3], paste0(tronquees$varnames[2],":",tronquees$varnames[3]))
-        colnames(tronquees2)<-c("F", "p", "df1", "df2")
+        names(tronquees2)<-c("F", "valeur.p", "df1", "df2")
         Resultats[[.ez.anova.msg("title",52)]][[.ez.anova.msg("title",51)]] <-tronquees2
         WRS2::sppba(modeleR, data[,id], data=data, est = "mom", avg = TRUE, nboot = n.boot, MDIS = FALSE)->MoMa 
         WRS2::sppbb(modeleR, data[,id], data=data, est = "mom", nboot = n.boot)->MoMb

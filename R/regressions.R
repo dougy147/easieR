@@ -147,6 +147,7 @@ regressions <-
         Resultats$"Normalite multivariee"<-.normalite(data=dtrgeasieR, X=cont, Y=NULL)
         ols_plot_resid_fit(lm.r1)
         FIV<-ols_coll_diag(lm.r1) # calcul du facteur d inflation de la variance 
+        FIV[[1]]<-data.frame(FIV[[1]])
         names(FIV)<-c("Test de multicolinearite", "Indice des valeurs propres")
         names(FIV$`Test de multicolinearite`)<-c("variables", "Tolerance", "FIV")
         Resultats$"Tests de multicolinearite"<-FIV$`Test de multicolinearite`
@@ -158,7 +159,8 @@ regressions <-
         Resultats$"Graphique testant la linearite entre les predicteurs et la variable dependante"<-ols_plot_comp_plus_resid(lm.r1)
         Resultats$"Indice des valeurs propres"<-FIV$`Indice des valeurs propres`
         dwt(lm.r1, simulate=TRUE, method= "normal", reps=500)->DWT.results
-        Resultats$"Test de Durbin-Watson - autocorrelations"<-round(data.frame("Autocorrelation"=DWT.results[1],"statistique de D-W"=DWT.results[2],"valeur p"=DWT.results[3]),4)->DWT.results
+        Resultats$"Test de Durbin-Watson - autocorrelations"<-round(data.frame("Autocorrelation"=DWT.results[[1]],
+                                                                               "statistique de D-W"=DWT.results[[2]],"valeur.p"=DWT.results[[3]]),4)
        
         var.err<-ols_test_breusch_pagan(lm.r1, rhs=T)
 
@@ -250,7 +252,7 @@ regressions <-
           hier<-paste0(hier,")")
           hier<-eval(parse(text=hier))
           attributes(hier)$heading[1]<-"Table de l'analyse de variance des modeles hierarchiques"
-          names(hier)<-c("ddl.resid", "SC.resid","ddl.effet", "SC", "F", "p")
+          names(hier)<-c("ddl.resid", "SC.resid","ddl.effet", "SC", "F", "valeur.p")
           Resultats$"Analyse hierarchique des modeles "<-hier
           
           
@@ -349,7 +351,7 @@ regressions <-
         (1-pt(abs(res_modele_robuste$coefficients[,3]), (length(dtrgeasieR[,1])-1-length(pred)), lower.tail=TRUE))*2->proba
         round(cbind(res_modele_robuste$coefficients, proba),3)->M_estimator
         data.frame(M_estimator)->M_estimator
-        noms<-c("b (M estimator)", "SE", "t.value", "p.valeur")
+        noms<-c("b (M estimator)", "SE", "t", "valeur.p")
         
         
         if(n.boot>100){ 

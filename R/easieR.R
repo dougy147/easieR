@@ -7,52 +7,10 @@ easieR <-
     test<-try(library(svDialogs), silent=T)
     if(class(test)== "try-error") return(ez.install())
     require(tcltk)
-    #
-    # # 2. installer les packages necessaires et MAJ des packages installes
-    # # 2a. packages à installer, par ordre alphabetique
-    # pack.to.inst <- c("afex", "akima",  "Amelia", "asbio","BayesFactor", "bibtex","car", "cobs", "corpcor", "DAAG","deldir", "DescTools","devtools", "doBy","dplyr", "epitools","emmeans",
-    #                   "foreign","ggplot2", "ggplotgui", "gmodels", "GPArotation", "gsl", "knitr","lars", "lsr", "MBESS", "mc2d", "mgcv", "mlogit", "nFactors", "nortest",
-    #                   "outliers", "pander","pgirmess", "phia", "pkgmaker", "plyr", "ppcor", "psych", "pwr", "QuantPsyc", "quantreg", "Rcpp", "readxl", "Rfit",
-    #                   "reshape2", "rmarkdown","rms", "robust", "robustbase","rpivotTable", "rtf", "rrcov", "scatterplot3d","semPlot", "sos", "sp", "stringi", "stringr", "svDialogs", "TeachingDemos",
-    #                   "trimcluster", "wle", "WRS2")
-    #
-    # # 2b. packages manquants
-    # pack.uninst <- pack.to.inst[!(pack.to.inst %in% rownames(installed.packages()))]
-    #
-    # # 2c. installer packages manquants si necessaires et si utilisateur le souhaite
-    # if(length(pack.uninst)>0){
-    #   inst <- menu(choices=c("oui","non"), graphics=TRUE, title="Voulez-vous installer les packages manquants ?")
-    #   if(length(inst)==0 || inst==2){
-    #     tk_messageBox(type="ok", caption="Attention", message="Vous avez choisi de ne pas installer les packages manquants, cela peut gener l'execution de certaines fonctions. Relancez easieR() si vous souhaitez installer les packages.")
-    #   } else {
-    #     writeLines("Installation des packages")
-    #     print(pack.uninst)
-    #     flush.console()
-    #     ## install devtools if necessary
-    #     install.packages('devtools')
-    #     ## Load devtools package for install_github()
-    #     library(devtools)
-    #     ## get BayesFactorExtras from github
-    #     try(install_github("richarddmorey/BayesFactorExtras", subdir="BayesFactorExtras"), silent=T)
-    #     install.packages(pack.uninst, quiet=TRUE)
-    #     #WRS is a special case because it is not on CRAN
-    #     if (!("WRS" %in% rownames(installed.packages()))) {
-    #       # third: install an additional package which provides some C functions
-    #       library("devtools")
-    #       try(install_github("nicebread/WRS", subdir="pkg"),silent=T)
-    #     }
-    #   }
-    # }
-    # flush.console()
-
-
-    # 3. choix du groupe de fonctions
-    #  require(svDialogs)
-
     library(rmarkdown)
     if(is.null(pandoc_version())){
-      if(grepl("mac",  .Platform$pkgType)){
         return(easieR.msg(msg=1))
+<<<<<<< HEAD
       }else{
 
         if(Sys.info()[[1]]=="Linux"){
@@ -80,33 +38,55 @@ easieR <-
     }
 
 
-    choix <- dlgList(c("Donnees - (Importation, exportation, sauvegarde)", "Pretraitements (tri, selection, operations mathematiques, valeurs manquantes",
-                       "Analyses - Tests d'hypothese", "Graphiques",
-                       "Interface - objets en memoire, nettoyer la memoire, repertoire de travail",
-                       "Materiel pedagogique"), preselect=NULL, multiple = FALSE, title="Que voulez-vous ?")$res
-    if(length(choix)==0) writeLines("Vous avez quitte easieR") else {
-      if(choix=="Donnees - (Importation, exportation, sauvegarde)") Resultats <- donnees()
-      if(choix=="Analyses - Tests d'hypothese") Resultats <-analyse()
-      if(choix=="Interface - objets en memoire, nettoyer la memoire, repertoire de travail") Resultats <- interfaceR()
-      if(choix=="Pretraitements (tri, selection, operations mathematiques, valeurs manquantes") Resultats<-preprocess()
-      if(choix== "Materiel pedagogique") return(teaching())
-      if(choix=="Graphiques") return(graphiques())
+    choix <- dlgList(easieR.msg("2"), preselect=NULL, multiple = FALSE, title=easieR.msg("3"))$res
+    if(length(choix)==0) return(writeLines(easieR.msg("4"))) else {
+      if(choix %in%c("Donnees - (Importation, exportation, sauvegarde)",
+                     "Data - (Import, export, save")) Resultats <- donnees()
+      if(choix %in% c("Analyses - Tests d'hypothese",
+                      "Analyses - Hypothesis tests")) Resultats <-analyse()
+      if(choix%in%c("Interface - objets en memoire, nettoyer la memoire, repertoire de travail",
+                  "Interface - objects in memory, clean memory, wordking directory")) Resultats <- interfaceR()
+      if(choix%in% c("Pretraitements (tri, selection, operations mathematiques, Traitement des valeurs manquantes)",
+                     "Preprocess (sort, select, mathematical operations, missing values)")) Resultats<-preprocess()
+      if(choix%in% c("Materiel pedagogique","Teaching material")) return(teaching())
+      if(choix%in%c("Graphiques","Graphics")) return(graphiques())
       return(Resultats)
 
     }
-  }
 
-easieR.msg<-function(msg=1){
-  if(msg==1){
-    if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())) {msg<-"Pour que easieR fonctionne correctement,
-    il faut installer Pandoc disponible à l'url suivant : https://github.com/jgm/pandoc/releases/tag/2.2.3.2" } else {
-      msg<-"In order to ensure that easieR is properly installed, please install Pandoc at the following url :
-      https://github.com/jgm/pandoc/releases/tag/2.2.3.2" }}
+#easieR.msg<-function(msg=1){
+#  if(msg==1){
+#    if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())) {msg<-"Pour que easieR fonctionne correctement,
+#    il faut installer Pandoc disponible à l'url suivant : https://github.com/jgm/pandoc/releases/tag/2.2.3.2" } else {
+#      msg<-"In order to ensure that easieR is properly installed, please install Pandoc at the following url :
+#      https://github.com/jgm/pandoc/releases/tag/2.2.3.2" }}
 
-  return(msg)
+easieR.msg<-function(msg="1"){
+   if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())) {
+     msg<-switch(msg,
+                 "1"=c("Pour que easieR fonctionne correctement, il faut installer Pandoc disponible à l'url suivant : https://github.com/jgm/pandoc/releases") ,
+                 "2"=c("Donnees - (Importation, exportation, sauvegarde)",
+                       "Pretraitements (tri, selection, operations mathematiques, Traitement des valeurs manquantes)",
+                       "Analyses - Tests d'hypothese", "Graphiques",
+                     "Interface - objets en memoire, nettoyer la memoire, repertoire de travail",
+                     "Materiel pedagogique"),
+                 "3"="Que voulez-vous ?",
+                 "4"="Vous avez quitte easieR")
+     }else {
+       msg<-switch(msg, "1"="In order to ensure that easieR is properly installed, please install Pandoc at the following url :
+      https://github.com/jgm/pandoc/releases",
+                   "2"=c("Data - (Import, export, save)", "Preprocess (sort, select, mathematical operations, missing values)",
+                         "Analyses - Hypothesis tests", "Graphics",
+                       "Interface - objects in memory, clean memory, working directory",
+                       "Teaching material"),
+                   "3"="What do you want to do?",
+                   "4"="User has terminated easieR")
+
+
     }
 
-
+  return(msg)
+}
 
 
 
@@ -547,7 +527,7 @@ VI.multiples<-function(data){ require("pych")
       round(data.frame(Shapiro_Wilk$statistic,Shapiro_Wilk$p.value, Lilliefors$statistic, Lilliefors$p.value),4)->normalite
       names(normalite)<-c("W de Shapiro-Wilk", "valeur.p SW", "D de Lilliefors", "valeur.p Llfrs")
       dimnames(normalite)[1]<-" "
-      format(normalite, width = max(sapply(names(normalite), nchar)), justify = "centre")->normalite
+#      format(normalite, width = max(sapply(names(normalite), nchar)), justify = "centre")->normalite
       n2$"Test de normalite"<-normalite}
 
 
@@ -684,7 +664,7 @@ ref1 <-
       } else {
       file.nametxt<-paste0(tempdir(), "/references.bib")
       }
-    
+
     write.bib(packages, file=file.nametxt)
     bibtex::read.bib(file.nametxt)->Resultats
     file.remove(file.nametxt)
@@ -703,7 +683,7 @@ ref1 <-
   packageStartupMessage(" If you are using easieR for the first time, please use the function ez.install in order to ensure that easieR will work properly.\n Si vous utilisez easieR pour la 1e fois, veuillez utiliser la fonction ez.install pour vous assurer de bon fonctionnement de easieR.")
   packageStartupMessage("Les accents / caracteres speciaux ont volontairement ete supprimes pour assurer la portabilite de easieR sur tous les ordinateurs.")
   packageStartupMessage(textVersion)
-  packageStartupMessage("Last update 04/29/2019")
+  packageStartupMessage("Last update 06/13/2019")
   packageStartupMessage("##############")
 
 }

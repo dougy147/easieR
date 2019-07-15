@@ -1,11 +1,11 @@
 ez.html <-
   function(ez.results=NULL){
     
-    packages<-c("rmarkdown", "knitr","ggplot2","stringr" )
+    packages<-c("rmarkdown", "knitr","ggplot2","stringr","reshape2") 
     if(any(lapply(packages, require, character.only=T))==FALSE)  {install.packages(packages) 
       require(packages)}
     dir.create(path= paste0(tempdir(),"\\easieR") , showWarnings = FALSE)
-
+    
     outputb<-c("---","title: 'Resultats de vos analyses'",
                "author: 'Genere automatiquement par easieR'",
                paste("date:","'", date(),"'"),
@@ -15,10 +15,18 @@ ez.html <-
                "    toc_float: true",
                "    toc_depth: 5",
                "---")
+    a<-c("```{r global options, include = FALSE}",
+         "knitr::opts_chunk$set(echo=FALSE, include=TRUE, warning=FALSE, message=FALSE)",
+         "```")
     
     im<-c("```{r, echo=F}","options(digits = 4)", "library('pander')","library('knitr')",
-          "library('bibtex')", "data.results<-dget('ez.results.txt')", "i<-0","```")
-    outputb<-c(outputb, im)
+          "library('bibtex')", "library('flextable')","library('tibble')", "data.results<-dget('ez.results.txt')", "i<-0","```")
+    round<-c("```{r, echo=F}",
+             "round.ps<-function (x) { substr(as.character(ifelse(x < 0.0001, ' <.0001', ifelse(round(x, 2) == 1, ' >.99', formatC(x, digits = 4, format = 'f')))), 2, 7)}",
+             "myf<-function(x){which(x<0.05)}"
+                  ,"```")
+
+    outputb<-c(outputb,a, im,round)
     
     to.html<-function(Resultats, X=1){
       listes<-list()
@@ -33,29 +41,7 @@ ez.html <-
           if(any(class(Resultats[[i]])=="chr")|any(class(Resultats[[i]])=="character")) {
             output<-c(output, Resultats[[i]])
           }
-          if(any(class(Resultats[[i]])=="matrix") && any(class(Resultats[[i]])=="table")) class(Resultats[[i]])<-"matrix"
-          if(any(class(Resultats[[i]])=="matrix")) {
-            data.frame(Resultats[[i]]) ->essai
-            listes[[length(listes)+1]]<-essai
-            essai<-c("```{r, echo=F, results='asis'}", "i<-i+1", "tableau<-data.results[[i]]", 
-                     "pandoc.table(data.frame(tableau), style='simple',split.tables=150)","```")
-            output<-c(output, essai)
-          }
-          if(any(class(Resultats[[i]])=="ftable")) {
-            Resultats[[i]] ->essai
-            listes[[length(listes)+1]]<-essai
-            essai<-c("```{r, echo=F, results='asis'}", "i<-i+1", "tableau<-data.results[[i]]", 
-                     "pandoc.table(tableau, style='simple',split.tables=150)","```")
-            output<-c(output, essai)
-          }
-          if(any(class(Resultats[[i]])=="data.frame") && length(Resultats[[i]])!=0) {
-            essai<-data.frame(Resultats[[i]])
-            
-            listes[[length(listes)+1]]<-essai
-            essai<-c("```{r, echo=F, results='asis'}", "i<-i+1", "tableau<-data.results[[i]]", 
-                     "pandoc.table(data.frame(tableau), style='simple',split.tables=150)","```")
-            output<-c(output, essai)
-          }
+          
           if(any(class(Resultats[[i]])=="bibentry")) {
             listes[[length(listes)+1]]<-Resultats[[i]]
             essai<-c("```{r, echo=F, results='asis'}","i<-i+1",
@@ -64,32 +50,67 @@ ez.html <-
                      "invisible(file.remove('references.bib'))","```")
             
             output<-c(output, essai)
-          }
-          
-          if(any(class(Resultats[[i]])=="table")) {
-            essai<-as.data.frame.matrix(Resultats[[i]])
-            listes[[length(listes)+1]]<-essai
-            essai<-c("```{r, echo=F}", "i<-i+1", "tableau<-data.results[[i]]", 
-                     " kable(data.frame(tableau))","```")
-            output<-c(output, essai)
-          }
-          
-          
+          }        
           if(any(class(Resultats[[i]])=="ggplot")) {
             essai<-Resultats[[i]]
-            dire<-dir(paste0(tempdir(), "\\easieR\\"))
-            if(any(str_detect(dire, "ezplot"))) {
-              ezplot<-str_detect(dire, "ezplot")
-              n<-length(which(ezplot==TRUE))
-              nom<-paste0(tempdir(), "\\easieR\\ezplot", n+1, ".png")
-            }else{nom<-paste0(tempdir(), "\\easieR\\ezplot1.png")}
-            ggsave(filename=nom, plot=essai)
+            if(Sys.info()[[1]]=="Windows"){
+              dire<-dir(paste0(tempdir(), "\\easieR\\"))
+              if(any(str_detect(dire, "ezplot"))) {
+                ezplot<-str_detect(dire, "ezplot")
+                n<-length(which(ezplot==TRUE))
+                nom<-paste0(tempdir(), "\\easieR\\ezplot", n+1, ".png")
+              }else{nom<-paste0(tempdir(), "\\easieR\\ezplot1.png")}
+              ggsave(filename=nom, plot=essai)
+              essai<-paste0("<img src='", nom, "'alt='Drawing' style='width: 700px;'/>")
+              output<-c(output, essai)
+            }else{
+              dir.create(paste0(tempdir(), "/easieR/"))
+              dire<-dir(paste0(tempdir(), "/easieR/"))
+              if(any(str_detect(dire, "ezplot"))) {
+                ezplot<-str_detect(dire, "ezplot")
+                n<-length(which(ezplot==TRUE))
+                nom<-paste0(tempdir(), "/easieR/ezplot", n+1, ".png")
+              }else{nom<-paste0(tempdir(), "/easieR/ezplot1.png")}
+              ggsave(filename=nom, plot=essai)
+              essai<-paste0("<img src='", nom, "'alt='Drawing' style='width: 700px;'/>")
+              output<-c(output, essai)
+            }
             
-            essai<-paste0("<img src='", nom, "'alt='Drawing' style='width: 700px;'/>")
-            output<-c(output, essai)
           }
           
-          
+          if(any(class(Resultats[[i]])=="matrix") | any(class(Resultats[[i]])=="table") |  any(class(Resultats[[i]])=="data.frame")|  any(class(Resultats[[i]])=="ftable")) {
+            
+            essai<-Resultats[[i]]
+            if(any(class(essai)=="ftable")) {
+              essai<-dcast(as.data.frame(essai), as.formula(paste(paste(names(attr(essai, 'row.vars')), collapse='+'), '~', paste(names(attr(essai, 'col.vars'))))))
+            }
+            
+            listes[[length(listes)+1]]<-essai
+            
+            essai<-c("```{r, echo=F, results='asis'}", 
+                     "i<-i+1",
+                     "table<-data.results[[i]]",
+                     "tableau<-table",
+                     "tableau<-as.data.frame.matrix(tableau)",
+                     "if(has_rownames(tableau) & any(rownames(tableau)!=' ')) tableau<-rownames_to_column(tableau, var = ' ')", 
+                     "if(any(grepl('valeur.p', names(tableau)))) {", 
+                     "col<-which(grepl('valeur.p', names(tableau)))",
+                     "if(length(col)>1) {is<-unique(unlist(apply(tableau[,col], 2,myf )))",
+                     "tableau[,col]<-apply(tableau[,col], 2, round.ps) }else{",
+                     "is<-which(tableau[, which(grepl('valeur.p', names(tableau)))]<0.05)",
+                     "tableau[, which(grepl('valeur.p', names(tableau)))]<-round.ps(tableau[, which(grepl('valeur.p', names(tableau)))])}}",
+                     "ft<-flextable(tableau)", 
+                     "if(!is.null(names(dimnames(table)))){ft<-add_header_row(ft, top=T, values=c(names(dimnames(table)), rep(' ',times= length(tableau)-2)))}",
+                     "ft<-theme_booktabs(ft)",
+                     "ft<-fontsize(ft, size=14, part='all')",
+                     "if(any(grepl('valeur.p', names(tableau)))) {",
+                         "ft <- color( ft, i = is, j = 1:ncol(tableau), color = 'red' )",
+                         "}", 
+                     "if(any(class(table)=='p.value')){",
+                     "for(j in 1:ncol(tableau)){ft <- color(ft, i = which(tableau[,j]<0.05) , j = j, color='red')}}",
+                     "ft","```")
+            output<-c(output, essai)
+          }
           
           if(any(class(Resultats[[i]])=="numeric") ) {
             if(length(Resultats[[i]])==1) {
@@ -100,9 +121,14 @@ ez.html <-
               essai<-data.frame(essai)
               names(essai)<-names(Resultats[[i]])
               listes[[length(listes)+1]]<-essai
-              essai<-c("```{r, echo=F}", "i<-i+1", "tableau<-data.results[[i]]", 
-                       "kable(data.frame(tableau))","```")
               
+              essai<-c("```{r, echo=F, results='asis'}", "i<-i+1", "tableau<-data.results[[i]]",
+                       "tableau<-data.frame(tableau)", 
+                       "if(has_rownames(tableau) & rownames(tableau)!=' ') tableau<-rownames_to_column(tableau,  var = ' ')",
+                       "ft <- flextable(tableau)",
+                       "ft<-theme_booktabs(ft)", "ft<-fontsize(ft, size=14, part='all')",
+                       "if(any(grepl('valeur.p', names(tableau)))) ft <- color( ft, i = which(any(tableau[, which(grepl('valeur.p', names(tableau)))]<0.05)), j = 1:ncol(tableau), color = 'red' )", 
+                       "ft","```")
               output<-c(output, essai)
             }
           }
@@ -123,37 +149,31 @@ ez.html <-
     output2<-to.html(Resultats=ez.results)
     listes<-c(output2$listes)
     
-    wd<-getwd() 
-    if(grepl("[^[:alnum:]]", wd)) {
-  
-    }
     
     if(Sys.info()[[1]]=="Windows"){
-    file.nametxt<-paste0(tempdir(), "\\easieR\\ez.results.txt")
-      } else {
+      file.nametxt<-paste0(tempdir(), "\\easieR\\ez.results.txt")
+    } else {
       dir.create(paste0(tempdir(), "/easieR/"))
       file.nametxt<-paste0(tempdir(), "/easieR/ez.results.txt")
-      }
+    }
     dput(listes, file.nametxt )
     
     
-
+    
     output<-c(outputb, output2$output)
-  if(Sys.info()[[1]]=="Windows"){
-    file.nameRmd<-paste0(tempdir(), "\\easieR\\Rapport.easieR.Rmd")
+    if(Sys.info()[[1]]=="Windows"){
+      file.nameRmd<-paste0(tempdir(), "\\easieR\\Rapport.easieR.Rmd")
     } else {
-    file.nameRmd<-paste0(tempdir(), "/easieR/Rapport.easieR.Rmd")
-  }
+      file.nameRmd<-paste0(tempdir(), "/easieR/Rapport.easieR.Rmd")
+    }
     writeLines(output, file.nameRmd)
-    #writeLines(output, file.nameRmd)
-    render(file.nameRmd)
-#    render("Rapport.easieR.Rmd" )
-      if(Sys.info()[[1]]=="Windows"){
-    browseURL(file.path("file:\\", tempdir(), "easieR\\Rapport.easieR.html"))
-        } else {
-         browseURL(file.path("file:/", tempdir(), "easieR/Rapport.easieR.html"))
-        }
-        
+    render(file.nameRmd, quiet=T)
+    if(Sys.info()[[1]]=="Windows"){
+      browseURL(file.path("file:\\", tempdir(), "easieR\\Rapport.easieR.html"))
+    } else {
+      browseURL(file.path("file:/", tempdir(), "easieR/Rapport.easieR.html"))
+    }
+    
     
     
     dire<-dir()
