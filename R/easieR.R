@@ -10,7 +10,6 @@ easieR <-
     library(rmarkdown)
     if(is.null(pandoc_version())){
         return(easieR.msg(msg=1))
-<<<<<<< HEAD
       }else{
 
         if(Sys.info()[[1]]=="Linux"){
