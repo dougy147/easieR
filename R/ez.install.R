@@ -1,7 +1,7 @@
 ez.install <-
   function(){
     require(tcltk)
-    
+
     # # 2. installer les packages necessaires et MAJ des packages installes
     # # 2a. packages a installer, par ordre alphabetique
     pack.to.inst <- c('afex',
@@ -69,13 +69,13 @@ ez.install <-
                       'svDialogs',
                       'TeachingDemos',
                       'trimcluster',
-                      'WRS',                   
+                      'WRS',
                       'WRS2'
     )
    
     # 2b. packages manquants
     pack.uninst <- pack.to.inst[!(pack.to.inst %in% rownames(installed.packages()))]
-    
+
     # 2c. installer packages manquants si necessaires et si utilisateur le souhaite
     if(length(pack.uninst)>0){
       inst <- menu(choices=c("oui","non"), graphics=TRUE, title="Voulez-vous installer les packages manquants ?")
@@ -93,23 +93,42 @@ ez.install <-
           install_github("nicebread/WRS", subdir="pkg")
         }
       }
-    } 
-    
+    }
+
     library(rmarkdown)
     if(is.null(pandoc_version())){
       if(grepl("mac",  .Platform$pkgType)){
         return(easieR.msg(msg=1))
-      }else{
-        
+      }
+
+      if(Sys.info()[[1]]=="Linux"){
+         if(grepl("arch",Sys.info()[[2]])){
+           system("sudo pacman -Sy pandoc")}
+         if(grepl("ubuntu",Sys.info()[[2]])||grepl("debian",Sys.info()[[2]])) {system("sudo apt install -y pandoc")}
+                # Si n est pas arch ni ubuntu/debian
+         else{
+             paste("cd $HOME")->dest   #indique le chemin de telechargement et d installation
+             system(dest)
+             paste(system("curl -s https://api.github.com/repos/jgm/pandoc/releases/latest | grep browser_download_url | grep '[.]gz'",intern=T))->url.pandoc  # recherche derniere version pandoc sur github
+             gsub('^...............................|.$', '', url.pandoc)->url.pandoc     #retire les caracteres superflus .. a ameliorer
+             paste("wget",url.pandoc)->commande
+             system(commande) # telecharge le tarball de la derniere version
+             gsub('^....................................................', '', url.pandoc)->fichier # enregistre nom de fichier .. a ameliorer
+             paste0("tar xvzf ./",fichier," --strip-components 1 -C $HOME")->install.pandoclinux
+             system(install.pandoclinux, intern=F, ignore.stdout=F, ignore.stderr=F, wait=F)
+           }
+      }
+
+      else{
         install.packages("installr")
         library(installr)
         install.pandoc()
       }
     }
-    
-    
+
+
     flush.console()
     vef.pack()->Resultats
     return(Resultats)
-    
+
   }

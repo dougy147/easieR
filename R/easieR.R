@@ -6,13 +6,11 @@ easieR <-
     options(scipen=999)
     test<-try(library(svDialogs), silent=T)
     if(class(test)== "try-error") return(ez.install())
-
     require(tcltk)
-
     library(rmarkdown)
     if(is.null(pandoc_version())){
         return(easieR.msg(msg=1))
-      } else{
+      }else{
 
         if(Sys.info()[[1]]=="Linux"){
            if(grepl("arch",Sys.info()[[2]])){
@@ -54,7 +52,13 @@ easieR <-
       return(Resultats)
 
     }
-  }
+
+#easieR.msg<-function(msg=1){
+#  if(msg==1){
+#    if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())) {msg<-"Pour que easieR fonctionne correctement,
+#    il faut installer Pandoc disponible à l'url suivant : https://github.com/jgm/pandoc/releases/tag/2.2.3.2" } else {
+#      msg<-"In order to ensure that easieR is properly installed, please install Pandoc at the following url :
+#      https://github.com/jgm/pandoc/releases/tag/2.2.3.2" }}
 
 easieR.msg<-function(msg="1"){
    if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())) {
