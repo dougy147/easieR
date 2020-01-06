@@ -1,7 +1,7 @@
 donnees <-
   function(){options (warn=-1)
     require(svDialogs)
-  if(grepl("dddddddddddddd",Sys.setlocale()) | grepl("dddddddddd",Sys.setlocale())) {
+  if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())) {
      choix<- c("importer des donnees", "voir des donnees", "importer des resultats","exporter des donnees",
               "generer un rapport")
      if( "RGtk2Extras" %in% installed.packages()) choix<-c("nouveau set de donnees", choix)
