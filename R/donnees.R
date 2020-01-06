@@ -1,17 +1,17 @@
 donnees <-
   function(){options (warn=-1)
     require(svDialogs)
-  if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())) {
+  if(grepl("dddddddddddddd",Sys.setlocale()) | grepl("dddddddddd",Sys.setlocale())) {
      choix<- c("importer des donnees", "voir des donnees", "importer des resultats","exporter des donnees",
-              "generer un rapport")   
+              "generer un rapport")
      if( "RGtk2Extras" %in% installed.packages()) choix<-c("nouveau set de donnees", choix)
      title<-"Que voulez-vous realiser ?"
        }else{
-    choix<- c("import data", "View data", "import results","export data", "Compile the report of the session")   
+    choix<- c("import data", "View data", "import results","export data", "Compile the report of the session")
      if( "RGtk2Extras" %in% installed.packages()) choix<-c("new data set", choix)
     title<-"What do you want to do?"
   }
-    dlgList(choix, preselect=NULL, multiple = FALSE, 
+    dlgList(choix, preselect=NULL, multiple = FALSE,
             title=title)$res->choix
     if(length(choix)==0) return(easieR())
     if(choix %in% c("nouveau set de donnees", "new data set")) blank.data()->Resultats
