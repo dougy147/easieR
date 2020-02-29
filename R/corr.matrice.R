@@ -277,14 +277,17 @@ corr.matrice <-
       Resultats$"matrice des r.deux" <-as.data.frame(r2)
       dimnames(r2)[[1]]<-paste(dimnames(r2)[[1]], "r^2")
       r1<-rbind(r1, r2)
-      r1<-r1[order(rownames(r1)), order(colnames(r1))]
-      r1[which(is.na(r1))]<-"-" 
+      r1<-data.frame(r1)
+	    r1$tri<-1:length(dimnames(r1)[[2]])
+      r1<-r1[order(r1$tri), ]
+	    r1<-r1[,-length(r1)]
+      r1[is.na(r1)]<-"-" 
       nice.mat<-list()
       nice.mat$"Matrice de correlations"<-(r1)
       if(html) try(ez.html(nice.mat), silent =T)
 
       
-      if(is.null(Y) & is.null(Z) & n.boot>100) round(cor.ci(data[,X], n.iter=n.boot, plot=FALSE)$ci,4)->Resultats$"Intervalle de confiance estime par bootstrap" else  round(matrice$ci,4)->Resultats$"Intervalle de confiance" 
+      if(is.null(Y) & is.null(Z) & (!is.null(n.boot) && n.boot > 100)) round(cor.ci(data[,X], n.iter=n.boot, plot=FALSE)$ci,4)->Resultats$"Intervalle de confiance estime par bootstrap" else  round(matrice$ci,4)->Resultats$"Intervalle de confiance" 
       names(Resultats[[length(Resultats)]])<-c("lim.inf","r","lim.sup","valeur.p")
       
       return(Resultats)  
@@ -292,7 +295,7 @@ corr.matrice <-
     }
     
     options (warn=-1) 
-    packages<-c("BayesFactor","nortest", "psych",  "rtf", "svDialogs", "ggplot2")
+    packages<-c("BayesFactor","nortest", "psych", "svDialogs", "ggplot2")
     
     try(lapply(packages, library, character.only=T), silent=T)->test2
     if(class(test2)== "try-error") return(ez.install())

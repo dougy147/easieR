@@ -13,7 +13,6 @@ ez.install <-
                       'car',
                       'cobs',
                       'corpcor',
-                      'DAAG',
                       'deldir',
                       'DescTools',
                       'doBy',
@@ -26,6 +25,7 @@ ez.install <-
                       'gmodels',
                       'GPArotation',
                       'gsl',
+                      'huxtable',
                       'knitr',
                       'lars',
                       'lsr',
@@ -72,7 +72,7 @@ ez.install <-
                       'WRS',
                       'WRS2'
     )
-   
+
     # 2b. packages manquants
     pack.uninst <- pack.to.inst[!(pack.to.inst %in% rownames(installed.packages()))]
 

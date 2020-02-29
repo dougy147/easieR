@@ -13,7 +13,7 @@ import <-
 
 
     options (warn=-1)
-    c("svDialogs",  "readxl","foreign")->packages
+    c("svDialogs",  "readxl","foreign", "textclean")->packages
     lapply(packages, require,character.only=T)
     Resultats <- list()
     if(info==TRUE) print("Dans quel format est enregistre votre fichier ?")
@@ -98,7 +98,9 @@ import <-
       writeLines("Des caracteres non autorises ont ete utilises pour le nom. Ces caracteres ont ete remplaces par des points")
       gsub("[^[:alnum:]]", ".", name)->name
     }
-    data1<-data.frame(data1)
+     nameV<-replace_non_ascii(names(data1))
+     names(data1)<-nameV
+     data1<-data.frame(data1)
 
     if(any(nchar(names(data1))>30)) {
       dlgMessage("Certaines variables ont des noms particulierement longs pouvant gener la lecture. Voulez-vous les raccourcir?", "yesno")$res->rn

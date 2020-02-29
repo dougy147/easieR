@@ -1,6 +1,6 @@
 regressions.log <-
   function(data=NULL, modele=NULL, Y=NULL, X_a=NULL, X_i=NULL, outlier=NULL, inf=T, select.m="none", step=NULL, group=NULL, scale=T, dial=T, info=T,
-           sauvegarde=F,proba=F){
+           sauvegarde=F,proba=F, html=T){
     
     logisticPseudoR2s <- function(LogModel) {
       dev <- LogModel$deviance
@@ -83,7 +83,7 @@ regressions.log <-
         }
         
         
-        if(any(link=="Effets additifs") || !null(X_a)| any(X_a %in% names(data)==F)) {
+        if(any(link=="Effets additifs") || !is.null(X_a)| any(X_a %in% names(data)==F)) {
           msg3<-"Veuillez choisir la variable dependante."
           X_a<-.var.type(X=Y, info=info, data=data, type=NULL, check.prod=F, message=msg3,  multiple=TRUE, title="Variables modele additif", out=Y)
           if(is.null(X_a)) {
@@ -449,7 +449,7 @@ regressions.log <-
     .add.result(Resultats=Resultats, name =paste("Regressions.logistique", Sys.time() ))  
     if(sauvegarde)   if(sauvegarde) save(Resultats=Resultats, choix="Regressions.logistique", env=.e)
     Resultats$"References"<-ref1(packages)
-    ez.html(Resultats)
+    if(html) try(ez.html(Resultats), silent=T)
     return(Resultats)
     
   }
