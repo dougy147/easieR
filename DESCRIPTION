@@ -5,7 +5,6 @@ Version: 1.0
 Date: 2018-06-04
 Author: Nicolas Stefaniak
 Maintainer: Nicolas Stefaniak <nicolas.stefaniak@univ-reims.fr>
-<<<<<<< HEAD
 Description: easieR aims to provide a flexible graphic user interface (GUI), allowing the use of either command lines or
     GUI on each specific function. This flexibility is helpful to rapidly be able to obtain complete results without
     mastering a lot of individual functions. Output is standardized so that user has not to adapt to each programmer
@@ -16,65 +15,31 @@ Description: easieR aims to provide a flexible graphic user interface (GUI), all
     best of R. The functions are compiled in order to provide a structured output. For all the analyses, assumptions are
     checked, user can choose between parametric, non parametric and robust statistics (based on WRS and WRS2 packages).
     It also allows user to easily identify and remove outliers from the analyses and to save results in nice output.
-Depends: R (>= 3.5.0),
-=======
-Description: easieR aims to provide a flexible graphic user interface (GUI), allowing the use of either command lines or 
-    GUI on each specific function. This flexibility is helpful to rapidly be able to obtain complete results without 
-    mastering a lot of individual functions. Output is standardized so that user has not to adapt to each programmer 
-    preference. easieR performs most classical analyses (e.g., descriptive, t test, chi squared, correlations, analysis of 
-    variance and covariance, factor analysis, regressions, logistic regressions, reliability analyses...). 
-    It will also allow to obtain pedagogical demonstration based on TeachingDemos package, graphics based on ggplot2, 
-    and manipulation data. easieR is an R metapackage allowing to find in one location all (or at least a part of) the 
-    best of R. The functions are compiled in order to provide a structured output. For all the analyses, assumptions are 
-    checked, user can choose between parametric, non parametric and robust statistics (based on WRS and WRS2 packages). 
-    It also allows user to easily identify and remove outliers from the analyses and to save results in nice output. 
-Depends: R (>= 3.6.0), 
->>>>>>> cae8ae9f50ca8cfa9e53df8369273b20195eac57
+Depends: R (>= 3.6.0),
 Imports: afex,
          akima,
          Amelia,
          asbio,
          BayesFactor,
          bibtex,
-<<<<<<< HEAD
          car,
          cobs,
          corpcor,
-         DAAG,
          deldir,
-=======
-         car, 
-         cobs, 
-         corpcor, 
-         deldir, 
->>>>>>> cae8ae9f50ca8cfa9e53df8369273b20195eac57
          DescTools,
          doBy,
          dplyr,
          epitools,
-<<<<<<< HEAD
          emmeans,
-         flextable,
-=======
-         emmeans, 
->>>>>>> cae8ae9f50ca8cfa9e53df8369273b20195eac57
          foreign,
          ggplot2,
          ggplotgui,
-<<<<<<< HEAD
          gmodels,
          GPArotation,
          gsl,
+         huxtable,
          knitr,
          lars,
-=======
-         gmodels, 
-         GPArotation, 
-         gsl, 
-         huxtable,
-         knitr, 
-         lars, 
->>>>>>> cae8ae9f50ca8cfa9e53df8369273b20195eac57
          lmtest,
          lsr,
          MBESS,
@@ -118,10 +83,6 @@ Imports: afex,
          TeachingDemos,
          textclean,
          tibble,
-<<<<<<< HEAD
-         trimcluster,
-=======
->>>>>>> cae8ae9f50ca8cfa9e53df8369273b20195eac57
          WRS2
 License: GPL-2
 RoxygenNote: 6.0.1
