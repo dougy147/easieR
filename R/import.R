@@ -25,8 +25,7 @@ import <-
                    "SPSS" =  "fichier SPSS","fichier SPSS"="fichier SPSS" )
     }
     if(is.null(type)) type <- dlgList(c("Fichier CSV", "Fichier txt", "Fichier Excel", "fichier SPSS"), preselect="Fichier Excel", multiple = FALSE, title="Format du fichier?")$res
-    if(length(type)==0) return(donnees())
-
+    #if(length(type)==0) return(donnees())
     if(!is.null(dir)) try(setwd(dir), silent=T)
     if(!is.null(file) && file.exists( file)) {file<-file
     dial<-F}else {dial<-T
