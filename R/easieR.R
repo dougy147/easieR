@@ -1,13 +1,13 @@
 
 easieR <-
   function(info=TRUE, html=T){
+    library(tcltk)
     # 1. l'argument info permettra a terme de choisir les informations qui s'affichent dans la console ou non
     options (warn=1)
     options(scipen=999)
     test<-try(library(svDialogs), silent=T)
     if(class(test)== "try-error") return(ez.install())
 
-    library(tcltk)
     library(rmarkdown)
     if(is.null(pandoc_version())){
         return(easieR.msg(msg=1))
