@@ -7,7 +7,7 @@ easieR <-
     test<-try(library(svDialogs), silent=T)
     if(class(test)== "try-error") return(ez.install())
 
-
+    library(tcltk)
     library(rmarkdown)
     if(is.null(pandoc_version())){
         return(easieR.msg(msg=1))
