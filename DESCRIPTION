@@ -67,14 +67,8 @@ Imports: afex,
          rmarkdown,
          rms,
          robustbase,
-<<<<<<< HEAD
-         rpivotTable, 
-         rrcov, 
-=======
          rpivotTable,
-         rtf,
          rrcov,
->>>>>>> e7ac402ce37635cac8efe41124b93f99a4c5b153
          scatterplot3d,
          semPlot,
          sjstats,
