@@ -8,6 +8,13 @@ easieR <-
     test<-try(library(svDialogs), silent=T)
     if(class(test)== "try-error") return(ez.install())
 
+    # déterminer le navigateur par défaut si OS linux
+    # if Sys.info()['sysname'] = linux :
+    if(.Platform$OS.type == "unix") {
+	    Sys.getenv("BROWSER")->navigateur_par_defaut #va chercher les variales de l'environnement, ici le "BROWSER"
+	    options(browser=navigateur_par_defaut)
+    }
+
     library(rmarkdown)
     if(is.null(pandoc_version())){
         return(easieR.msg(msg=1))
