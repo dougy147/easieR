@@ -109,8 +109,8 @@ ez.install <-
       }
     }
 
-    if(grepl("Linux", Sys.info()[[1]]){
-	    if(grepl("arch",Sys.info()[[2]])){
+    if(grepl("Linux", Sys.info()[[1]]) {
+	    if(grepl("arch",Sys.info()[[2]])) {
 		    system("sudo pacman -Sy pandoc")}
 	    if(grepl("ubuntu",Sys.info()[[2]])||grepl("debian",Sys.info()[[2]])) {
 		    system("sudo apt install -y pandoc")}
@@ -131,4 +131,4 @@ ez.install <-
     vef.pack()->Resultats
     return(Resultats)
 
-	}
+  }
