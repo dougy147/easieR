@@ -40,6 +40,7 @@ ez.install <-
                       'pander',
                       "PMCMRplus",
                       'pgirmess',
+                      'phia',
                       'pkgmaker',
                       'plyr',
                       'ppcor',
@@ -53,9 +54,11 @@ ez.install <-
                       'Rfit',
                       'rmarkdown',
                       'rms',
+                      'robust',
                       'robustbase',
                       'rpivotTable',
                       'rrcov',
+                      'rtf',
                       'scatterplot3d',
                       'semPlot',
                       "sjstats",
@@ -65,6 +68,7 @@ ez.install <-
                       'stringr',
                       'svDialogs',
                       'TeachingDemos',
+                      'trimcluster',
                       'WRS',
                       'WRS2'
     )
@@ -97,23 +101,6 @@ ez.install <-
         return(easieR.msg(msg=1))
       }
 
-      if(Sys.info()[[1]]=="Linux"){
-         if(grepl("arch",Sys.info()[[2]])){
-           system("sudo pacman -Sy pandoc")}
-         if(grepl("ubuntu",Sys.info()[[2]])||grepl("debian",Sys.info()[[2]])) {system("sudo apt install -y pandoc")}
-                # Si n est pas arch ni ubuntu/debian
-         else{
-             paste("cd $HOME")->dest   #indique le chemin de telechargement et d installation
-             system(dest)
-             paste(system("curl -s https://api.github.com/repos/jgm/pandoc/releases/latest | grep browser_download_url | grep '[.]gz'",intern=T))->url.pandoc  # recherche derniere version pandoc sur github
-             gsub('^...............................|.$', '', url.pandoc)->url.pandoc     #retire les caracteres superflus .. a ameliorer
-             paste("wget",url.pandoc)->commande
-             system(commande) # telecharge le tarball de la derniere version
-             gsub('^....................................................', '', url.pandoc)->fichier # enregistre nom de fichier .. a ameliorer
-             paste0("tar xvzf ./",fichier," --strip-components 1 -C $HOME")->install.pandoclinux
-             system(install.pandoclinux, intern=F, ignore.stdout=F, ignore.stderr=F, wait=F)
-           }
-      }
 
       else{
         install.packages("installr")
@@ -122,9 +109,26 @@ ez.install <-
       }
     }
 
+    if(grepl("Linux", Sys.info()[[1]]){
+	    if(grepl("arch",Sys.info()[[2]])){
+		    system("sudo pacman -Sy pandoc")}
+	    if(grepl("ubuntu",Sys.info()[[2]])||grepl("debian",Sys.info()[[2]])) {
+		    system("sudo apt install -y pandoc")}
+	    else{
+		    paste("cd $HOME")->dest   #indique le chemin de telechargement et d installation
+		    system(dest)
+		    paste(system("curl -s https://api.github.com/repos/jgm/pandoc/releases/latest | grep browser_download_url | grep '[.]gz'",intern=T))->url.pandoc  # recherche derniere version pandoc sur github
+		    gsub('^...............................|.$', '', url.pandoc)->url.pandoc     #retire les caracteres superflus .. a ameliorer
+		    paste("wget",url.pandoc)->commande
+		    system(commande) # telecharge le tarball de la derniere version
+		    gsub('^....................................................', '', url.pandoc)->fichier # enregistre nom de fichier .. a ameliorer
+		    paste0("tar xvzf ./",fichier," --strip-components 1 -C $HOME")->install.pandoclinux
+		    system(install.pandoclinux, intern=F, ignore.stdout=F, ignore.stderr=F, wait=F)
+           }
+      }
 
     flush.console()
     vef.pack()->Resultats
     return(Resultats)
 
-  }
+	}
