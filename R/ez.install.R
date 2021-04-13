@@ -110,19 +110,20 @@ ez.install <-
     }
 
     if(grepl("Linux", Sys.info()[[1]])){
-	       if(grepl("arch",Sys.info()[[2]])) {
-		    system("sudo pacman -Sy pandoc")}
+	    if(grepl("arch",Sys.info()[[2]])) {
+	       if(system("sudo pacman -Q pandoc") == 1){
+		       system("sudo pacman -Sy pandoc")}
+	       }
 	    if(grepl("ubuntu",Sys.info()[[2]])||grepl("debian",Sys.info()[[2]])) {
 		    system("sudo apt install -y pandoc")}
 	    else{
 		    paste("cd $HOME")->dest   #indique le chemin de telechargement et d installation
 		    system(dest)
-		    paste(system("curl -s https://api.github.com/repos/jgm/pandoc/releases/latest | grep browser_download_url | grep '[.]gz'",intern=T))->url.pandoc  # recherche derniere version pandoc sur github
-		    gsub('^...............................|.$', '', url.pandoc)->url.pandoc     #retire les caracteres superflus .. a ameliorer
-		    paste("wget",url.pandoc)->commande
-		    system(commande) # telecharge le tarball de la derniere version
-		    gsub('^....................................................', '', url.pandoc)->fichier # enregistre nom de fichier .. a ameliorer
-		    paste0("tar xvzf ./",fichier," --strip-components 1 -C $HOME")->install.pandoclinux
+		    paste(system("curl -s https://api.github.com/repos/jgm/pandoc/releases/latest | grep browser_download_url | grep '[.]gz' | head -n 1 | sed 's/\"browser_download_url\"://' | sed 's/\"//g' | sed 's/\ //g'",intern=T))->url.pandoc  # récupère le lien de la derniere version pandoc sur github en tar.gz
+		    paste(system("curl -s https://api.github.com/repos/jgm/pandoc/releases/latest | grep browser_download_url | grep '[.]gz' | head -n 1 | sed 's/\"browser_download_url\"://' | sed 's/\"//g' | sed 's/\ //g' | sed 's/^.*\///'",intern=T))->nom.fichier.pandoc  # récupère le nom du fichier
+		    paste("wget",url.pandoc)->commande_telechargement
+		    system(commande_telechargement) # telecharge le tar.gz de la derniere version
+		    paste0("tar xvzf ./",nom.fichier.pandoc," --strip-components 1 -C $HOME")->install.pandoclinux
 		    system(install.pandoclinux, intern=F, ignore.stdout=F, ignore.stderr=F, wait=F)
 	    }
       }
