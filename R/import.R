@@ -29,8 +29,12 @@ import <-
     if(!is.null(dir)) try(setwd(dir), silent=T)
     if(!is.null(file) && file.exists( file)) {file<-file
     dial<-F}else {dial<-T
-    file <- try(tk_choose.files(), silent=TRUE)
-    # file <- try(file.choose(), silent=TRUE)
+    if(grepl("Linux", Sys.info()[[1]]){
+	       file <- try(tk_choose.files(), silent=TRUE)
+		   }
+    else{
+	    file <- try(file.choose(), silent=TRUE)
+    }
     if(class(file)=="try-error") return(import())
     setwd(dirname(file))
     basename(file)->file
