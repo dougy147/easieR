@@ -29,7 +29,7 @@ import <-
     if(!is.null(dir)) try(setwd(dir), silent=T)
     if(!is.null(file) && file.exists( file)) {file<-file
     dial<-F}else {dial<-T
-    if(grepl("Linux", Sys.info()[[1]]){
+    if(grepl("Linux", Sys.info()[[1]])){
 	       file <- try(tk_choose.files(), silent=TRUE)
 		   }
     else{
