@@ -109,8 +109,8 @@ ez.install <-
       }
     }
 
-    if(grepl("Linux", Sys.info()[[1]]) {
-	    if(grepl("arch",Sys.info()[[2]])) {
+    if(grepl("Linux", Sys.info()[[1]])){
+	       if(grepl("arch",Sys.info()[[2]])) {
 		    system("sudo pacman -Sy pandoc")}
 	    if(grepl("ubuntu",Sys.info()[[2]])||grepl("debian",Sys.info()[[2]])) {
 		    system("sudo apt install -y pandoc")}
@@ -124,7 +124,7 @@ ez.install <-
 		    gsub('^....................................................', '', url.pandoc)->fichier # enregistre nom de fichier .. a ameliorer
 		    paste0("tar xvzf ./",fichier," --strip-components 1 -C $HOME")->install.pandoclinux
 		    system(install.pandoclinux, intern=F, ignore.stdout=F, ignore.stderr=F, wait=F)
-           }
+	    }
       }
 
     flush.console()
