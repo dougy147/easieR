@@ -92,9 +92,9 @@ VI.multiples<-function(data, X){
   nvar<-length(X)
   try(psych::outlier(data[,X], bad=T, na.rm=T,plot=T),silent=T)->essai
   if(class(essai)=="try-error"){
-    msgBox("Votre matrice est singuliere, ce qui pose souci. Nous tentons de  de resoudre le souci.
+    msgBox(if(grepl("fr",Sys.getlocale())){"Votre matrice est singuliere, ce qui pose souci. Nous tentons de  de resoudre le souci.
            Si possible, la distance de Mahalanobis sera alors calculee sur le maximum d information
-           tout en evitant la singularite.")
+           tout en evitant la singularite."}else{"............................."})
     data2<-data
     rankifremoved <- sapply(1:ncol(data2), function (x) qr(data2[,-x])$rank)
     which(rankifremoved == max(rankifremoved))->rangs
@@ -113,13 +113,13 @@ VI.multiples<-function(data, X){
     if(class(essai)=="try-error") {
       corr.test(data2[,X])$r->matrice
       if(any(abs(matrice)==1)) {
-        msgBox("vous tenter de faire une matrice de correlations avec des variables parfaitement correlees. Cela pose souci pour le calcul de la distance de Mahalanobis. Nous tentons de resoudre le souci")
+        msgBox(if(grepl("fr",Sys.getlocale())){"vous tenter de faire une matrice de correlations avec des variables parfaitement correlees. Cela pose souci pour le calcul de la distance de Mahalanobis. Nous tentons de resoudre le souci"}else{"................................"})
         which(abs(matrice)==1, arr.ind=TRUE)->un
         un<-un[-which(un[,1]==un[,2]),]
         data2[,-un[,2]]->data2
         try(psych::outlier(data2), silent=T)->essai
         if(class(essai)=="try-error") {
-          writeLines("Desole, nous ne pouvons pas calculer la distance de Mahalanobis sur vos donnees. Les analyses seront resalisees sur les donnees completes")
+          writeLines(if(grepl("fr",Sys.getlocale())){"Desole, nous ne pouvons pas calculer la distance de Mahalanobis sur vos donnees. Les analyses seront resalisees sur les donnees completes"}else{"..............................................................."})
           0->data$D.Mahalanobis  }
       }else{essai-> data$D.Mahalanobis}
     } else{ essai-> data$D.Mahalanobis
@@ -132,33 +132,33 @@ VI.multiples<-function(data, X){
   data[which(data$D.Mahalanobis>seuil),]->outliers
   length(outliers[,1])/length(data[,1])*100->pourcent
 
-  msgBox(paste(round(pourcent,2), "% des observations sont considerees comme outliers."))
+  msgBox(paste(round(pourcent,2), if(grepl("fr",Sys.getlocale())){"% des observations sont considerees comme outliers."}else{"........................."}))
 
 
   if(pourcent!=0){
-    writeLines("Supprimer l'ensemble des outliers supprime l'ensemble des valeurs au-delà p(chi.deux)< 0.001.
+    writeLines(if(grepl("fr",Sys.getlocale())){"Supprimer l'ensemble des outliers supprime l'ensemble des valeurs au-delà p(chi.deux)< 0.001.
                Supprimer une observation à la fois permet de faire une analyse detaillee de chaque observation
                consideree comme influente en partant de la valeur la plus extreme. La procedure s'arrete
-               quand plus aucune observation n'est consideree comme influente")
+               quand plus aucune observation n'est consideree comme influente"}else{"............................................................................;"})
 
-    suppr<- dlgList(c("Suppression de l'ensemble des outliers", "Suppression manuelle"),
-                    preselect=c("Suppression de l'ensemble des outliers"), multiple = FALSE, title="Comment voulez-vous les supprimer?")$res
+    suppr<- dlgList(if(grepl("fr",Sys.getlocale())){c("Suppression de l'ensemble des outliers", "Suppression manuelle")}else{c("..........................")},
+                    preselect=if(grepl("fr",Sys.getlocale())){c("Suppression de l'ensemble des outliers")}else{c(".......")}, multiple = FALSE, title=if(grepl("fr",Sys.getlocale())){"Comment voulez-vous les supprimer?"}else{"......."})$res
     if(length(suppr)==0) return(NULL)
-    if(suppr=="Suppression de l'ensemble des outliers") {data[which(data$D.Mahalanobis<seuil),]->data
-      outliers->Resultats$"Valeurs considerees comme influentes"}else{
+    if(suppr==if(grepl("fr",Sys.getlocale())){"Suppression de l'ensemble des outliers"}else{"....."}) {data[which(data$D.Mahalanobis<seuil),]->data
+      outliers->Resultats$if(grepl("fr",Sys.getlocale())){"Valeurs considerees comme influentes"}else{".........."}}else{
         suppression<-"yes"
         outliers<-data.frame()
         while(suppression=="yes"){
           print(data[which.max(data$D.Mahalanobis),])
-          cat ("Appuyez [entree] pour continuer")
+          cat (if(grepl("fr",Sys.getlocale())){"Appuyez [entree] pour continuer"}else{"........"})
           line <- readline()
-          dlgMessage("Voulez-vous supprimer cette observation ?", "yesno")$res->suppression
+          dlgMessage(if(grepl("fr",Sys.getlocale())){"Voulez-vous supprimer cette observation ?", "yesno"}else{"..........", "yesno"})$res->suppression
           if(suppression=="yes") {rbind(outliers, data[which.max(data$D.Mahalanobis),])->outliers
             data[-which.max(data$D.Mahalanobis),]->data
 
           }
         }
-        Resultats$"Valeurs considerees comme influentes"<-outliers
+        Resultats$if(grepl("fr",Sys.getlocale())){"Valeurs considerees comme influentes"}else{"............."}<-outliers
       }
   }
   Resultats$data<-data
@@ -224,11 +224,11 @@ VI.multiples<-function(data, X){
   etend.y<-max.y-min.y
   y_breaks<-c(min.y, min.y+1/4*etend.y ,min.y+1/2*etend.y ,min.y+3/4*etend.y , max.y )
   y_labs<-as.character(round(exp(y_breaks),2))
-  reorder( c("moyen", "large", "ultra large"),levels(SBF$rscale))->levels(SBF$rscale)
-  p1 <- ggplot(SBF, aes(x = n, y = log(BF), group=rscale)) + ylab("Facteur bayesiens 10") +
+  reorder( if(grepl("fr",Sys.getlocale())){c("moyen", "large", "ultra large")}else{c("..................")},levels(SBF$rscale))->levels(SBF$rscale)
+  p1 <- ggplot(SBF, aes(x = n, y = log(BF), group=rscale)) + ylab(if(grepl("fr",Sys.getlocale())){"Facteur bayesiens 10"}else{"................"}) +
     # p1 <- ggplot(SBF, aes(x = as.factor(n), y = log(BF), group=rscale)) + ylab("Facteur bayesiens 10") +
     xlab("n")+ geom_line(aes(linetype=rscale))+ geom_point()
-  p1<-p1+theme(plot.title = element_text(size = 12))+ggtitle("Facteurs bayesiens sequentiels - Analyse de robustesse")
+  p1<-p1+theme(plot.title = element_text(size = 12))+ggtitle(if(grepl("fr",Sys.getlocale())){"Facteurs bayesiens sequentiels - Analyse de robustesse"}else{".................."})
   p1<-p1+scale_y_continuous(breaks = y_breaks, labels =y_labs )
   return(p1)
 }
@@ -286,20 +286,20 @@ VI.multiples<-function(data, X){
 
   if(!is.null(type) && type=="factor"){
     if(all(sapply(data[,X], class)%in% c("factor", "character"))!=T ) {
-      res<-okCancelBox("Vous devez utiliser des variables categorielles. Voulez-vous transformer les variables numeriques en variables categorielles ?")
+      res<-okCancelBox(if(grepl("fr",Sys.getlocale())){"Vous devez utiliser des variables categorielles. Voulez-vous transformer les variables numeriques en variables categorielles ?"}else{"................."})
       if(res==F) {X<-NULL
       .var.type(X=NULL, info=info, data=data, type=type,message=message, multiple=multiple, title=title, out=out)->Resultats
       return(Resultats)}
     }
     if(length(X)==1) factor(data[,X])->data[,X] else lapply(data[, X], factor)->data[, X]
     if((length(X)==1 && nlevels(data[,X])<2) | (length(X)>1 && any(sapply(data[, X], nlevels)<2))) {
-      okCancelBox("Une variable categorielle doit avoir au moins 2 modalites differentes. Veuillez choisir une variable avec au moins deux modalites")
+      okCancelBox(if(grepl("fr",Sys.getlocale())){"Une variable categorielle doit avoir au moins 2 modalites differentes. Veuillez choisir une variable avec au moins deux modalites"}else{"........................."})
       .var.type(X=NULL, info=info, data=data, type=type,message=message, multiple=multiple, title=title,out=out)->Resultats
       return(Resultats)
     }
     if(check.prod){
       if(length(X)>1 && sapply(data[,X],nlevels)>length(data[,1])) {
-        msgBox("Le produit des modalites des variables definissant les groupes est superieur au nombre de vos observations. Il faut au moins une observation par combinaison de modalites de vos variables. Veuillez redefinir votre analyse")
+        msgBox(if(grepl("fr",Sys.getlocale())){"Le produit des modalites des variables definissant les groupes est superieur au nombre de vos observations. Il faut au moins une observation par combinaison de modalites de vos variables. Veuillez redefinir votre analyse"}else{"..........................."})
         .var.type(X=NULL, info=info, data=data, type=type,message=message, multiple=multiple, title=title,out=out)->Resultats
         return(Resultats)
       }
@@ -310,7 +310,7 @@ VI.multiples<-function(data, X){
   }
   if(!is.null(type) && type=="integer"){
     if((any(data[,X]%%1==0) %in% c(FALSE, NA)) || min(data[,X])<0) {
-      okCancelBox("la variable doit etre un entier *integer* positif")
+      okCancelBox(if(grepl("fr",Sys.getlocale())){"la variable doit etre un entier *integer* positif"}else{"........................."})
       X<-NULL
       .var.type(X=NULL, info=info, data=data, type=type,message=message, multiple=multiple, title=title, out=out)->Resultats
       return(Resultats)
@@ -319,7 +319,7 @@ VI.multiples<-function(data, X){
   if(!is.null(type) && type=="numeric"){
     if(length(X)==1) moy<-is.na(mean(data[,X],na.rm=T)) else moy<-any(is.na(sapply(data[,X], mean, na.rm=T)))
     if(moy || var(data[,X],na.rm=T)==0){
-      okCancelBox("la variable doit etre numerique et avoir une variance non nulle.")
+      okCancelBox(if(grepl("fr",Sys.getlocale())){"la variable doit etre numerique et avoir une variance non nulle."}else{"............................."})
       X<-NULL
       .var.type(X=NULL, info=info, data=data, type=type,message=message, multiple=multiple, title=title, out=out)->Resultats
       return(Resultats)
@@ -353,36 +353,36 @@ VI.multiples<-function(data, X){
     choix<-c()
     if(param==T){
       if(info) writeLines(msg.options1)
-      choix<-c(choix, "Test parametrique")
+      choix<-c(choix, if(grepl("fr",Sys.getlocale())){"Test parametrique"}else{"............."})
     }
     if(non.param==T) {
       if(info) writeLines(msg.options2)
-      choix<-c(choix, "Test non parametrique")
+      choix<-c(choix, if(grepl("fr",Sys.getlocale())){"Test non parametrique"}else{".............."})
     }
     if(robust==T) {
-      if(info) writeLines("Les statistiques robustes sont des analyses alternatives a l'analyse principale, impliquant le plus souvent des bootstraps. Ces analyses sont souvent plus lentes")
-      choix<-c(choix, "Test robustes - impliquant des bootstraps")
+      if(info) writeLines(if(grepl("fr",Sys.getlocale())){"Les statistiques robustes sont des analyses alternatives a l'analyse principale, impliquant le plus souvent des bootstraps. Ces analyses sont souvent plus lentes"}else{"................"})
+      choix<-c(choix, if(grepl("fr",Sys.getlocale())){"Test robustes - impliquant des bootstraps"}else{"............."})
     }
     if(Bayes==T) {
-      if(info) writeLines("Facteurs bayesiens : calcule l'equivalent du test d'hypothese nulle en adoptant une approche bayesienne.")
-      choix<-c(choix, "Facteurs bayesiens")
+      if(info) writeLines(if(grepl("fr",Sys.getlocale())){"Facteurs bayesiens : calcule l'equivalent du test d'hypothese nulle en adoptant une approche bayesienne."}else{"......."})
+      choix<-c(choix, if(grepl("fr",Sys.getlocale())){"Facteurs bayesiens"}else{"...................."})
     }
 
-    choix<- dlgList(choix, preselect=choix, multiple = TRUE, title="Quelle(s) analyses voulez-vous  ?")$res
+    choix<- dlgList(choix, preselect=choix, multiple = TRUE, title=if(grepl("fr",Sys.getlocale())){"Quelle(s) analyses voulez-vous  ?"}else{"................."})$res
     if(length(choix)==0) return(NULL)
   }
   Resultats$choix<-choix
 
 
-  if(exists("choix") && any(choix== "Test robustes - impliquant des bootstraps") || !is.null(n.boot)){{
+  if(exists("choix") && any(choix== if(grepl("fr",Sys.getlocale())){"Test robustes - impliquant des bootstraps"}else{"............."}) || !is.null(n.boot)){{
     if(!is.null(n.boot) && ((class(n.boot)!="numeric" & class(n.boot)!="integer") ||  n.boot%%1!=0 || n.boot<1)){
-      msgBox("Le nombre de bootstrap doit etre un nombre entier positif")
+      msgBox(if(grepl("fr",Sys.getlocale())){"Le nombre de bootstrap doit etre un nombre entier positif"}else{"............."})
       n.boot<-NULL
     }
     while(is.null(n.boot)){
-      writeLines("Veuillez preciser le nombre de bootstrap. Pour ne pas avoir de bootstrap, choisir 1")
+      writeLines(if(grepl("fr",Sys.getlocale())){"Veuillez preciser le nombre de bootstrap. Pour ne pas avoir de bootstrap, choisir 1"}else{"................."})
 
-      n.boot<-dlgInput("Nombre de bootstrap ?", 1000)$res
+      n.boot<-dlgInput(if(grepl("fr",Sys.getlocale())){"Nombre de bootstrap ?"}else{"................."}, 1000)$res
       if(length(n.boot)==0) {.ez.options(options=options, n.boot=NULL,param=param, non.param=non.param, robust=robust,
                                          Bayes=Bayes, msg.options1=msg.options1, msg.options2=msg.options2, info=T, dial=T,
                                          choix=choix,sauvegarde=F, outlier=NULL,rscale=rscale)->Resultats
@@ -391,7 +391,7 @@ VI.multiples<-function(data, X){
       tail(n.boot[[1]],n=1)->n.boot
       as.numeric(n.boot)->n.boot
       if(is.na(n.boot) ||  n.boot%%1!=0 || n.boot<1){
-        msgBox("Le nombre de bootstrap doit etre un nombre entier positif")
+        msgBox(if(grepl("fr",Sys.getlocale())){"Le nombre de bootstrap doit etre un nombre entier positif"}else{"............."})
         n.boot<-NULL
       }
     }
@@ -399,9 +399,9 @@ VI.multiples<-function(data, X){
     Resultats$n.boot<-n.boot
   }
   if(!is.null(rscale)){
-    if(dial & any(choix=="Facteurs bayesiens")|| (is.numeric(rscale) & (rscale<0.1 | rscale>2)) || (!is.numeric(rscale) & rscale%in% c("moyen", "large", "ultralarge")==F)) {
-      if(info) writeLines("Veuillez preciser la distribution a priori de Cauchy")
-      rscale<-dlgList(c("moyen", "large", "ultralarge"), preselect="moyen", multiple = F, title="Quelle distribution voulez-vous  ?")$res
+    if(dial & any(choix==if(grepl("fr",Sys.getlocale())){"Facteurs bayesiens"}else{"........"})|| (is.numeric(rscale) & (rscale<0.1 | rscale>2)) || (!is.numeric(rscale) & rscale%in% if(grepl("fr",Sys.getlocale())){c("moyen", "large", "ultralarge")}else{c("....,.....,......")})==F) {
+      if(info) writeLines(if(grepl("fr",Sys.getlocale())){"Veuillez preciser la distribution a priori de Cauchy"}else{".................."})
+      rscale<-dlgList(if(grepl("fr",Sys.getlocale())){c("moyen", "large", "ultralarge"), preselect="moyen", multiple = F, title=if(grepl("fr",Sys.getlocale())){"Quelle distribution voulez-vous  ?"}else{"................."})$res
       if(length(rscale)==0) {
         .ez.options(options=options, n.boot=NULL,param=param, non.param=non.param, robust=robust,
                     Bayes=Bayes, msg.options1=msg.options1, msg.options2=msg.options2, info=T, dial=T,
@@ -409,7 +409,7 @@ VI.multiples<-function(data, X){
       }
     }
     if(is.character(rscale)) {
-      ifelse(rscale=="moyen", rscale<-2^0.5/2, ifelse(rscale=="large", rscale<-1, ifelse(rscale=="ultralarge", rscale<-2^0.5, rscale<-rscale)))
+      ifelse(rscale==if(grepl("fr",Sys.getlocale())){"moyen"}else{"medium"}, rscale<-2^0.5/2, ifelse(rscale==if(grepl("fr",Sys.getlocale())){"large"}else{"large"}, rscale<-1, ifelse(rscale==if(grepl("fr",Sys.getlocale())){"ultralarge"}else{"ultralarge"}, rscale<-2^0.5, rscale<-rscale)))
       Resultats$rscalei<-T
     } else Resultats$rscalei<-F
 
@@ -419,15 +419,17 @@ VI.multiples<-function(data, X){
 
   if(any(options=="outlier")){
     if(dial || is.null(outlier)||
-       (dial==F & any(outlier %in%c("Donnees completes", "Identification des valeurs influentes","Donnees sans valeur influente",
-                                   "complete", "id", "removed"))==F)) {
-      if(info==TRUE) writeLines("les donnees completes representent l'analyse classique sur toutes les donnees utilisables, l'identification des valeurs influentes
+       (dial==F & any(outlier %in% if(grepl("fr",Sys.getlocale())){c("Donnees completes", "Identification des valeurs influentes","Donnees sans valeur influente",
+                                   "complete", "id", "removed")}else{c("..............")})==F)) {
+      if(info==TRUE) writeLines(if(grepl("fr",Sys.getlocale())){"les donnees completes representent l'analyse classique sur toutes les donnees utilisables, l'identification des valeurs influentes
                                 permet d'identifier les observations qui sont considerees statistiquement comme influencant les resultats.
                                 les analyses sur les donnees sans les valeurs influentes realise l'analyse apres suppression des valeurs influentes.
-                                Cette option stocke dans la memoire de R une nouvelle base de donnees sans valeur influente dans un objet portant le nom *nettoyees*")
-      Resultats$desires<- dlgList(c("Donnees completes", "Identification des valeurs influentes","Donnees sans valeur influente"),
-                                  preselect=c("Donnees completes","Identification des valeurs influentes", "Donnees sans valeur influente"),
-                                  multiple = TRUE, title="Quelles analyse voulez-vous ?")$res
+                                Cette option stocke dans la memoire de R une nouvelle base de donnees sans valeur influente dans un objet portant le nom *nettoyees*"}else{"........
+      .....................................................................
+      .........................................."})
+      Resultats$desires<- dlgList(if(grepl("fr",Sys.getlocale())){c("Donnees completes", "Identification des valeurs influentes","Donnees sans valeur influente")}else{c("............"},
+                                  preselect=if(grepl("fr",Sys.getlocale())){c("Donnees completes","Identification des valeurs influentes", "Donnees sans valeur influente")}else{c(".........")},
+                                  multiple = TRUE, title=if(grepl("fr",Sys.getlocale())){"Quelles analyse voulez-vous ?"}else{"............"})$res
       if(length(Resultats$desires)==0) {.ez.options(options=options, n.boot=NULL,param=param, non.param=non.param, robust=robust,
                                                     Bayes=Bayes, msg.options1=msg.options1, msg.options2=msg.options2, info=T, dial=T,
                                                     choix=choix,sauvegarde=F, outlier=NULL,rscale=rscale)->Resultats
@@ -435,7 +437,7 @@ VI.multiples<-function(data, X){
     } else Resultats$desires<-outlier
   }
 
-  if( dial==T) {Resultats$sauvegarde<- dlgList(c(TRUE, FALSE), preselect=FALSE, multiple = FALSE, title="Enregistrer les resultats ?")$res
+  if( dial==T) {Resultats$sauvegarde<- dlgList(c(TRUE, FALSE), preselect=FALSE, multiple = FALSE, title=if(grepl("fr",Sys.getlocale())){"Enregistrer les resultats ?"}else{"..."})$res
   if(length(Resultats$sauvegarde)==0) {.ez.options(options=options, n.boot=NULL,param=param, non.param=non.param, robust=robust,
                                                    Bayes=Bayes, msg.options1=msg.options1, msg.options2=msg.options2, info=T, dial=T,
                                                    choix=choix,sauvegarde=F, outlier=NULL,rscale=rscale)->Resultats
@@ -452,7 +454,7 @@ VI.multiples<-function(data, X){
   try(get("ez.history", envir=.GlobalEnv),silent=T)->ez.history
   if(class(ez.history)=="try-error") {ez.history<-list()
   ez.history$Analyse[[1]]<-data
-  names(ez.history)[length(ez.history)]<-paste("analyse sur",nom)
+  names(ez.history)[length(ez.history)]<-paste(if(grepl("fr",Sys.getlocale())){"analyse sur"}else{"analyse on"},nom)
   names(ez.history[[length(ez.history)]])[1]<-nom
   ez.history[[length(ez.history)]]$historique<-command
   }else{
@@ -460,7 +462,7 @@ VI.multiples<-function(data, X){
       ez.history[[length(ez.history)]]$historique<-rbind(ez.history[[length(ez.history)]]$historique,command)
     }else {
       ez.history$Analyse[[1]]<-data
-      names(ez.history)[length(ez.history)]<-paste("analyse sur",nom)
+      names(ez.history)[length(ez.history)]<-paste(if(grepl("fr",Sys.getlocale())){"analyse sur"}else{"analyse on"},nom)
       names(ez.history[[length(ez.history)]])[1]<-nom
       ez.history[[length(ez.history)]]$historique<-command
     }
@@ -508,19 +510,19 @@ VI.multiples<-function(data, X){
       shapiro.test(data[,"res"])->Shapiro_Wilk # realise le Shapiro-Wilk
       lillie.test(data[,"res"])->Lilliefors  # realise le Lilliefors
       round(data.frame(Shapiro_Wilk$statistic,Shapiro_Wilk$p.value, Lilliefors$statistic, Lilliefors$p.value),4)->normalite
-      names(normalite)<-c("W de Shapiro-Wilk", "valeur.p SW", "D de Lilliefors", "valeur.p Llfrs")
+      names(normalite)<-if(grepl("fr",Sys.getlocale())){c("W de Shapiro-Wilk", "valeur.p SW", "D de Lilliefors", "valeur.p Llfrs")}else{c("............")}
       dimnames(normalite)[1]<-" "
 #      format(normalite, width = max(sapply(names(normalite), nchar)), justify = "centre")->normalite
-      n2$"Test de normalite"<-normalite}
+      n2$if(grepl("fr",Sys.getlocale())){"Test de normalite"}else{"Normality test"}<-normalite}
 
 
     p1<-ggplot(data, aes(x=res))+geom_histogram(aes(y=..density..))
     p1<-p1+ stat_function(fun = dnorm, colour = "red",
                           args = list(mean = mean(data[,"res"], na.rm = TRUE),
                                       sd = sd(data[,"res"], na.rm = TRUE)))
-    p1<-p1+theme(plot.title = element_text(size = 12))+labs(x = "Distribution du residu")
+    p1<-p1+theme(plot.title = element_text(size = 12))+labs(x = if(grepl("fr",Sys.getlocale())){"Distribution du residu"}else{".................."})
     #print(p1)
-    n2$"Distribution des residus"<-p1
+    n2$if(grepl("fr",Sys.getlocale())){"Distribution des residus"}else{".............."}<-p1
     p2<-ggplot(data, aes(sample=res))+stat_qq()
     p2<-p2+theme(plot.title = element_text(size = 12))+ggtitle("QQplot")
     n2$"QQplot"<-p2
@@ -534,8 +536,8 @@ VI.multiples<-function(data, X){
                  "skew"=mardia.results$skew,"p.skew"=mardia.results$p.skew,"small.skew"= mardia.results$small.skew,"p.small"= mardia.results$p.small,
                  "kurtosis"=mardia.results$kurtosis,"p.kurtosis"=mardia.results$p.kurt )->n2
     } else {
-      msgBox("La matrice est singuliere et le test de Mardia ne peut etre realise. Seules les analyses univariees peuvent etre realisees")
-       n2<-data.frame("W de Shapiro-Wilk"=NULL, "valeur.p SW"=NULL, "D de Lilliefors"=NULL, "valeur.p Llfrs"=NULL)
+      msgBox(if(grepl("fr",Sys.getlocale())){"La matrice est singuliere et le test de Mardia ne peut etre realise. Seules les analyses univariees peuvent etre realisees"}else{"...."})
+       n2<-data.frame(if(grepl("fr",Sys.getlocale())){"W de Shapiro-Wilk"=NULL, "valeur.p SW"=NULL, "D de Lilliefors"=NULL, "valeur.p Llfrs"=NULL}else{"................"})
       for(i in 1:length(X)){
         X[i]->Z
         .normalite(data=data, X=Z,Y=Y)->nor1
@@ -573,9 +575,9 @@ VI.multiples<-function(data, X){
                         ranges = TRUE,trim=tr)->psych.desc
       expand.grid(sapply(groupes2, levels))->modalites
       for(i in 1:length(modalites[,1])) {
-        if(is.null(psych.desc[[i]])) paste("pas d'observations pour la combinaison", paste(unlist(modalites[i,]), collapse=" & "))->Resultats[[i]] else   psych.desc[[i]]->Resultats[[i]]
+        if(is.null(psych.desc[[i]])) paste(if(grepl("fr",Sys.getlocale())){"pas d'observations pour la combinaison"}else{"................"}, paste(unlist(modalites[i,]), collapse=" & "))->Resultats[[i]] else   psych.desc[[i]]->Resultats[[i]]
         paste(unlist(modalites[i,]), collapse=" & ")->names(Resultats)[i]}
-    } else psych.desc-> Resultats$'Variables numeriques'
+    } else psych.desc-> Resultats$if(grepl("fr",Sys.getlocale())){'Variables numeriques'}else{'.............'}
 
 
 
@@ -621,15 +623,15 @@ VI.multiples<-function(data, X){
         })
 
         Resultats$Graphiques<-graphiques
-        Resultats$"Informations sur les graphiques"[[1]]<-"L'epaisseur du graphique donne la densite, permettant de mieux cerner la distribution."
-        Resultats$"Informations sur les graphiques"[[2]]<-"Le point rouge est la moyenne. La barre d'erreur est l'ecart-type"
+        Resultats$if(grepl("fr",Sys.getlocale())){"Informations sur les graphiques"}else{".................."}[[1]]<-if(grepl("fr",Sys.getlocale())){"L'epaisseur du graphique donne la densite, permettant de mieux cerner la distribution."}else{"........................"}
+        Resultats$if(grepl("fr",Sys.getlocale())){"Informations sur les graphiques"[[2]]<-if(grepl("fr",Sys.getlocale())){"Le point rouge est la moyenne. La barre d'erreur est l'ecart-type"}else{"..............................................."}
       }
     }
 
   }
   if(!is.null(categ)) {
     for(i in 1:length(categ)) {
-      Resultats$'Variables categorielles'[[categ[i]]] <-ftable(data[, c(categ[i], groupes)])
+      Resultats$if(grepl("fr",Sys.getlocale())){'Variables categorielles'}else{'.................'}[[categ[i]]] <-ftable(data[, c(categ[i], groupes)])
     }
   }
 
