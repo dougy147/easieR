@@ -427,7 +427,7 @@ VI.multiples<-function(data, X){
                                 Cette option stocke dans la memoire de R une nouvelle base de donnees sans valeur influente dans un objet portant le nom *nettoyees*"}else{"........
       .....................................................................
       .........................................."})
-      Resultats$desires<- dlgList(if(grepl("fr",Sys.getlocale())){c("Donnees completes", "Identification des valeurs influentes","Donnees sans valeur influente")}else{c("............"},
+      Resultats$desires<- dlgList(if(grepl("fr",Sys.getlocale())){c("Donnees completes", "Identification des valeurs influentes","Donnees sans valeur influente")}else{c("............")},
                                   preselect=if(grepl("fr",Sys.getlocale())){c("Donnees completes","Identification des valeurs influentes", "Donnees sans valeur influente")}else{c(".........")},
                                   multiple = TRUE, title=if(grepl("fr",Sys.getlocale())){"Quelles analyse voulez-vous ?"}else{"............"})$res
       if(length(Resultats$desires)==0) {.ez.options(options=options, n.boot=NULL,param=param, non.param=non.param, robust=robust,
