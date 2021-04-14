@@ -40,7 +40,6 @@ ez.install <-
                       'pander',
                       "PMCMRplus",
                       'pgirmess',
-                      'phia',
                       'pkgmaker',
                       'plyr',
                       'ppcor',
@@ -54,11 +53,9 @@ ez.install <-
                       'Rfit',
                       'rmarkdown',
                       'rms',
-                      'robust',
                       'robustbase',
                       'rpivotTable',
                       'rrcov',
-                      'rtf',
                       'scatterplot3d',
                       'semPlot',
                       "sjstats",
@@ -68,7 +65,6 @@ ez.install <-
                       'stringr',
                       'svDialogs',
                       'TeachingDemos',
-                      'trimcluster',
                       'WRS',
                       'WRS2'
     )
@@ -99,10 +95,8 @@ ez.install <-
     if(is.null(pandoc_version())){
       if(grepl("mac",  .Platform$pkgType)){
         return(easieR.msg(msg=1))
-      }
+      }else{
 
-
-      else{
         install.packages("installr")
         library(installr)
         install.pandoc()

@@ -1,5 +1,5 @@
 import <-
-  function(file=NULL, dir=NULL, type=NULL, header=T, info=TRUE, dec=".", sep=";",na.strings="NA",sheet=NULL, name="dataset") {
+  function(file=NULL, dir=NULL, type=NULL, header=T, info=TRUE, dec=".", sep=";",na.strings="NA",sheet=NULL, name="dataset"){
     # file : Character. Name of the file to import
     # dir : Character. Directory in which the file is stored
     # type : One among "csv", "txt", "excel", "SPSS"
@@ -26,6 +26,7 @@ import <-
     }
     if(is.null(type)) type <- dlgList(c("Fichier CSV", "Fichier txt", "Fichier Excel", "fichier SPSS"), preselect="Fichier Excel", multiple = FALSE, title="Format du fichier?")$res
     if(length(type)==0) return(donnees())
+
     if(!is.null(dir)) try(setwd(dir), silent=T)
     if(!is.null(file) && file.exists( file)) {file<-file
     dial<-F}else {dial<-T

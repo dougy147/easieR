@@ -1,17 +1,16 @@
 
 easieR <-
   function(info=TRUE, html=T){
-    library(tcltk)
     # 1. l'argument info permettra a terme de choisir les informations qui s'affichent dans la console ou non
     options (warn=1)
     options(scipen=999)
     test<-try(library(svDialogs), silent=T)
     if(class(test)== "try-error") return(ez.install())
 
-    # déterminer le navigateur par défaut si OS linux
-    # if Sys.info()['sysname'] = linux :
-    if(.Platform$OS.type == "unix") {
-	    Sys.getenv("BROWSER")->navigateur_par_defaut #va chercher les variales de l'environnement, ici le "BROWSER"
+    # déterminer le navigateur par défaut si OS linux + charger tcltk pour interface de sélection des dossiers
+    if(grepl("Linux", Sys.info()[1])){
+	    library(tcltk)
+	    Sys.getenv("BROWSER")->navigateur_par_defaut
 	    options(browser=navigateur_par_defaut)
     }
 
