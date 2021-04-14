@@ -152,7 +152,7 @@ VI.multiples<-function(data, X){
           print(data[which.max(data$D.Mahalanobis),])
           cat (if(grepl("fr",Sys.getlocale())){"Appuyez [entree] pour continuer"}else{"........"})
           line <- readline()
-          dlgMessage(if(grepl("fr",Sys.getlocale())){"Voulez-vous supprimer cette observation ?", "yesno"}else{"..........", "yesno"})$res->suppression
+          if(grepl("fr",Sys.getlocale())){dlgMessage("Voulez-vous supprimer cette observation ?", "yesno")}else{dlgMessage("..........", "yesno")}$res->suppression
           if(suppression=="yes") {rbind(outliers, data[which.max(data$D.Mahalanobis),])->outliers
             data[-which.max(data$D.Mahalanobis),]->data
 
