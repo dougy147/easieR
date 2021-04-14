@@ -513,7 +513,7 @@ VI.multiples<-function(data, X){
       names(normalite)<-if(grepl("fr",Sys.getlocale())){c("W de Shapiro-Wilk", "valeur.p SW", "D de Lilliefors", "valeur.p Llfrs")}else{c("............")}
       dimnames(normalite)[1]<-" "
 #      format(normalite, width = max(sapply(names(normalite), nchar)), justify = "centre")->normalite
-      n2$if(grepl("fr",Sys.getlocale())){"Test de normalite"}else{"Normality test"}<-normalite}
+      if(grepl("fr",Sys.getlocale())){n2$"Test de normalite"}else{n2$"Normality test"}<-normalite}
 
 
     p1<-ggplot(data, aes(x=res))+geom_histogram(aes(y=..density..))
