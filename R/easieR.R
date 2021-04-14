@@ -145,7 +145,7 @@ VI.multiples<-function(data, X){
                     preselect=if(grepl("fr",Sys.getlocale())){c("Suppression de l'ensemble des outliers")}else{c(".......")}, multiple = FALSE, title=if(grepl("fr",Sys.getlocale())){"Comment voulez-vous les supprimer?"}else{"......."})$res
     if(length(suppr)==0) return(NULL)
     if(suppr==if(grepl("fr",Sys.getlocale())){"Suppression de l'ensemble des outliers"}else{"....."}) {data[which(data$D.Mahalanobis<seuil),]->data
-      outliers->Resultats$if(grepl("fr",Sys.getlocale())){"Valeurs considerees comme influentes"}else{".........."}}else{
+      if(grepl("fr",Sys.getlocale())){outliers->Resultats$"Valeurs considerees comme influentes"}else{outliers->Resultats$".........."}}else{
         suppression<-"yes"
         outliers<-data.frame()
         while(suppression=="yes"){
