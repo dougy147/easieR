@@ -522,7 +522,7 @@ VI.multiples<-function(data, X){
                                       sd = sd(data[,"res"], na.rm = TRUE)))
     p1<-p1+theme(plot.title = element_text(size = 12))+labs(x = if(grepl("fr",Sys.getlocale())){"Distribution du residu"}else{".................."})
     #print(p1)
-    n2$if(grepl("fr",Sys.getlocale())){"Distribution des residus"}else{".............."}<-p1
+    if(grepl("fr",Sys.getlocale())){n2$"Distribution des residus"}else{n2$".............."}<-p1
     p2<-ggplot(data, aes(sample=res))+stat_qq()
     p2<-p2+theme(plot.title = element_text(size = 12))+ggtitle("QQplot")
     n2$"QQplot"<-p2
