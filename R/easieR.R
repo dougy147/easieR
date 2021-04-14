@@ -624,7 +624,7 @@ VI.multiples<-function(data, X){
 
         Resultats$Graphiques<-graphiques
         if(grepl("fr",Sys.getlocale())){Resultats$"Informations sur les graphiques"}else{Resultats$".................."}[[1]]<-if(grepl("fr",Sys.getlocale())){"L'epaisseur du graphique donne la densite, permettant de mieux cerner la distribution."}else{"........................"}
-        Resultats$if(grepl("fr",Sys.getlocale())){Resultats$"Informations sur les graphiques"[[2]]}else{Resultats$"....................."}<-if(grepl("fr",Sys.getlocale())){"Le point rouge est la moyenne. La barre d'erreur est l'ecart-type"}else{"..............................................."}
+        if(grepl("fr",Sys.getlocale())){Resultats$"Informations sur les graphiques"[[2]]}else{Resultats$"....................."}<-if(grepl("fr",Sys.getlocale())){"Le point rouge est la moyenne. La barre d'erreur est l'ecart-type"}else{"..............................................."}
       }
     }
 
