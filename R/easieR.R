@@ -631,7 +631,7 @@ VI.multiples<-function(data, X){
   }
   if(!is.null(categ)) {
     for(i in 1:length(categ)) {
-      Resultats$if(grepl("fr",Sys.getlocale())){'Variables categorielles'}else{'.................'}[[categ[i]]] <-ftable(data[, c(categ[i], groupes)])
+      if(grepl("fr",Sys.getlocale())){Resultats$'Variables categorielles'}else{Resultats$'.................'}[[categ[i]]] <-ftable(data[, c(categ[i], groupes)])
     }
   }
 
