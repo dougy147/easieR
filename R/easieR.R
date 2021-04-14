@@ -537,7 +537,7 @@ VI.multiples<-function(data, X){
                  "kurtosis"=mardia.results$kurtosis,"p.kurtosis"=mardia.results$p.kurt )->n2
     } else {
       msgBox(if(grepl("fr",Sys.getlocale())){"La matrice est singuliere et le test de Mardia ne peut etre realise. Seules les analyses univariees peuvent etre realisees"}else{"...."})
-       n2<-data.frame(if(grepl("fr",Sys.getlocale())){"W de Shapiro-Wilk"=NULL, "valeur.p SW"=NULL, "D de Lilliefors"=NULL, "valeur.p Llfrs"=NULL}else{"................"})
+       if(grepl("fr",Sys.getlocale())){n2<-data.frame("W de Shapiro-Wilk"=NULL, "valeur.p SW"=NULL, "D de Lilliefors"=NULL, "valeur.p Llfrs"=NULL)}else{n2<-data.frame("................")}
       for(i in 1:length(X)){
         X[i]->Z
         .normalite(data=data, X=Z,Y=Y)->nor1
