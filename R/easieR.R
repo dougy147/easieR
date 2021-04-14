@@ -577,7 +577,7 @@ VI.multiples<-function(data, X){
       for(i in 1:length(modalites[,1])) {
         if(is.null(psych.desc[[i]])) paste(if(grepl("fr",Sys.getlocale())){"pas d'observations pour la combinaison"}else{"................"}, paste(unlist(modalites[i,]), collapse=" & "))->Resultats[[i]] else   psych.desc[[i]]->Resultats[[i]]
         paste(unlist(modalites[i,]), collapse=" & ")->names(Resultats)[i]}
-    } else psych.desc-> Resultats$if(grepl("fr",Sys.getlocale())){'Variables numeriques'}else{'.............'}
+    } else if(grepl("fr",Sys.getlocale())){psych.desc-> Resultats$'Variables numeriques'}else{psych.desc-> Resultats$'.............'}
 
 
 
