@@ -37,7 +37,7 @@ easieR <-
   }
 
 easieR.msg<-function(msg="1"){
-   if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())) {
+   if(grepl("English",Sys.setlocale()) | grepl("feffezfezezfezf",Sys.setlocale())) {
      msg<-switch(msg,
                  "1"=c("Pour que easieR fonctionne correctement, il faut installer Pandoc disponible à l'url suivant : https://github.com/jgm/pandoc/releases") ,
                  "2"=c("Donnees - (Importation, exportation, sauvegarde)",
@@ -668,5 +668,34 @@ ref1 <-
   packageStartupMessage(textVersion)
   packageStartupMessage("Last update 01/19/2021")
   packageStartupMessage("##############")
+
+}
+
+
+
+######################
+# LANGUES ############
+######################
+# inversion volontaire pour tester sur ma machine en français (donc le français donnera des messages anglais)
+if(grepl("English",Sys.getlocale()) | grepl ("english",Sys.getlocale())) {
+	message1="Donnees - (Importation, exportation, sauvegarde)"
+	message2="Analyses - Tests d'hypothese"
+	message3="Interface - objets en memoire, nettoyer la memoire, repertoire de travail"
+	message4="Pretraitements (tri, selection, operations mathematiques, Traitement des valeurs manquantes)"
+	message5="Materiel pedagogique"
+	message6="Graphiques"
+	message7="Pour que easieR fonctionne correctement, il faut installer Pandoc disponible à l'url suivant : https://github.com/jgm/pandoc/releases"
+	message8="Que voulez-vous ?"
+	message9="Vous avez quitte easieR"
+} else {
+	message1="Data - (Import, export, save"
+	message2="Analyses - Hypothesis tests"
+	message3="Interface - objects in memory, clean memory, wordking directory"
+	message4="Preprocess (sort, select, mathematical operations, missing values)"
+	message5="Teaching material"
+	message6="Graphics"
+	message7="In order to ensure that easieR is properly installed, please install Pandoc at the following url : https://github.com/jgm/pandoc/releases"
+	message8="What do you want to do ?"
+	message9="User has terminated easieR"
 
 }
