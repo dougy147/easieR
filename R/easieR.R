@@ -158,7 +158,7 @@ VI.multiples<-function(data, X){
 
           }
         }
-        Resultats$if(grepl("fr",Sys.getlocale())){"Valeurs considerees comme influentes"}else{"............."}<-outliers
+        if(grepl("fr",Sys.getlocale())){Resultats$"Valeurs considerees comme influentes"}else{Resultats$"............."}<-outliers
       }
   }
   Resultats$data<-data
