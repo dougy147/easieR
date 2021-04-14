@@ -144,7 +144,7 @@ VI.multiples<-function(data, X){
 	       Procedure will stop when no more observation is considered to be an outlier."})
 
     suppr<- dlgList(if(grepl("en",Sys.getlocale())){c("Suppression de l'ensemble des outliers", "Suppression manuelle")}else{c("Delete all outliers", "Manual deletion")},
-                    preselect=if(grepl("en",Sys.getlocale())){c("Suppression de l'ensemble des outliers")}else{c("Delete all outliers","Manual deletion")}, multiple = FALSE, title=if(grepl("en",Sys.getlocale())){"Comment voulez-vous les supprimer?"}else{"How do you want to delete outliers ?"})$res
+                    preselect=if(grepl("en",Sys.getlocale())){c("Suppression de l'ensemble des outliers")}else{c("Delete all outliers")}, multiple = FALSE, title=if(grepl("en",Sys.getlocale())){"Comment voulez-vous les supprimer?"}else{"How do you want to delete outliers ?"})$res
     if(length(suppr)==0) return(NULL)
     if(suppr==if(grepl("en",Sys.getlocale())){"Suppression de l'ensemble des outliers"}else{"Delete all outliers"}) {data[which(data$D.Mahalanobis<seuil),]->data
       if(grepl("en",Sys.getlocale())){outliers->Resultats$"Valeurs considerees comme influentes"}else{outliers->Resultats$"Values considered as outliers"}}else{
