@@ -401,7 +401,7 @@ VI.multiples<-function(data, X){
   if(!is.null(rscale)){
     if(dial & any(choix==if(grepl("fr",Sys.getlocale())){"Facteurs bayesiens"}else{"........"})|| (is.numeric(rscale) & (rscale<0.1 | rscale>2)) || (!is.numeric(rscale) & rscale%in% if(grepl("fr",Sys.getlocale())){c("moyen", "large", "ultralarge")}else{c("....,.....,......")})==F) {
       if(info) writeLines(if(grepl("fr",Sys.getlocale())){"Veuillez preciser la distribution a priori de Cauchy"}else{".................."})
-      rscale<-dlgList(if(grepl("fr",Sys.getlocale())){c("moyen", "large", "ultralarge"), preselect="moyen", multiple = F, title=if(grepl("fr",Sys.getlocale())){"Quelle distribution voulez-vous  ?"}else{"................."})$res
+      rscale<-dlgList(if(grepl("fr",Sys.getlocale())){c("moyen", "large", "ultralarge")}else{c("...............")}, if(grepl("fr",Sys.getlocale())){preselect="moyen"}else{preselect="medium"}, multiple = F, title=if(grepl("fr",Sys.getlocale())){"Quelle distribution voulez-vous  ?"}else{"................."})$res
       if(length(rscale)==0) {
         .ez.options(options=options, n.boot=NULL,param=param, non.param=non.param, robust=robust,
                     Bayes=Bayes, msg.options1=msg.options1, msg.options2=msg.options2, info=T, dial=T,
