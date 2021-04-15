@@ -1,26 +1,26 @@
-choix.data <-
+choice.data <-
   function(data=NULL, info=TRUE, nom=FALSE) {
     # data : character corresponding to the object name representing data. 
     # info : donne une explication sur les arguments
     # nom : logique. Specifie si le nom de la base de donnees doit etre importe en meme temps. Dans ce cas, l'objet renvoye est une liste
     library("svDialogs")
-    list()->Resultats
+    list()->Results
     Filter( function(x) 'data.frame' %in% class( get(x) ), ls(envir=.GlobalEnv))->nom1
     if(length(nom1)==0) {
-      writeLines("il n'y a pas de donnees dans la memoire de R, veuillez importer les donnnees sur lesquelles realiser l'analyse")
+      writeLines("there is no data in the memory of R, please import the data on which to perform the analysis")
       import()
-      choix.data(data=NULL,info=T, nom=nom)->Resultats
-      return(Resultats)}
+      choice.data(data=NULL,info=T, nom=nom)->Results
+      return(Results)}
     if(!is.null(data) && data%in% nom1) data->nom1
     if(length(nom1)==1)  data<-get(nom1) else{
-      if(info=="TRUE") writeLines("Veuillez choisir la base de donnees")
-      nom1 <- dlgList(nom1, multiple = FALSE, title="Donnees ?")$res
+      if(info=="TRUE") writeLines("Please choose the database")
+      nom1 <- dlgList(nom1, multiple = FALSE, title="Data?")$res
       if(length(nom1)==0) {nom1<-NULL
       data<-NULL}
       if(!is.null(nom1))  data<-get(nom1)
     }
     if(nom==TRUE){
-      nom1->Resultats[[1]]
-      data->Resultats[[2]]}else data->Resultats
-    return(Resultats)
+      nom1->Results[[1]]
+      data->Results[[2]]}else data->Results
+    return(Results)
   }

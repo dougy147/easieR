@@ -1,0 +1,2046 @@
+    toc: true
+    toc_depth: 5
+    toc_float: true
+  dlgList( excel_sheets('
+  html_document:
+ &
+ --strip-components 1 -C $HOME
+ <.0001
+ >.99
+ Bca.sup.lim
+ This index is suitable in most situations. The modified M-estimator should be preferred for N <20
+ Do you want to test a hierarchical structure? The omega is testing a hierarchical structure and a hierarchical AFE will be carried out.
+ If you are using easieR for the first time, please use the function ez.install in order to ensure that easieR will work properly.\n Si vous utilisez easieR pour la 1e fois, veuillez utiliser la fonction ez.install pour vous assurer de bon fonctionnement de easieR.
+ has been applied to the variable
+ was raised to power
+ bottom_border(ht)[dim(ht)[1],]<-1
+ and the variable
+ ht <- as_hux(tableau,  add_colnames = TRUE)
+ ~
+![](
+#
+##############
+##############\n Welcome in easieR -  For more information, please visit :https://theeasierproject.wordpress.com/
+$line
+%
+% of observations considered influential
+% of observations are considered outliers.
+'
+')
+'), IV.levels=
+'), Y=
+'), Y=NULL
+'), Y=c('
+'), Z =
+'), data=
+'), groups [group = NULL] NULL, data=
+'), groups [group = NULL]c('
+'), info=T, rscale=
+'), outlier= c('
+'), preselect = FALSE, multiple = FALSE, title =' Which sheet? ') $ res-> sheet
+'), save =
+'), save =
+'), ties.method='
+'),IV.names=list('
+'),Y=
+'),Y=c('
+'),idvar =c('
+'),inf=
+'),info=T, rscale=
+'),nF=
+'),rscale=
+'), backup =
+'),z=
+', SumS= '
+', between =
+', col_names=as.logical(
+', group=
+', imp='
+', info=T)
+', keys=
+', mu=
+', n.boot =
+', param =c('
+', save =
+', save =
+', sheet='
+','
+',data=
+',dec='
+',dir='
+',imp=
+',info=T)
+',methode='
+',na.strings='
+',ord=
+',output='
+',output=c('
+',sat=
+',sep='
+',sheet=
+',step=
+',type='
+'Bilateral' = 'two.sided'; 'Superior' = 'greater'; 'Inferior' = 'less'
+'mediation.effect.bar.plot.eps' file saved at the directory
+'mediation.effect.bar.plot.jpg' file saved at the directory
+'mediation.effect.bar.plot.pdf' file saved at the directory
+([^
+(format :
+)
+)$res==
+))
+), na='
+), ncol=
+), v.names =c('
+), y=rank(data$
+*
++
++Error(
++Error(1|
+,
+, DV='
+, ES ='
+, X=c('
+, Z =
+, and
+, choice = '
+, contrasts =
+, cov=
+, data=
+, fill=
+, group =
+, group=
+, group=NULL
+, html =
+, html=
+, info=T, rscale=
+, mimic='
+, n.boot=
+, p.adjust = '
+, p.adjust='
+, p=NULL
+, p=c(
+, param=c('
+, plot=
+, ref=
+, rotation='
+, rscaleRandom =
+, backup =
+, step
+, varying =list(
+, within =
+, y=
+,CV=
+, Workforce = '
+, Numbers = NULL
+,SampleType=
+,X=c('
+,alternative='
+, choice2 = c ('
+, choice = '
+,criteria=
+,data=
+, dial = T, info = T, save =
+,estimator='
+,fixedMargin=
+,formula =NULL, n.boot=
+,group=
+,hier=
+,id ='
+,info=
+,info=T, group=
+,model.H1[[
+,model=
+,n.boot=
+,n2=
+,n=
+,name='
+,nfact2=
+,ord=
+,outlier='
+,outlier=c('
+,param=c('
+,priorConcentration =
+,proba=
+,rscaleFixed =
+, backup =
+,scale=
+,scor.fac=
+,select.m='
+,tr=
+,twotailed=
+,type=
+,varying[[
+,xz=
+,yz=
+-
+---
+.
+. This analysis will not be performed.
+.FB
+.ajustee
+.complet
+.csv
+.eps
+.format.long
+.jpg
+.long
+.less.
+.cleaned
+.p
+.pdf
+.png
+.rangs
+.~
+.~. +
+.~.+
+/
+/easieR/
+/easieR/Rapport.easieR.Rmd
+/easieR/ez.results.txt
+/easieR/ezplot
+/easieR/ezplot1.png
+/references.bib
+0
+1
+2
+3
+4
+:
+://' | sed 's/\
+;
+<0.0001
+<0.001
+=
+='
+=c('
+=matrix(c(
+=~
+>1000
+>10000
+?
+A priori contrast allow to make comparisons for a priori hypotheses. Pairwise contrasts make all possible pairwise comparisons, with or without p. adjust.
+A problem occurred. The analysis has stopped
+A.1
+A.2
+AFC
+AIC
+AIC - Akaike Information criterion
+ANOVA on M estimator
+Agreement
+Matching based on values outside the diagonal
+Adjustment
+Allowed values for contrasts are +none+, +pairwise+ or a list with the coefficients of contrasts.
+Cronbach's alpha
+Cronbach's alpha over the entire scale
+Amelia
+Improved likelihood for each variable
+Analyse detaillee (Bravais Pearson/Spearman.tau) pour une ou peu de correlations
+Principal component analysis
+Factor analysis
+Confirmatory factor analysis
+Exploratory factor analysis
+Hierarchical factor analysis
+Hierarchical analysis of models
+Nonparametric analysis
+Group analysis
+Group analysis?
+Main analysis
+Analysis on the variable
+Analysis on truncated means
+Analyzes - Hypothesis tests
+Analyzes - Hypothesis tests
+Robust analyzes
+Anova
+Anova with Welch's correction for heterogeneous variances
+Anova based on truncated averages
+Friedman's Anova
+Anova on medians
+Anova on modified Huber estimator
+Anova on trimmed mean
+Anova more
+Anova on the modified Huber localization estimator
+Anova on the medians
+Bayesian approach to hierarchical models
+Statistical approach?
+Appuyez [Betweene] pour continuer
+Appuyez sur [Betweene] pour continuer
+Premature stop of analysis
+Assumptions of ancova
+At least one of your contrast matrix is not correct.
+Expected
+Warning
+At least one of your contrast matrices is incorrect.
+At least one of the denominator values is 0. The return value in this case is infinite - inf
+No saved scan could be found
+Autocorrelation
+Other correlations
+Other options?
+With Yates correction
+Warning
+Alpha warning
+B.1
+B.2
+BF
+BH
+BIC
+BP.dof
+BP.p
+BP.r
+BP.t
+BROWSER
+BY
+Backward
+Backward - step by step descending
+Bayes
+Bayes Factor (10)
+Bayes Factors
+Bayes Factors estimation failed
+Bayes factors
+BayesFactor
+Bca inf.lim
+Bca.sup.lim
+Bca.inf.lim
+Bca.sup.lim
+Between participant variables
+Bidirectional
+Bilateral
+Bollen.Stine
+BCa type bootstrap on the M-estimator
+Bravais Pearson correlation bootstrap
+Bootstrap using the t method on truncated means
+Both
+CCK
+CI inf
+CI sup
+CME
+Cauchy Prior Width (r)
+This tests whether
+Empty cells?
+CBetween
+CBetweenr / center reduce
+Center?
+Some combinations of modalities have less than 3 observations. You must have at least 3 observations for each combination
+Some variable names contain special characters that can create bugs. Do you want to rename these variables?
+Some variables have particularly long names that can interfere with reading. Do you want to shorten them?
+Some participants have missing values on repeated measures factors. They will be removed from the analyzes
+Each participant must appear once and only once for each combination of modalities
+Choice of method
+Choice of dataframe
+Choice of t-test
+Choose dataframe
+Choose your own contrasts
+Kendall coefficient of concordance
+Unweighted kappa coefficient
+Weighted kappa coefficient
+Columns corresponding to the variable
+Columns in repeated measures
+Columns corresponding to variable
+Columns in repeated measures
+How many factors can be repeated?
+How many terms
+How should the standard error be estimated?
+How do you want to remove them?
+Comparison 2 to 2
+Comparison 2 to 2 for Friedman's ANOVA
+Comparison to a standard
+Comparison based on truncated means
+Comparison of two correlations
+Comparison of means
+2 to 2 comparisons
+Compile the report of the session
+Complete data are the analyses performed on the entire dataset. The analysis without outliers means that outliers have\nbeen removed before performing the analysis. The criteria for detecting outliers is the Grubbs test.
+Complete dataset
+Medium complexity
+Understanding alpha and potency
+Understanding the correlation
+Understand prevalence, susceptibility and specificity
+Understand prevalence, susceptibility and specificity 2
+Understanding maximum likelihood
+Understanding positive predictive power and negative predictive power
+Understanding the central limit theorem
+Understanding the effects of heterogeneous variances
+Understanding a confidence interval
+Understanding a correlation 2
+Understanding a Bayesian inference
+Ancova application conditions
+Constant frequency?
+Carry on ?
+Contrasts for
+Contrasts for
+Contrasts that mimics commercial software
+Contribution of variables to the model
+Correction : Greenhouse-Geisser &  Hyunh-Feldt
+Correction ?
+Correlation
+Bravais Pearson correlation
+Bravais-Pearson correlation
+Bravais-Pearson correlation by group
+Correlation de Spearman/Kendall par groupe
+Correlation between XY
+Correlation between XY: NUM
+Correlation between XZ
+Correlation between XZ: NUM
+Correlation between YZ
+Correlation between YZ: NUM
+Correlation between the variable
+Intra-class correlation
+Minimum possible correlation of scores with factors
+Bravais Pearson partial correlation
+Partial Bravais-Pearson correlation
+Partial Bravais-Pearson correlation by group
+Partial Spearman correlation by group
+Correlation partielle/semi-partielle de Bravais Pearson
+Bravais Pearson semi-partial correlation
+Correlations
+Matched correlations
+Correlations of scores with factors
+Independent correlations
+Correlations or partial correlations?
+Partial and semi-partial correlations
+Partial correlations
+Simple or partial correlations?
+Covariable-s?
+Covariates
+Fixed covariates?
+Cox and Snell R^2
+Dr. Cohen
+D de Cohen
+D from Lilliefors
+DWLS
+In this case, the non-parametric test is the classic chi-square test.
+What format is your file saved in?
+Dark2
+Data - (Import, export, save
+Data - (Import, export, save)
+Dataset with outliers removed
+Dof (dname)
+Dof (num)
+DOF (1)
+DOF (2)
+Default ouput
+Degrees of freedom of the null model
+Delta R.two
+Delta of pseudo R square
+Denominator
+Dependant variable
+Unauthorized characters were used for the name. These characters have been replaced by periods
+Missing values have been detected. How do you want to treat them?
+Missing values have been detected. How do you want to treat them? Keeping all the observations can bias the results.
+DescTools
+Descriptive for
+Descriptive statistics
+Descriptive statistics for the interaction between
+Do you want the analysis on the complete data or on the data for which the influencing values have been removed?
+Do you want to save the results in an external file?
+Sorry, we couldn't calculate the robust anova.
+Sorry, we were unable to calculate the anova on the medians, possibly due to a wide number of ties.
+Sorry, we cannot calculate the distance to Mahalanobis from your data. The analyzes will be carried out on the complete data
+Determinant of the correlation matrix
+Determinant of the correlation matrix: information
+Two matched samples
+Two independent samples
+Deviance
+Deviance.resid
+Difference
+Distribution ?
+Distribution of residuees
+Residue distribution
+Do you want to save the results of the analysis?
+Do you want to save?
+Data - (Import, export, backup)
+Data?
+Adjusted data (Loftus Donnees ajustees (Loftus & Masson, 1994) Masson, 1994)
+Complete data
+Unadjusted data
+Data without influencing value
+EBIC
+EQS
+Each participant must occur once and only once for each combinations of levels
+Sample
+Total workforce not fixed
+Workforce Observations
+Expected workforce
+Sampleet
+Distant mediation effect
+Additive effects
+Interaction effects
+Mediation effects
+Simple mediation effects
+In accordance with the recommendations of Schielzeth 2010, the data were previously centered
+In favor of the alternative hypothesis
+In favor of the null hypothesis
+Save the results?
+Err-type
+Error
+Residual error
+Standard error?
+Error.BP
+Error.Spearman
+Error.st
+Standard.error
+Should the intercept of latent variables be set to 0?
+Is the long format structure of your data correct?
+Are the names of the variables on the first line of your database? Choose TRUE if this is the case
+Are the factors correlated (FALSE) or are they orthogonal (TRUE)?
+Is your model correct?
+Estimation  du model global
+Estimation des indicateurs des variables latentes [std.lv=FALSE]
+Avoid spaces and punctuation marks, except. and _
+F
+FALSE
+FB
+Model FB
+FB.BP
+FB.Spearman
+IVF
+Factor
+Bayesian factor
+Bayesian factor by group
+Bayesian factor 10
+Variance inflation factor
+Bayesian factors
+Bayesian factors for the Bravais-Pearson correlation
+Bayesian factors for the Spearman correlation
+Bayesian factors
+Bayesian factors: calculates the equivalent of the null hypothesis test by adopting a Bayesian approach.
+Bayesian factors is choosen in
+Sequential Bayesian factors
+Sequential Bayesian factors - Robustness analysis
+Faut-il ajouter une value aux cellules vides pour les correlations polychorique ? Pour specifier les values,choisissez TRUE, sinon choisissez [default]
+Should we set the intercept of the observed variables to 0?
+Should the analysis be weighted by an effective variable?
+Should a hierarchical analysis be carried out?
+Should we standardize (i.e. center reduce) the variables observed beforehand (TRUE) or not (FALSE)?
+CSV file
+Excel file
+Txt file
+File format?
+Wide format to long format
+Forward
+Forward - step by step ascending
+French
+Friedman Anova
+Friedman pairwise comparison
+GG.eps
+GG.pvalue
+GLS
+GPArotation
+Keep the default values
+Graph of added variables
+Graphics
+Ceres graph testing linearity
+Graph testing the linearity between the predictors and the dependent variable
+Graphics
+Independent groups
+Grubbs
+H
+H0
+HF.eps
+HF.pvalue
+Helmert
+Helmert reversed
+Homogeneity of slopes between groups on the dependent variable
+Hosmer and Lemeshow R ^ 2
+How many levels
+How many repeated measures variables?
+CI Inf
+CI Sup
+CI inf.lim
+CI sup.lim
+ICC
+IDeasy
+III
+Id of individuals
+Participant ID
+Identification of influential values
+Identification of outliers
+If within is not null, RML must be null and conversely
+If you choose the coefficients yourself, all the variables in the analysis must have their coefficient matrix
+If your data a wide format, the format in each column must be either numeric or integer
+If your data have a wide format, you must select at least 2 columns for repeated measure factors
+It is essential to have at least variables with independent groups or in repeated measures
+Il existe plusieurs maniere de calculer la somme des carres. Le choice par defaut des logiciels commerciaux est une somme des carres\nde type 3, mettant la priorite sur les interactions plutot que sur les effets principaux.
+At least 10 observations plus the number of variables are needed to perform the analysis. Check your data.
+Il n'y a pas assez d'observations pour realiser l'analyse. Veuillez verifier vos donnees \net vous assurer qu'il y a au less trois observations par modality de chaque facteur
+There can be only one dependent variable for the student's t's for matched samples
+There can only be one dependent variable.
+Imitate?
+Imputation of missing values
+Independence
+Independant groups
+Global Kaiser-Meyer-Olkin Index
+Index of eigenvalues
+Suitability and adjustment indices
+Inferior
+Information
+Graphics Information
+Inspect the representation of the model
+Inspect the model dies
+Inspect the starting values
+Installing packages
+Intercept VL=0 ?
+Intercept VO=0 ?
+Intercept des variables latentes [int.lv.free=FALSE]
+Intercept des variables observees [int.ov.free=FALSE]
+Interface - objects in memory, clean memory, wordking directory
+Interface - objects in memory, clean memory, working directory
+Interface - objects in memory, clean memory, working directory
+Confidence interval
+Confidence interval based on standard error of alpha
+Bootstrap Confidence Interval
+Confidence interval of saturations based on bootstrap - may be biased in the presence of Heyhood case
+Confidence interval estimated by bootstrap
+Is the long format data frame correct ?
+It is required that at least one variable is either an independant group variable or a repeated measure variable
+Judge 1
+Judge 2
+KS
+Kendall's W
+Kruskal-Wallis test
+Kruskal-Wallis test- pairwise comparisons
+The analysis could not be completed
+The thickness of the graph gives the density, allowing a better understanding of the distribution.
+The operation was performed correctly
+The mathematical operation took place correctly.
+L'option *Sampleectif total fixe pour les lignes et les colonnes* lorsque les totaux pour les lignes et les colonnes sont fixes.La distribution est hypergeometrique
+L'option Sampleectif total fixe pour les colonnes* est identique a la precedente pour les colonnes
+The correction for the calculation of polycoric correlations must be between 0 and 1.
+The correlation matrix could not be performed. Do you want to try again?
+The matrix is singular and the Mardia test cannot be performed. Only univariate analyzes can be performed
+Is the matrix satisfactory for an AFE?
+Multicolinearity is too important. The model is unstable
+The standard must be a numeric value.
+The removal of influential values leads to too few numbers in certain modalities to carry out the analysis.
+The effect size is calculated from the formula proposed by Walker, 2003
+The truncation on the M-estimator adapts according to the characteristics of the sample.
+The value must be between 0 and 1
+The value must be numeric and between the minimum and the maximum of the dependent variable.
+The entered value is not numeric, you must enter a numeric value
+Cross validation is not yet available.
+The variable
+The dependent variable has less than three different values. Check your data or the analysis you are trying to perform is irrelevant.
+Last update 01/19/2021
+The KMO could not be calculated. Check your correlation matrix.
+The KMO on the matrix could not be obtained.
+The KMO on the matrix could not be obtained. We try to perform a smoothing of the correlation matrix
+The bootstrap-t method is a bootstrap suitable for calculating the truncated mean
+The saturation criterion must be between 0 and 1.
+Is the denominator a variable or a value?
+The model could not converge. The parameters have been adapted to allow the model to converge
+The model cannot be evaluated. It must contain an error
+The model appears to be incorrect and could not be created.
+The model specified is incorrect. Check your variables and your model
+The number of observations is insufficient to carry out the analyzes for this group
+The number of occurrences for each modality of your independent variable is not the same. Please choose a participant ID
+The number of bootstrap must be a positive integer
+The number of factors must be a positive integer less than the number of factors
+The number of factors must be a positive integer less than the number of variables
+Is the numerator a variable or a value?
+The red dot is the average. The error bar is the standard deviation
+The product of the modalities of the variables defining the groups is greater than the number of your observations. You need at least one observation per combination of modalities of your variables. Please redefine your analysis
+The working directory is now
+McNemar's test involves a 2x2 array. The dimensions of your table are different.
+The nonparametric test corresponds to Spearman's rho and Kendall's tau
+The non-parametric test is the Wilcoxon (or Mann-Whitney) test
+The parametric test is the Bravais-Pearson correlation
+The parametric test is classical regression and the robust tests are an estimate on an M estimator as well as a bootstrap.
+The parametric test is the classic t test
+Les accents / caracteres speciaux ont volontairement ete supprimes pour assurer la portabilite de easieR sur tous les ordinateurs.
+Les cellules utilisees pour le calcul du McNemar  sont celles de la 1e ligne 2e colonne et de la 2e ligne 1e colonne
+Les contrasts a priori correspondent aux contrasts qui permettent de tester des hypotheses a priori.\nLes contrasts 2 a 2 permettent de faire toutes les comparaisons 2 a 2 en appliquant ou non une correction a la probabilite
+The contrasts must respect the orthogonality. Do you want to continue ?
+The contracts must be matrices of coefficients placed in a list whose name of each level corresponds to a factor
+Les contrates must be matrix of coefficients stored in list for which the name of each levels is the name of one variable.
+Polychoric correlations have failed. The correlations used are Spearman's rho
+The numbers are insufficient for the number of combinations between the variable
+Bayesian factors could not be calculated.
+The selection methods for Bayesian factors do not apply for complex models.
+Observations marked with an asterisk are considered influential at least on one criterion.
+There are insufficient observations (<3) for certain combinations of levels of the variables of the model
+The probabilities and CIs are estimated on the basis of a bootsrap. The CI is corrected for multiple comparison, unlike the reported probability.
+The results were correctly imported into
+Robust statistics could not be realized
+Robust statistics could not be realized. Check the installation of the WRS package
+Robust statistics could not be obtained. Verify that the WRS packages are correctly installed
+Robust statistics are alternative analyzes to the main analysis, most often involving bootstraps. These scans are often slower
+Les values a droite du symbole *less* sont-elles une/des variable(s) ou une value  ?
+Les values admises pour critere sont  z  et  Grubbs
+Allowed values for contrasts are + none + for no contrast, + pairwise + for comparisons 2 to 2 or a list of contrast coefficients
+Les values positives sont-elles une/des variable(s) ou une value ?
+The variables you have chosen to perform your analysis do not allow you to perform any analysis. Please redefine your analysis
+Levene's test testing homogeneity of variances
+Lien (seulement pour estimator=MML) [link=probit]
+Lower CI limit
+Lim.up.CI
+Lower limit?
+Upper limit?
+Linux
+List of objects still in memory of R
+When saving your file, what is the column separation index?
+M estimator ANOVA
+M-estimator
+M-estimator modifies
+M.estimaror.G1
+M.estimator.G2
+M.tronquee
+MASS
+MBESS
+ML
+MLF
+MLM
+MLMV
+MLMVS
+MLR
+MML
+MS WORD
+MV
+Residual MV
+Main analysis
+Teaching materials
+Information matrix?
+Partial Correlations Matrix
+Matrix of variable coefficients
+Correlation matrix
+Correlation matrix tetrachorique/polychorique ou mixte
+Correlation matrix used for AFE
+Correlation matrixs
+Adjusted covariance matrix
+Estimated covariance matrix
+Matrix of correlations
+Model matrices
+Matrix of coefficients
+Mauchly's sphericity test
+Median
+Mediator
+Mediator 2
+Mediation Sampleect Bar Plot
+Remote mediation
+Influence measurement
+Matrix adequacy measure
+Adjustment measure
+Suitability measures
+Repeated measurements
+Selection method
+Selection method - Akaike information criteria
+Selection methods
+Selection methods: Bayesian factors
+Modalities to be regrouped
+Model
+Model?
+Complete model
+Non-parametric model
+Parametric model
+Model tested
+Hierarchical models - significance of the complete model at each stage
+Hierarchical models
+Moment
+Mean and standard deviation
+Mean and standard deviation for adjusted data
+Mean and standard deviation for unadjusted data
+Average1
+Average2
+Adjusted averages
+Adjusted Averages-Graph
+Mplus
+Multiple imputation - Amelia
+N of the correlation XY
+N of the correlation XY: NUM
+N of the correlation XZ
+N of the correlation XZ: NUM
+N.bootstrap
+N.retire
+N.retirees
+N.var
+NA
+NULL
+NULL)
+Nagelkerke R^2
+Name of levels for
+Name of measured variable
+Nature of the variables?
+Do not forget to close the htmlt window (firexfox, chrome, internet explorer ...) to return to the R session
+Do nothing - Keep all observations
+Name of the new variable?
+Name of the latent variable
+Name of the variable measured
+Name of variables?
+Name of factor
+Number of observations withdrawn
+Number of bootstrap?
+Number of factors?
+Number of higher level factors?
+Number of missing values per variable
+Number of missing values per variable. How do you want to treat them?
+Number of variables measured
+Number.bootstrap
+Names of modalities for
+No center
+Non parametric
+Non-parametric test
+Normal distribution test
+Multivariate normalcy
+We were unable to complete the scan correctly. Please try to respecify the parameters
+We have not succeeded in making the model converge. Please check your correlation matrix and try again with other parameters
+New.file
+Number of measured variables
+Numerator
+Contrast number
+Objects to delete
+Objects in memory
+Observations considered influential
+Observations
+Odd ratio
+Odd.ratio
+We cannot calculate ORs for arrays wider than 2x3 or arrays containing 0s
+Only one file format for saving figure may be used at a time (you have both EPS and JPG specified).
+Only one file format for saving figure may be used at a time (you have both PDF and EPS specified).
+Only one file format for saving figure may be used at a time (you have both PDF and JPG specified).
+Mathematical operations on variables
+Orthogonality of factors?
+Orthogonalite des factors.[orthogonal=FALSE]
+PMCMRplus
+PRGn
+Package.mal.installes
+Packages used for this function
+Pairwise
+Pairwise comparisons
+Pan experimental between
+By what value are the missing values defined?
+Constant parameters?
+Estimated parameters
+Non-standard estimated parameters
+Standardized estimated parameters
+Standardized parameters
+Parametric
+Bootstrap percentile on M-estimator
+Percentile.inf.lim
+Percentile.sup.lim
+Please choose all the columns corresponding to the repeaed measure levels
+Please choose between participant variables.
+Please choose the covariables
+Please choose the dependant variable
+Please choose the type of contrast
+Please select the repeated measures variable-s or the levels of the repeated measures variables
+To display the results, please use summary (model.cfa)
+Pour citer easieR dans vos publication / to cite easieR in you publications use :\n  Stefaniak, N. (2020).
+For wider samples, boostrap using the t method should be preferred.
+Pour que easieR fonctionne correctement, il faut installer Pandoc disponible à l'url suivant : https://github.com/jgm/pandoc/releases
+For what combination of factors do you want to display the adjusted means?
+For a factor in repeated measures in wide format, at least two columns are required
+For a detailed description of the results,? Distal.med
+For a detailed description of the results,? Mediation
+Percent.obs. withdrawn
+Percentage by column
+Percentage by line
+Total percentage
+Percentage.obs.removed
+Specify the value?
+Predictor
+Preprocess (sort, select, mathematical operations, missing values)
+Press Enter to continue
+Press [enter] to continue
+Preprocessing (sorting, selection, mathematical operations, Treatment of missing values)
+Probabilities?
+Predicted probabilities
+Probability and CI are estimated by bootstrap. CI is corrected for multiple comparisons, contrary to reported p values
+Cumulative proportion of the explanation
+Proportion of explanation
+QQplot
+QuantPsyc
+What do you want ?
+What do you want to display?
+What do you want to do ?
+What do you want to achieve?
+Which algorithm would you like?
+What coding criteria do you want?
+What criteria do you want to use for the variable
+What is the saturation criterion you want to use?
+What is the format of your data?
+What is the name of the dependent variable?
+What is the name of the independent variable?
+What is your choice ?
+What format do you want?
+What method should be applied for the selection method?
+What name do you want to give to
+What name do you want to give to the new variable?
+What name do you want to give to the file
+What name do you want to give to the file?
+What name do you want to give to the file?
+What name do you want to give to the data?
+Which test do you want to use?
+Quel type d'echantillonnage  avez-vous realise pour votre analyse ?
+What type of mediation?
+What kind of regression?
+What kind of contrast do you want?
+What kind of variables?
+What analysis are you looking for?
+What analysis do you want to perform?
+What analysis do you want to perform?
+What analysis do you want?
+Which probability correction do you want to apply? To not apply a correction, choose + none +
+Quelle distribution voulez-vous  ?
+What is the baseline?
+What is the baseline?
+What is the value of the standard?
+What is the variable identifying the participants?
+What observation do you want to get from the analyzes? 0 = none
+Which operation do you want?
+What a rotation
+How much of the edges do you want to use?
+Quelle taille d effet voulez-vous  ?
+What value of the probability do you want to use?
+What value of F do you want to use?
+What value do you want for your math operation?
+Which variable at this stage
+Quelle(s) analyses voulez-vous  ?
+What analysis do you want?
+What data do you want to analyze?
+What data do you want to export?
+Which estimator?
+What modalities do you want to select for the variable
+What options?
+What options do you want to specify?
+What are the variables to select?
+What output results do you want?
+What contrasts for the variable
+What results do you want? Warning: the default outputs cannot be saved. If you want a rescue, choose the detail
+What results do you want to achieve?
+What are the parameters that you want to keep constant?
+R multiple square of scores with factors
+R.carre
+R.two
+R.two.aj
+RGtk2Extras
+RMSEA
+RMSR
+RMSR corrects
+Ranks
+Likelihood ratio (G test)
+Ratio of FBs between models
+Ratio.med
+References
+References of the packages used
+References of the packages used for this analysis
+References of packages used for this analysis
+Regressions
+Logistics regressions
+Regressions.logistics
+Multiple regressions
+Replace with median
+Replace with the mean
+Repeated measure
+Repeated measures
+Work directory
+Representation of the model
+Graphical Representation - Mean and Standard Deviation
+Residues
+Non-standardized residuees
+Standardized residuees
+Adjusted standardized residuees
+Result
+Complementary results (e.g. interaction contrasts and adjusted means)
+Results of the match of two between the variable
+McNemar test results between variable
+Results.aov.more
+Spearman's Rho
+Spearman Partial Rho
+Rho partiel/semi partiel de Spearman
+Spearman's semi-partial rho
+Robust statistics - might take some time
+S
+SC
+SC.resid
+SE
+SPSS
+Without Yates correction
+Satorra.Bentler
+Factor scores?
+Second set of variables
+Select observations
+Select variables
+Column separator
+Decimal separator
+Threshold
+Confidence threshold (1- alpha)
+Critical threshold
+Only values above the diagonals are adjusted for multiple comparisons
+If some data contains decimals, what is the symbol indicating the decimal?
+If some data is missing, how is it defined? You can leave NA if the cells are empty
+If your data is in wide format, the measurements must all be numeric or integers (integer)
+If you enter contrasts manually, all variables in the analysis must have their coefficient matrix
+If true, the residueals of the latent variables are fixed at 1, otherwise the parameters of the latent variable are estimated by fixing the first indicator at 1
+If true, we consider the exogenous covaries as fixed, otherwise we consider them as random and their parameters are free
+Significance of residuees - probability corrected by applying Holm's method
+Significance of the global model
+Some participants have missing data on repeated measure factors. They are removed from the analyzes.
+Sum of saturation squares
+Outputs of results?
+Default outputs
+Spearman
+Spearman.dof
+Spearman.p
+Spearman.r
+Spearman.rho
+Spearman.t
+Specify workforce?
+Specify groups?
+Specify the actual numbers?
+Specify the model
+Specify other options?
+Standardization?
+Vehicle standardization?
+Stat
+Descriptive statistics
+Descriptive statistics of the interaction between
+Descriptive statistics of the variable
+Descriptive statistics on
+Robust statistics
+Robust statistics - can take time
+Stepwise
+Superior
+Deleting an object in memory
+Removal of all outliers
+Removing cases with missing values
+Manual removal
+On which information matrix should the estimation of standard errors be carried out?
+Summary of influential observations
+Summary of the number of observations considered to be influential
+TC
+TRUE
+Hierarchical models deviance analysis table
+Analysis of variance table for hierarchical models
+Table of coefficients
+Table of contrasts
+Table of contrasts imitating commercial software
+Table of contrasts
+Pivot table
+Summary table
+Sample size
+Sample size: NUM
+Size.effect
+Type your search here
+Kendall's Tau
+Kendall's partial tau
+Tau partiel/semi-partiel de Kendall
+Kendall's semi-partial tau
+Tau.Kendall.p
+Tau.Kendall.r
+Teaching material
+TeachingDemos
+Test
+Barlett test
+Durbin-Watson test - autocorrelations
+Grubbs test
+Kolmogorov-Smirnov test comparing two distributions
+Kruskal-Wallis test
+Kruskal-Wallis test - Two by two comparison
+Levene test verifying the homogeneity of variances
+Mauchly test testing the sphericity of the covariance matrix
+McNemar test
+McNemar test: the modalities are not the same for the McNemar test. Is this a factor capable of repeated?
+McNemar test with Yates correction
+McNemar test with continuity correction
+McNemar test without continuity correction
+Student's test - comparison to a norm
+Student's test - comparison of two matched samples
+Test for the absence of difference between groups on
+Test for homogeneity of slopes between groups on the dependent variable
+Multicolinearity test
+Normality test
+Non-parametric test
+Test of absence of difference between groups on
+Parametric test
+Robust testing - involving bootstraps
+H0 tests
+Multicolinearitis tests
+Normality tests
+The analysis has failed
+The contrasts must be orthogonal. Do you want to continue ?
+The dependant variable has less than 3 unique different values. Check your data or the analysis that you try to make is not relevant.
+The most often used effect size is the partial eta squarred (pes). The most accurate is the generalized eta squared (ges)
+The number of observations is not enough given the number of levels for each variable. \nPlease ensure that there are at least 3 observations for each combination of levels
+The product of the number of levels of each factor must  equal to the number of selected columns.
+The value is not numeric. You must enter a numeric value
+There are less than 3 observations for at least one group or the variance for one groupe is 0. Results are probably biased
+There are several ways to estimate the Sum of Squares. Default value for comercial softwares is Type 3,\nwhich prioritizes interaction instead of main effects
+Tolerance
+Not all values entered are numeric. Please enter numeric values only
+Trait.vs.contr
+Treatment of missing values
+Treatment of missing values?
+Sort
+Truncation: NUM
+Type
+Type of correction?
+Type of correlations?
+Chi-square type
+Type of skew and kurtosis, must be between 1 and 3: NUM
+ULS
+ULSM
+ULSMV
+UTF-8
+A problem has been identified in the stages of your hierarchical regression
+A categorical variable must have at least 2 different modalities. Please choose a variable with at least two modalities
+User has terminated easieR
+V
+V.carre
+Estimated value of p by Monte Carlo simulation
+Highest value
+P-value by Monte Carlo simulation
+Contrast value
+Critical.value
+P-value by Monte Carlo simulation
+Test.value
+Values considered influential
+Starting values
+Influential values
+Negative values
+Positive values
+Cross validation
+Var.explained
+Variation explained
+Var_cBetweene_abs
+Variable
+Variable *Identifiant*
+Variable [groupes] ?
+Variable to analyze?
+Variable added
+Dependent variable
+Independent variable
+Variable (s)
+Variable (s)  groupes ?
+Variable (s) of this step
+Variable-s
+Variable-s to control
+Dependent variable
+Variable-s in abscissa
+Variable-s in ordinate
+Variable-s groups
+Variable.
+Variable.1
+Variables
+Variables with independent groups
+Variables exogenes fixees [fixed.x=default]
+Obvious variables of
+Additive model variables
+Interactive model variables
+Ordinal variables?
+Variables.
+Variance explained
+Probability vector. Warning: do not enter fractions
+Verification of the non-constancy of the error variance (Breusch-Pagan test)
+Package verification
+Check the installation of packages
+Please choose the second judge
+Veuillez  choisir l'operation mathematique que vous desirez realiser
+Please choose the analysis you want to perform.
+Please choose the set of columns corresponding to the modalities of the variables in repeated measures
+Please choose the database
+Please choose the defining groups
+Please choose the selection method you wish to use
+Please choose the covariate (s)
+Please choose the variable (s) defining the workforce
+Please choose the variable (s) defining the groups
+Please choose the dependent variable.
+Please choose the variable in abscissa
+Please choose the variable in ordinate
+Please choose the variable identifying the participants
+Please choose the independent variable.
+Please choose the categorical ranking factor.
+Please choose the model you want to analyze with aov.plus
+Please choose the level
+Please choose the first set of variables
+Please choose the first judge
+Please choose the first set of categorical factor (s)
+Please choose the working directory
+Please choose the second set of variables
+Please choose the second set of categorical factor (s)
+Please choose time 1.
+Please choose time 2.
+Please choose the type of correlations you want to achieve
+Please choose the type of correlations you want to achieve. For dichotomous variables, the correlations will be tetrachoric correlations
+Please choose the type of rotation. Oblimin is adapted in humanities
+Please choose the predictors to enter in the interaction model. It is necessary to have at least two variables
+Please choose the variables with independent groups
+Please choose the variables to use for each step
+Veuillez choisir les variables dont il faut realiser les correlations polychorique/tetrachorique/mixte.
+Please choose the manifest variables you want to analyze. You must choose at least 3 variables
+Please choose ordinal variables.
+Please choose the variables you want to analyze.
+Please choose the variables you want to analyze. You must choose at least 3 variables
+Please choose the variables you want to analyze. You must choose at least 5 variables
+Please choose the categorical ranking factor.
+Please give a name to the dependent variable. Giving an explicit name to the dependent variable will make reading the results more readable
+Please give a name to the independent variable. Giving an explicit name to the independent variable will make reading the results more readable
+Please enter the different values
+Please enter the probabilities corresponding to each category of the variable.
+Please set the truncation threshold
+Please specify the base of the logarithm, to get e, type e
+Please specify the a priori distribution of Cauchy
+Please specify the family (i.e. form of distribution).
+Please specify the variable (s) to control
+Please specify the separation value
+Please specify the value for 2x2 tables
+Please specify the value for tables wider than 2x2
+Please specify the value on which the observations should be selected.
+Please specify the reasonableness.
+Please specify the number of bootstrap. To not have a bootstrap, choose 1
+Please specify the number of factors of the hierarchical structure.
+Please specify the number of factors.
+Please specify the number of latent variables
+Please specify the type of square footage you wish to achieve.
+Please specify the type of probability correction you want to perform
+Please specify the type of correlation you wish to achieve.
+Please specify the type of t test you wish to perform.
+Veuillez preciser le type de variables. Des correlations tetra/polychoriques seront realisees sur les variables dichotomiques/ordinales et Bravais-Pearson sur les variables continues
+Veuillez preciser le type de variables. Des correlations tetra/polychoriques seront realisees sur les variables ordinales et Bravais-Pearson sur les variables continues
+Veuillez preciser le(s) type(s) de variable(s) que vous souhaitez inclure dans l'analyse.\nVous pouvez en choisir plusieurs (e.g., pour anova mixte ou des ancova
+Please specify the reverse items
+Please specify the variables you want to rank
+Please specify ordinal variables?
+Please select the variable (s) to sort
+Veuillez selectionner la -les- variable(s) a droite du symbole *less*.
+Veuillez selectionner la -les- variable(s) a gauche du symbole *less*
+Please select the variable in the denominator
+Please select the variable in the numerator
+Please select the terms you want to keep.
+Please select the variables OR the modalities of the variable (s) as repeated.
+Please select the variables to add.
+Please select the variables to be averaged
+Please select the variables to be multiplied.
+Please select the variables to which the exponent applies
+Please select the variables to be the absolute value
+Please select the variables to be logarithmd
+Please select the variables used for the exponential
+Please specify the spreadsheet you want to import
+Please specify the value of the standard
+Please specify the value to perform your math operation.
+Veuillez specifier la/les modality(s) qui serviront pour la ligne de base (e.g. 0). Les autres modalitys seront regroupes dans la categorie 1.
+Please specify the criterion on which you want to dichotomize your variable. You can use the median or choose a specific threshold.
+Please specify the model to be produced
+Veuillez specifier les criteres des observations que vous desirez conserver/garder.
+Please specify the contrasts.
+View data
+Your data
+Votre matrice est singuliere, ce qui pose souci. Nous tentons de  de resoudre le souci. Si possible, la distance de Mahalanobis sera alors calculee sur le maximum d'information tout en evitant la singularite.
+Your veriable dependent has
+Do you want to center the numeric variables? Center is generally advised (e.g., Schielzeth, 2010).
+Do you want to make groupings between the modalities?
+Do you want to install the missing packages?
+Voulez-vous les tests d'hypothees nuls ou/et les factors.bayesiens ?
+Do you want factor scores included in your data?
+Do you want to perform the analyzes on the complete data or on the data without the influencing values?
+Do you want to save?
+Do you want to save the results of the analysis?
+Do you want to save?
+Do you want to save the results?
+Voulez-vous specifier tous les parametres [default] ou imiter un logiciel particulier ?
+Do you want to delete this observation?
+You have chosen not to install the missing packages, this may interfere with the execution of some functions. Restart easieR () if you want to install the packages.
+You have left easieR
+You must enter the observation number
+You must enter the number allowing you to know which observation should be deleted.
+You must specify the value of the probability. This value must be between 0 and 1
+You must specify the value of F. This value must be greater than 1
+You must use categorical variables. Do you want to transform numeric variables into categorical variables?
+You must use a categorical independent variable with 2 modalities
+You're trying to alpha on something other than a matrix. Do you want to get out of this analysis?
+Vous n avez pas choisi de variable. Voulez-vous continuer  (ok) ou abandonner (to cancel) cette analyse ?
+You did not specify the number of factors able to repeat, do you want to quit?
+You did not specify the lower limit. Do you want to leave the selection?
+You did not specify the upper limit. Do you want to leave the selection?
+You cannot have both within and RML arguments
+Vous ne pouvez pas avoir de variable *groupes* etant donne que toutes les variables doivent etre decrites
+You can choose predefined contrasts or specify them manually. In the latter case, please choose to specify the contrasts
+You can decompose the descriptive statistics by subgroup by choosing one or more categorical variables. Do you want to specify the subgroups?
+You can still add a specific value to the total. Leave 0 if you don't want to add anything
+You can still multiply the total by a specific value. Leave 1 if you no longer want to multiply by a new value
+You can specify the truncation and parameters for flattening and skewness by choosing other options
+Vraisemblance (seulement pour estimator=ML) [likelihood=default]
+Likelihood?
+W by Shapiro-Wilk
+W. of Kendall
+WLS
+WLSM
+WLSMV
+WRS
+WRS2
+Wald
+Warning
+We are sorry but it was not possible to perform the ANOVA on the medians, probably du to ex aequo.
+We are sorry but robust ANOVA failed
+Welch's ANOVA for heterogeneous variances
+What do you want to do?
+Which analysis do you want ?
+Which effect size do you want?
+Which kind of variable ?
+Which kind of variable do you want to include in the analysis ?\nYou are allowed to choose several (e.g., for mixed anova or for ancova).
+Which level is the baseline?
+Which output do you want?
+Which p adjustment do you want ? If you do not want any p adjust, choose +none+
+Which results do you want ?
+Which sum of squares do you want ?
+Which variable identify individual ?
+White
+Wilcoxon W
+Wilcoxon by group
+Windows
+Y
+Are there any reverse items?
+You have not chosen any variable. Do you want to continue (ok) or to leave (cancel) this analysis ?
+You have not state the number of repeated measures factors. Do you want to abort ?
+You may use one of predefined contrast matrix or state the contrast by yourself. In the latter case, you must choose state the contrasts.
+Yuan.Bentler
+Z
+[\\|,+,='\n'~' ']+
+[^[:alnum:][:space:]_.]
+[^[:alnum:]]
+\
+\\easieR
+\\easieR\\
+\\easieR\\Rapport.easieR.Rmd
+\\easieR\\ez.results.txt
+\\easieR\\ezplot
+\\easieR\\ezplot1.png
+\\references.bib
+\n
+\t
+]]
+^2+5
+_
+_cont
+```
+```{r global options, include = FALSE}
+```{r, echo=F, results='asis'}
+```{r, echo=F}
+has been added to
+has been added to the variable
+a multiplies the -variable-s
+a priori
+acp
+addition of a specific value
+addition of columns
+additions
+aes(color=
+aes(shape=
+aes(x=
+aes(x=factor(0), y=
+aes(x=rank(data$
+afc
+afe
+afex
+alpha
+alternative
+amelia
+amelia.ncpus
+reliability analysis and agreement
+analysis of variance and covariance
+analyse en composante principale en utilisant la fonction [principal] du package psych, l'algorithme est
+factorial analysis using the function fa of the package psych with the method
+group analysis
+analysis on
+factor and component analyzes
+parallel analyzes
+to cancel
+anova on
+anova(model.H1[[1]],model.H1[[2]]
+aov.plus.in
+aovplus
+arch
+arrangelist
+at least one of the variables is not numeric
+at least one variable is not numeric
+beyond (with a lower and upper limit
+no
+no results have been saved
+any
+author: 'Automatically generated by easieR'
+other data
+with Welch correction
+average
+b
+b (M estimator)
+b1p
+b2p
+backward
+bar
+base
+basic
+bayes
+bayesian
+bca
+bentlerQ
+bentlerT
+beta
+bibentry
+bibtex
+bibtex::read.bib('references.bib')
+bidirectional
+bifactor
+binomial
+biquartimin
+black
+bonferroni
+boot
+bootstrap
+bootstrap studentise sur les truncated averages
+bootstrap-t method
+both
+bottom_border(ht)[1,]<-1
+c('
+cancel
+car
+carree
+cd $HOME
+this is the wide format
+this is the long format
+center
+cBetween
+cBetweenr
+center reduce
+center.reduced
+character
+chi-square of maximum likelihood
+chi square of the null model
+empirical chi square
+chi.deux
+chi-square adjustment on the variable
+chi(X=c('
+chi.2
+chi.2.model
+chi.carre
+chi.deux
+chi.two adjustment
+choice
+chr
+cluster
+col <-which (grepl ('value.p', names (array)) | grepl ('p.value', names (array)))
+colonnes
+cols
+columns
+communality
+comp.corr(xy=
+comparison to a baseline
+comparison of correlations
+comparison of correlations XY =
+comparison of the two correlations
+complete
+complete.obs
+complexity
+consec
+continues
+contr.helmert
+contr.poly
+contr.sum
+contrast
+contrasts
+contrasts
+cor
+psychoanalyst
+corr.complet(X=c('
+corr.matrice(X=c('
+correction de continuite [zero.keep.margins=default]
+correction de continuite [zero.keep.margins]
+correlation of
+intra-class correlation
+correlations
+correlations between factors
+mixed correlations
+polychoric correlations
+critic
+cross validation is encountering some issues
+csv
+curl -s https://api.github.com/repos/jgm/pandoc/releases/latest | grep browser_download_url | grep '[.]gz' | head -n 1 | sed 's/\
+d de Cohen
+data
+data.frame
+data.results<-dget('ez.results.txt')
+data1
+data1 <- read_excel(path='
+dataset
+date:
+dof
+predictor dof
+dof.denom
+dof.effect
+dof.num
+dof.resid
+dof.residueels
+dof1
+dof2
+sorting
+debian
+default
+degrees of freedom of the model
+denom
+devtools
+df
+df.denom
+df.num
+df1
+df2
+dichotomiques/ordinales
+diff
+digits
+division
+dodge
+data you have just selected
+dtrgeasieR
+dunnettx
+e
+easieR/Rapport.easieR.docx
+easieR/Rapport.easieR.html
+easieR: An R metapackage. Retrieved from https://github.com/NicolasStefaniak/easieR
+easieR\\Rapport.easieR.docx
+easieR\\Rapport.easieR.html
+effect
+effect size
+effet
+equal to
+em.out
+emmeans
+Between
+epitools
+equamax
+error
+standard.error [se=standard]
+standard.error [se]
+error.st
+standard.error
+errorbar
+space
+is different from
+Are the frequencies of the different groups a free parameter?
+est.inf
+estimate
+estimator
+estimator [estimator=ml])
+estimation
+et
+and YZ =
+and the variable
+and the number of observations =
+step
+are you ready?
+excel
+exp.
+expected
+exponential
+export data
+export data
+exhibitor
+exponent or root
+ez.anova(data=
+ez.cfa(model='
+ez.history
+ez.rank(data=
+ez.reshape(data=
+ez.results
+ezplot
+f
+fa
+Tucker Lewis Reliability Factor - TLI
+factor.
+factors suffice
+factors.
+factor
+factor.an(data=
+fdr
+reliability per item removed
+reliability (X = c ('
+SPSS file
+file:/
+file:\\
+fiml
+first
+first.order
+fitM
+fitted.cov
+times less
+times more
+objective function of the model
+objective function of the null model
+for (j in 1: ncol (array)) {
+foreign
+forward
+fr
+ftable
+generate report
+geominQ
+geominT
+ges
+ggplot
+ggplot2
+ggplotgui
+gls
+gray
+gray48
+greater
+grey
+group
+groupes [group=NULL]
+gsl
+hochberg
+holm
+hommel
+ht
+ht<-set_text_color(ht, row = is,col =everywhere ,  value='red')
+ht<-set_text_color(ht, row = is,col =everywhere ,  value='red')}}
+html
+htmltools
+hypergeom
+hypergeom -  Sampleectif total fixe pour les lignes et les colonnes
+i<-0
+i<-i+1
+id
+if(!is.null(dimnames(tableau)[[1]])) tableau<-data.frame(' '=dimnames(tableau)[[1]], tableau, check.names=F)
+if(any(class(table)=='p.value')){
+if (any (grepl ('value.p', names (array))) | any (grepl ('p.value', names (array)))) {
+if (any (grepl ('value.p', names (array))) | any (grepl ('p.value', names (array)))) {
+if(length(col)>1) {is<-unique(unlist(apply(tableau[,col], 2,myf )))+1
+it is not possible to calculate logarithms for a base is negative. NA is fired
+there is no data in the memory of R, please import the data on which to perform the analysis
+there is no rotation
+il y a less de 3 observations pour un des groups [group = NULL]u \nla variance d'au less un groupe vaut 0. Les resultats risquent d'etre considerablement biaises
+import data
+import results
+import(file='
+import data
+import results
+indepMulti
+indepMulti - Fixed count for columns - variable
+indepMulti - Total fixed headcount for lines - variable
+less than
+less than or equal to
+information
+information [information=default]
+informations
+installr
+integer
+interaction
+intercepts
+intra
+invisible(file.remove('references.bib'))
+invisible(write.bib(data.results[[i]], file='references'))
+is<-is+1
+is<-which(tableau[, which(grepl('p-value', names(tableau)))]<0.05)
+inverse items?
+jointMulti
+jointMulti - Total fixed workforce
+keep
+kendall
+knitr
+knitr::opts_chunk$set(echo=FALSE, include=TRUE, warning=FALSE, message=FALSE)
+kurtosis
+l
+the exponential has been applied to the variable
+the average complexity is
+the correction applied is the correction of
+the bootstrap percentile method should be preferred for small samples
+rotation is rotation
+la taille d'effet la plus frequente est le eta carre partiel - pes.\nLa taille d'effet la plus precise est le eta carre generalise - ges
+the absolute value has been applied to the variable
+the entered value is not numeric
+the value you entered is not numeric. Do you want to cancel this scan?
+the variable
+the variable must be numeric and have a non-zero variance.
+the variable doit etre un entier *integer* positif
+the variable is not numeric
+wide
+wide - 0.5
+last
+lavaan
+the KMO must absolutely be greater than 0.5
+the file is saved in
+the base logarithm
+le model parametrique renvoie l'anova classique,le non parametrique calcule le test de Kruskal Wallis \nsi c'est un model a groupes independants, ou une anova de Friedman pour un model en Repeated measurements.\nLe model bayesien est l'equivalent du model teste dans l'anova en adoptant une approche bayesienne,\nles statisticals robusts sont des anovas sur des medianes ou les truncated averages avec ou sans bootstrap.
+the model tested is
+the number of observations =
+the number of factors to be retained according to the parallel analysis is
+the number of judges =
+the product of the modalities of each of the variables must correspond to the number of selected columns.
+the data has been imported correctly
+the data has been sorted correctly
+the data is saved in
+the observations you have selected are in
+les values influentes sont identifiees sur la base de 4/n
+influencing values are identified based on the Mahalanobis distance with a chi threshold of 0.001
+the selected variables are in
+level
+library('bibtex')
+library('huxtable')
+library('knitr')
+library('pander')
+library('tibble')
+inf.lim
+lower CI limit
+sup.lim
+sup.ci limit
+lower limit of RMSEA
+upper limit of RMSEA
+limit.inf
+limit.sup
+list
+list(
+list of objects in memory
+lm.r1
+loadings
+log.
+logarithm
+logical
+logit
+long
+lower
+lower.lim.CI
+lsr
+lv.covariances
+lv.variances
+m1
+m2
+mac
+mardia
+match
+probability matrix
+r. two matrix
+matrix
+max
+max possible
+maximum likelihood
+mean
+mean.change
+mean.var.adjusted
+mean_sdl
+means
+median
+mediation.effect.bar.plot
+mesure
+mimic
+min
+minchi
+minres
+update packages
+mixed
+mixte
+ml
+mlogit
+modality
+terms and conditions. It is incompatible with a logistic regression. She must be dichotomous
+model
+complex model
+modmat
+modrep
+moindre carre  pondere diagonalement
+lesser square generalized
+least unweighted edge
+least weighted square
+less
+mom
+moment
+medium
+medium - 0.353
+average of columns
+means and adjusted standard errors
+truncated averages
+msg
+mu
+multicore
+multiplication
+multiplication of a specific value
+multiplication of columns
+multiplied by
+mvt
+myf<-function(x){which(x<0.05)}
+n
+nFactors
+name of the factor
+neither
+cleaned
+new data set
+nicebread/WRS
+no
+total number of observations
+non
+non param
+non parametric
+none
+norm
+normal
+nortest
+new directory
+new data set
+new.variable
+num
+number_format(ht) <- list(function(x) prettyNum(x, big.mark = ' ', scientific = FALSE) )
+numeric
+oblimin
+influential observations
+observed
+get the working directory
+ok
+okcancel
+olsrr
+options(digits = 4)
+order
+ordinary
+orthogonal
+inverse orthogonal
+Yes
+outlier
+outliers
+output:
+output: word_document
+p
+p.Wald
+p.crit
+critical.corrected
+p.inf
+p.kurtosis
+p.skew
+p.small
+p.sup
+p.value
+pa
+packages.installed.correctly
+paired
+pairs
+pairwise
+parEst
+parSt
+param
+parametric
+no observations for the combination
+path
+pearson
+perc
+percentile
+pes
+pgirmess
+pkg
+pkgmaker
+plus
+plyr
+point
+semicolon
+pointrange
+poisson
+fish - Total number not fixed
+poly
+polynomials
+pooled
+ppcor
+lower probability
+higher probability
+probabilities
+probit
+promax
+proportion of variance explained
+cumulative explained variance proportion
+psihat
+psych
+pych
+quartimax
+r
+r = 0.353 - medium
+r = 0.5 - wide
+r = 0.707 - medium
+r = 0.707 - ultrawide
+r = 1 - wide
+r = 1.41 - ultrawide
+r.squared
+r. two
+r ^ 2
+random
+rangs
+readr
+readxl
+search for a new function
+rectangular
+red
+regressions
+logistical regressions
+regressions(data=
+regressions.log(data=
+multiple regressions
+removed
+res
+res.St
+res.Unst
+reshape2
+residue
+residueal.covariances
+residueals
+residuees
+residuees1
+residuees2
+rho
+rho.two
+nothing
+right
+risk of multicollinearity if the determinant of the matrix is less than 0.00001
+rm
+rmarkdown
+rms
+robust
+robusts
+round.ps<-function (x) { substr(as.character(ifelse(x < 0.0001, ' <.0001', ifelse(round(x, 2) == 1, ' >.99', formatC(x, digits = 4, format = 'f')))), 2, 7)}
+rows
+rpivotTable
+rscale
+without Welch correction
+standardized saturations based on the correlation matrix
+scaled.shifted
+scheffe
+scipen
+se
+selection
+semPlot
+critical threshold
+sidak
+simplimax
+sjstats
+skew
+small.skew
+snow
+soustraction
+spearman
+specify the working directory
+specify the contrasts
+specify your contrasts
+specifite
+standard
+standardisation des variables observees [std.ov=T]
+standardized
+start
+stat.desc(X=c('
+statistical
+D-W statistic
+descriptive statistics
+descriptive statistics by group
+std
+step
+str_c(varying[[1]]
+stringi
+stringr
+sudo apt install -y pandoc
+sudo pacman -Q pandoc
+sudo pacman -Sy pandoc
+better than
+greater than or equal to
+svDialogs
+t
+Student's t
+Student's t per group
+t of student for independent samples
+t test
+t1
+t2
+tab
+table
+betas table
+2x2 array?
+array> 2x2?
+array <-as.data.frame (array)
+tableau<-data.results[[i]]
+tableau[, which(grepl('p-value', names(tableau))|grepl('p.value', names(tableau)))]<-round.ps(tableau[,  which(grepl('p-value', names(tableau))|grepl('p.value', names(tableau)))])}}
+tableau[,col]<-apply(tableau[,col], 2, round.ps) }else{
+sample size
+tar xvzf ./
+tau
+time 1
+time 2
+time1
+time2
+test
+test [test=standard]
+Mann-Whitney test - Wilcoxon
+non-parametric test
+parametric test
+test t
+test.t
+test.t(X=c('
+tetrapoly(data=
+textclean
+thresholds
+time
+title
+title: 'Results of your analyzes'
+top_border(ht)[1,]<-1
+topright
+total
+trace-back
+try-error
+tukey
+two.sided
+two.step
+txt
+type
+die type
+ubuntu
+ultra wide
+ultra wide - 0.707
+ultrawide
+unequal
+upper.lim.CI
+value
+absolute value
+value of the proability of the empirical square footage
+probability value
+value of the chi-square probability of the maximum likelihood
+value of the probability of the empirical chi-square
+F value
+value.Z
+absolute value.
+p-value
+p-value Llfrs
+p-value SW
+values
+value
+variable
+variable deleted
+variable.1
+variables
+varimax
+varimin
+vcov
+vector of length zero
+please choose the database
+please choose the variable (s)
+please choose the dependent variable
+please choose the mediator
+please choose the variables for which you want to obtain descriptive statistics
+please specify the number of bootstrap. A minimum of 500 is ideally required. May take time for N> 1000
+please specify the predictor
+please specify the second mediator.
+view.results()
+comma
+see data
+voulez-vous convertir the variable dependante en une variable dichotomique,  ?
+do you still want to add a value to the total?
+do you want to save the results
+do you want to save?
+you left aov.more
+you left AFE
+you have performed the following operation:
+you have selected
+you must specify the lower limit
+you must specify the upper limit
+you must specify the number of factors able to repeat
+you multiply the error of the 1st kind. The risk of making a mistake of the first kind is
+try to make a correlation matrix with perfectly correlated variables. This causes concern for the calculation of the Mahalanobis distance. We try to solve the problem
+wget
+white
+wishart
+wls
+x
+y
+yes
+yesno
+you have selected
+you must state the number of repeated measure factors
+z
+z doit etre un nombre
+zero
+|
+}
+~

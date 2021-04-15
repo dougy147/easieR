@@ -1,0 +1,68 @@
+--strip-components 1 -C $HOME
+If you are using easieR for the first time, please use the function ez.install in order to ensure that easieR will work properly.n Si vous utilisez easieR pour la 1e fois, veuillez utiliser la fonction ez.install pour vous assurer de bon fonctionnement de easieR.
+bottom_border(ht)[dim(ht)[1],]<-1
+![](
+##############n Welcome in easieR -  For more information, please visit :https://theeasierproject.wordpress.com/
+([^
+,modele.H1[[
+,varying[[
+://' | sed 's/;
+Appuyez [entree] pour continuer
+Appuyez sur [entree] pour continuer
+Complete data are the analyses performed on the entire dataset. The analysis without outliers means that outliers havenbeen removed before performing the analysis. The criteria for detecting outliers is the Grubbs test.
+Estimation des indicateurs des variables latentes [std.lv=FALSE]
+Faut-il ajouter une valeur aux cellules vides pour les correlations polychorique ? Pour specifier les valeurs,choisissez TRUE, sinon choisissez [default]
+Il existe plusieurs maniere de calculer la somme des carres. Le choix par defaut des logiciels commerciaux est une somme des carresnde type 3, mettant la priorite sur les interactions plutot que sur les effets principaux.
+Il n'y a pas assez d'observations pour realiser l'analyse. Veuillez verifier vos donnees net vous assurer qu'il y a au moins trois observations par modalite de chaque facteur
+Intercept des variables latentes [int.lv.free=FALSE]
+Intercept des variables observees [int.ov.free=FALSE]
+L'option *Effectif total fixe pour les lignes et les colonnes* lorsque les totaux pour les lignes et les colonnes sont fixes.La distribution est hypergeometrique
+L'option Effectif total fixe pour les colonnes* est identique a la precedente pour les colonnes
+Les contrastes a priori correspondent aux contrastes qui permettent de tester des hypotheses a priori.nLes contrastes 2 a 2 permettent de faire toutes les comparaisons 2 a 2 en appliquant ou non une correction a la probabilite
+Les valeurs a droite du symbole *moins* sont-elles une/des variable(s) ou une valeur  ?
+Lien (seulement pour estimator=MML) [link=probit]
+Orthogonalite des facteurs [orthogonal=FALSE]
+Pour citer easieR dans vos publication / to cite easieR in you publications use :n  Stefaniak, N. (2020).
+Press [enter] to continue
+The number of observations is not enough given the number of levels for each variable. nPlease ensure that there are at least 3 observations for each combination of levels
+There are several ways to estimate the Sum of Squares. Default value for comercial softwares is Type 3,nwhich prioritizes interaction instead of main effects
+Variable *Identifiant*
+Variable [groupes] ?
+Variables exogenes fixees [fixed.x=default]
+Veuillez preciser le(s) type(s) de variable(s) que vous souhaitez inclure dans l'analyse.nVous pouvez en choisir plusieurs (e.g., pour anova mixte ou des ancova
+Veuillez selectionner la -les- variable(s) a droite du symbole *moins*.
+Veuillez selectionner la -les- variable(s) a gauche du symbole *moins*
+Voulez-vous specifier tous les parametres [default] ou imiter un logiciel particulier ?
+Vous ne pouvez pas avoir de variable *groupes* etant donne que toutes les variables doivent etre decrites
+Vraisemblance (seulement pour estimator=ML) [likelihood=default]
+Which kind of variable do you want to include in the analysis ?nYou are allowed to choose several (e.g., for mixed anova or for ancova).
+\easieR\
+\easieR\Rapport.easieR.Rmd
+\easieR\ez.results.txt
+\easieR\ezplot
+\easieR\ezplot1.png
+analyse en composante principale en utilisant la fonction [principal] du package psych, l'algorithme est
+anova(modele.H1[[1]],modele.H1[[2]]
+bottom_border(ht)[1,]<-1
+correction de continuite [zero.keep.margins=default]
+correction de continuite [zero.keep.margins]
+curl -s https://api.github.com/repos/jgm/pandoc/releases/latest | grep browser_download_url | grep '[.]gz' | head -n 1 | sed 's/d de Cohen
+easieR\Rapport.easieR.docx
+easieR\Rapport.easieR.html
+erreur standard [se]
+estimateur [estimator=ml])
+file:\
+if(!is.null(dimnames(tableau)[[1]])) tableau<-data.frame(' '=dimnames(tableau)[[1]], tableau, check.names=F)
+if(length(col)>1) {is<-unique(unlist(apply(tableau[,col], 2,myf )))+1
+il y a moins de 3 observations pour un des groupes ou nla variance d'au moins un groupe vaut 0. Les resultats risquent d'etre considerablement biaises
+invisible(write.bib(data.results[[i]], file='references'))
+is<-which(tableau[, which(grepl('valeur.p', names(tableau)))]<0.05)
+la taille d'effet la plus frequente est le eta carre partiel - pes.nLa taille d'effet la plus precise est le eta carre generalise - ges
+la variable doit etre un entier *integer* positif
+le modele parametrique renvoie l'anova classique,le non parametrique calcule le test de Kruskal Wallis nsi c'est un modele a groupes independants, ou une anova de Friedman pour un modele en Mesures repetees.nLe modele bayesien est l'equivalent du modele teste dans l'anova en adoptant une approche bayesienne,nles statistiques robustes sont des anovas sur des medianes ou les moyennes tronquees avec ou sans bootstrap.
+standardisation des variables observees [std.ov=T]
+str_c(varying[[1]]
+tableau<-data.results[[i]]
+tableau[, which(grepl('valeur.p', names(tableau))|grepl('p.value', names(tableau)))]<-round.ps(tableau[,  which(grepl('valeur.p', names(tableau))|grepl('p.value', names(tableau)))])}}
+tableau[,col]<-apply(tableau[,col], 2, round.ps) }else{
+top_border(ht)[1,]<-1

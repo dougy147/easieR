@@ -66,8 +66,8 @@ function(){
                       'WRS2'
     )
 
-          list()->Resultats
-    Resultats$"packages.installes.correctement"<-pack.to.inst[ which(lapply(pack.to.inst, require, character.only=T)==TRUE) ]
-    Resultats$"Package.mal.installes"<-pack.to.inst[ which(lapply(pack.to.inst, require, character.only=T)==FALSE) ]
-    return(Resultats)
+          list()->Results
+    Results$"packages.installed.correctly"<-pack.to.inst[ which(lapply(pack.to.inst, require, character.only=T)==TRUE) ]
+    Results$"Package.mal.installes"<-pack.to.inst[ which(lapply(pack.to.inst, require, character.only=T)==FALSE) ]
+    return(Results)
 }

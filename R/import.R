@@ -15,16 +15,16 @@ import <-
     options (warn=-1)
     c("svDialogs",  "readxl","foreign", "textclean")->packages
     lapply(packages, require,character.only=T)
-    Resultats <- list()
-    if(info==TRUE) print("Dans quel format est enregistre votre fichier ?")
+    Results <- list()
+    if(info==TRUE) print("What format is your file saved in?")
     if(!is.null(type)){
       type<-switch(type,
-                   "csv"="Fichier CSV","Fichier CSV"="Fichier CSV" ,
-                   "txt"="Fichier txt","Fichier txt"="Fichier txt" ,
-                   "excel"="Fichier Excel","Fichier Excel"="Fichier Excel",
-                   "SPSS" =  "fichier SPSS","fichier SPSS"="fichier SPSS" )
+                   "csv"="CSV file","CSV file"="CSV file" ,
+                   "txt"="Txt file","Txt file"="Txt file" ,
+                   "excel"="Excel file","Excel file"="Excel file",
+                   "SPSS" =  "SPSS file","SPSS file"="SPSS file" )
     }
-    if(is.null(type)) type <- dlgList(c("Fichier CSV", "Fichier txt", "Fichier Excel", "fichier SPSS"), preselect="Fichier Excel", multiple = FALSE, title="Format du fichier?")$res
+    if(is.null(type)) type <- dlgList(c("CSV file", "Txt file", "Excel file", "SPSS file"), preselect="Excel file", multiple = FALSE, title="File format?")$res
     if(length(type)==0) return(donnees())
 
     if(!is.null(dir)) try(setwd(dir), silent=T)
@@ -43,48 +43,48 @@ import <-
 
 
 
-    if(type!="fichier SPSS"){
+    if(type!="SPSS file"){
       if(dial | (dec %in% c(".",","))==FALSE | (sep %in% c(" ", "\t",";",","))==FALSE |!is.logical(header)){
-        if(info==TRUE) print("Est-ce que le nom des variables est sur la premiere ligne de votre base de donnees ? Choisir TRUE si c'est le cas")
-        header <- dlgList(c(TRUE, FALSE), preselect=TRUE, multiple = FALSE, title="Nom de variables?")$res
+        if(info==TRUE) print("Are the names of the variables on the first line of your database? Choose TRUE if this is the case")
+        header <- dlgList(c(TRUE, FALSE), preselect=TRUE, multiple = FALSE, title="Name of variables?")$res
         if(length(header)==0) return(import())
 
-        if(info==TRUE) print("Si certaines donnees sont manquantes, comment sont-elles definies ? Vous pouvez laisser NA si les cellules sont vides")
-        na.strings <- dlgInput("Par quelle valeur sont definies les valeurs manquantes ?", "NA")$res
+        if(info==TRUE) print("If some data is missing, how is it defined? You can leave NA if the cells are empty")
+        na.strings <- dlgInput("By what value are the missing values defined?", "NA")$res
         if(length(na.strings)==0) na.strings <- "NA"
         na.strings <- strsplit(na.strings, ":")
         na.strings <- tail(na.strings[[1]],n=1)
 
 
-        if(type=="Fichier CSV"|type=="Fichier txt"){
-          if(info==TRUE) print("Lors de l'enregistrement de votre fichier, quel est l'indice de separation des colonnes ?")
-          sep <- dlgList(c("espace","tab","point virgule","virgule"), preselect="point virgule", multiple = FALSE, title="Separateur de colonnes")$res
+        if(type=="CSV file"|type=="Txt file"){
+          if(info==TRUE) print("When saving your file, what is the column separation index?")
+          sep <- dlgList(c("space","tab","semicolon","comma"), preselect="semicolon", multiple = FALSE, title="Column separator")$res
           if(length(sep)==0) return(import())
-          m1 <- matrix(c("espace","tab","point virgule","virgule"," ","\t",";",","),nrow=4)
+          m1 <- matrix(c("space","tab","semicolon","comma"," ","\t",";",","),nrow=4)
           sep <- subset(m1, m1[,1] %in% sep)[,2]
 
-          if(info==TRUE) print("Si certaines donnees contiennent des decimales, quel est le symbole indiquant la decimale ?")
-          dec <- dlgList(c("point", "virgule"), preselect=NULL, multiple = FALSE, title="Separateur de decimales")$res
+          if(info==TRUE) print("If some data contains decimals, what is the symbol indicating the decimal?")
+          dec <- dlgList(c("point", "comma"), preselect=NULL, multiple = FALSE, title="Decimal separator")$res
           if(length(dec)==0) return(import())
-          m1 <- matrix(c("point", "virgule",".",","),nrow=2)
+          m1 <- matrix(c("point", "comma",".",","),nrow=2)
           dec <- subset(m1, m1[,1] %in% dec)[,2]
         }
       }
     }
-    if(type=="fichier SPSS") {
+    if(type=="SPSS file") {
       #basename(file)->file
       data1<-read.spss(file, to.data.frame=TRUE)
       col.char <-sapply(data1, is.factor)
       if(any(col.char)) data1[col.char] <- lapply(data1[which(col.char)], factor)
     }
-    if(type=="Fichier CSV") data1 <- read.csv2(file, header=as.logical(header), sep=sep, dec=dec, na.strings=na.strings)
-    if(type=="Fichier txt") data1 <- read.table(file, header=as.logical(header), sep=sep, dec=dec, na.strings=na.strings)
-    if(type=="Fichier Excel"){
+    if(type=="CSV file") data1 <- read.csv2(file, header=as.logical(header), sep=sep, dec=dec, na.strings=na.strings)
+    if(type=="Txt file") data1 <- read.table(file, header=as.logical(header), sep=sep, dec=dec, na.strings=na.strings)
+    if(type=="Excel file"){
       basename(file)->file
-      writeLines("Veuillez specifier la feuille de calcul que vous souhaitez importer")
+      writeLines("Please specify the spreadsheet you want to import")
       if(is.null(sheet) || (sheet %in%  excel_sheets(file))==FALSE){
         eval(parse(text=paste0("  dlgList( excel_sheets('",file,
-                               "'), preselect=FALSE, multiple = FALSE, title='Quelle feuille ?')$res->sheet")))
+                               "'), preselect = FALSE, multiple = FALSE, title =' Which sheet? ') $ res-> sheet")))
         if(length(sheet)==0) return(import())
       }
 
@@ -93,14 +93,14 @@ import <-
       if(any(col.char)) data1[col.char] <- lapply(data1[which(col.char)], factor)
     }
     if(dial)  {
-      if(type=="Fichier Excel") name<-sheet else name<-file
-      name <- dlgInput("Quel nom voulez-vous donner aux donnees ?", name)$res
+      if(type=="Excel file") name<-sheet else name<-file
+      name <- dlgInput("What name do you want to give to the data?", name)$res
     if(length(name)==0) name <- "data1"
     name <- strsplit(name, ":")
     name <- tail(name[[1]],n=1)
     }
     if(grepl("[^[:alnum:]]", name)) {
-      writeLines("Des caracteres non autorises ont ete utilises pour le nom. Ces caracteres ont ete remplaces par des points")
+      writeLines("Unauthorized characters were used for the name. These characters have been replaced by periods")
       gsub("[^[:alnum:]]", ".", name)->name
     }
      nameV<-replace_non_ascii(names(data1))
@@ -108,11 +108,11 @@ import <-
      data1<-data.frame(data1)
 
     if(any(nchar(names(data1))>30)) {
-      dlgMessage("Certaines variables ont des noms particulierement longs pouvant gener la lecture. Voulez-vous les raccourcir?", "yesno")$res->rn
+      dlgMessage("Some variables have particularly long names that can interfere with reading. Do you want to shorten them?", "yesno")$res->rn
       if(rn=="yes"){
         which(nchar(names(data1))>30)->rn
         for(i in 1:length(rn)) {
-          rn2<- dlgInput("Quel nom voulez-vous attribuer a", colnames(data1)[rn[i]])$res
+          rn2<- dlgInput("What name do you want to give to", colnames(data1)[rn[i]])$res
           if(length(rn2)!=0){
             strsplit(rn2, ":")->rn2
             tail(rn2[[1]],n=1)->colnames(data1)[rn[i]]
@@ -123,12 +123,12 @@ import <-
     }
 
     if(any( grepl("[^[:alnum:][:space:]_.]", names(data1)))) {
-      writeLines("Evitez les espaces ainsi que les signes de ponctuations, a l'exception . et _ ")
-      dlgMessage("Certaines noms de variables contiennent des caracteres speciaux pouvant creer des bugs. Voulez-vous renommer ces variables ?", "yesno")$res->rn
+      writeLines("Avoid spaces and punctuation marks, except. and _ ")
+      dlgMessage("Some variable names contain special characters that can create bugs. Do you want to rename these variables?", "yesno")$res->rn
       if(rn=="yes"){
         grep("[^[:alnum:][:space:]_.]", names(data1))->rn
         for(i in 1:length(rn)) {
-          rn2<- dlgInput("Quel nom voulez-vous attribuer a", colnames(data1)[rn[i]])$res
+          rn2<- dlgInput("What name do you want to give to", colnames(data1)[rn[i]])$res
           strsplit(rn2, ":")->rn2
           tail(rn2[[1]],n=1)->colnames(data1)[rn[i]]
         }
@@ -136,20 +136,20 @@ import <-
     }
 
     if(any(is.na(data1))){
-      writeLines("Nombre de valeurs manquantes par variable")
+      writeLines("Number of missing values per variable")
       print(sapply(data1, function(x) sum(length(which(is.na(x))))) )
     }
 
 
     assign(x=name, value=data1, envir=.GlobalEnv)
-    try(View(data1, "Vos donnees"), silent=T)
+    try(View(data1, "Your data"), silent=T)
     str(data1)
-    Resultats <- "les donnees ont ete importees correctement"
+    Results <- "the data has been imported correctly"
     call.txt<-paste0("import(file='", file, "',dir='",getwd(),"',type='",type,"',dec='",dec,
                      "',sep='",sep,"',na.strings='", na.strings,"',sheet=" ,
                      ifelse(is.null(sheet), "NULL",paste0("'", sheet,"'")),",name='",name,"')")
-    Resultats$call<-call.txt
-    .add.history(data=data1, command=Resultats$Call, nom=name)
-    return(Resultats)
+    Results$call<-call.txt
+    .add.history(data=data1, command=Results$Call, nom=name)
+    return(Results)
 
   }

@@ -2,9 +2,9 @@
 
 
 fiabilite <-
-  function(X=NULL,Y=NULL, data=NULL, choix=NULL, ord=NULL,outlier="Donnees completes", keys=NULL, n.boot=NULL, sauvegarde=F, 
+  function(X=NULL,Y=NULL, data=NULL, choice=NULL, ord=NULL,outlier="Complete data", keys=NULL, n.boot=NULL, backup =F, 
            imp=NULL, html=TRUE){
-    # choix
+    # choice
     
     options (warn=-1)
     packages<-c("svDialogs", "psych", "lavaan")
@@ -12,18 +12,18 @@ fiabilite <-
     if(class(test2)== "try-error") return(ez.install())
     
     .e<- environment()
-    Resultats<-list()
+    Results<-list()
     if(is.null(data) | is.null(X))  {dial<-TRUE}else dial<-F
-    if(dial || is.null(choix) || length(choix)!=1 ||choix %in% c("Alpha de Cronbach","alpha","ICC","CCK","Correlation intra-classe","Coefficient de concordance de Kendall")==FALSE){
+    if(dial || is.null(choice) || length(choice)!=1 ||choice %in% c("Cronbach's alpha","alpha","ICC","CCK","Intra-class correlation","Kendall coefficient of concordance")==FALSE){
       dial<-T  
-      writeLines("Veuillez choisir l'analyse que vous desirez realiser.")
-      dlgList(c("Alpha de Cronbach", "Correlation intra-classe","Coefficient de concordance de Kendall"), preselect=NULL, multiple = FALSE, title="Quelle analyse voulez-vous realiser?")$res->choix
-      if(length(choix)==0) return(analyse())
+      writeLines("Please choose the analysis you want to perform.")
+      dlgList(c("Cronbach's alpha", "Intra-class correlation","Kendall coefficient of concordance"), preselect=NULL, multiple = FALSE, title="What analysis do you want to perform?")$res->choice
+      if(length(choice)==0) return(analyse())
     }
     
     
     if(dial || class(data)!="data.frame"){
-      data<-choix.data(data=data, nom=T)
+      data<-choice.data(data=data, nom=T)
       if(length(data)==0) return(analyse())
       nom<-data[[1]]
       data<-data[[2]]  
@@ -31,63 +31,63 @@ fiabilite <-
       deparse(substitute(data))->nom  
     }
     
-    if(choix=="CCK" | choix=="Coefficient de concordance de Kendall"){
-      msg3<-"Veuillez choisir le premier juge"
+    if(choice=="CCK" | choice=="Kendall coefficient of concordance"){
+      msg3<-"Please choose the first judge"
       type<-"factor"
-      title<-"Juge 1"
+      title<-"Judge 1"
       multiple<-T
     } else{
       multiple<-T
-      msg3<-"Veuillez choisir les variables que vous desirez analyser."
+      msg3<-"Please choose the variables you want to analyze."
       type<-"numeric"
       title<-"variables"
     }
     
     X<-.var.type(X=X, data=data, type=type, check.prod=F, message=msg3,  multiple=multiple, title=title, out=NULL)
     if(is.null(X)) {
-      Resultats<-fiabilite()
-      return(Resultats)}
+      Results<-fiabilite()
+      return(Results)}
     data<-X$data
     X<-X$X
     
-    if(choix %in% c("Alpha de Cronbach","Correlation intra-classe","ICC","alpha") ){
-      if(dial || length(outlier)>1 || outlier %in% c("Donnees completes", "Donnees sans valeur influente") ==FALSE){
-     writeLines("Desirez-vous l'analyse sur les donnees completes ou sur les donnees pour lesquelles les valeurs influentes ont ete enlevees ?")
-     writeLines("les valeurs influentes sont identifiees sur la base de la distance de Mahalanobis avec un seuil du chi a 0.001")
-        outlier<- dlgList(c("Donnees completes", "Donnees sans valeur influente"), preselect="Donnees completes",multiple = FALSE, title="Quels resultats voulez-vous obtenir ?")$res
-        if(length(outlier)==0) { Resultats<-fiabilite()
-        return(Resultats)}
+    if(choice %in% c("Cronbach's alpha","Intra-class correlation","ICC","alpha") ){
+      if(dial || length(outlier)>1 || outlier %in% c("Complete data", "Data without influencing value") ==FALSE){
+     writeLines("Do you want the analysis on the complete data or on the data for which the influencing values have been removed?")
+     writeLines("influencing values are identified based on the Mahalanobis distance with a chi threshold of 0.001")
+        outlier<- dlgList(c("Complete data", "Data without influencing value"), preselect="Complete data",multiple = FALSE, title="What results do you want to achieve?")$res
+        if(length(outlier)==0) { Results<-fiabilite()
+        return(Results)}
       }
       
-      if(outlier=="Donnees sans valeur influente"){
+      if(outlier=="Data without influencing value"){
         inf<-VI.multiples(data[,X])
-        Resultats$"Valeurs considerees comme influentes"<-inf$"Valeurs considerees comme influentes"
+        Results$"Values considered influential"<-inf$"Values considered influential"
         data<-inf$data
       }
       
       
-      if(choix %in% c("Alpha de Cronbach","alpha"))  {
+      if(choice %in% c("Cronbach's alpha","alpha"))  {
         if(dial){
          writeLines("Veuillez preciser le type de variables. Des correlations tetra/polychoriques seront realisees sur les variables ordinales et Bravais-Pearson sur les variables continues")
-          type<-dlgList(c("dichotomiques/ordinales", "continues", "mixte"), preselect=NULL, multiple = FALSE, title="Nature des variables ?")$res
-          if(length(type)==0) {Resultats<-fiabilite()
-          return(Resultats)
+          type<-dlgList(c("dichotomiques/ordinales", "continues", "mixte"), preselect=NULL, multiple = FALSE, title="Nature of the variables?")$res
+          if(length(type)==0) {Results<-fiabilite()
+          return(Results)
           }} else{if(is.null(ord)) type<-"continues" else type<-"dichotomiques/ordinales"}
         
         if(dial){
-          writeLines("Y a-t-il des items inverses ?") 
-          rev<-dlgList(c(TRUE,FALSE), multiple = FALSE, title="items inverses?")$res
+          writeLines("Are there any reverse items?") 
+          rev<-dlgList(c(TRUE,FALSE), multiple = FALSE, title="inverse items?")$res
           if(length(rev)==0) {
-            Resultats<-fiabilite()
-            return(Resultats)
+            Results<-fiabilite()
+            return(Results)
           }  } 
           
           if(rev=="TRUE" || !is.null(keys) && any(keys %in% X==FALSE)){
-            writeLines("Veuillez preciser les items inverses")
-            keys<-dlgList(X, multiple = TRUE, title="items inverses?")$res
+            writeLines("Please specify the reverse items")
+            keys<-dlgList(X, multiple = TRUE, title="inverse items?")$res
             if(length(keys)==0) {
-              Resultats<-fiabilite()
-            return(Resultats)
+              Results<-fiabilite()
+            return(Results)
             }
           }else keys<-NULL
           
@@ -95,19 +95,19 @@ fiabilite <-
           
           if(type=="continues"){
             if(!is.null(n.boot) && ((class(n.boot)!="numeric" & class(n.boot)!="integer") ||  n.boot%%1!=0 || n.boot<1)){
-              msgBox("Le nombre de bootstrap doit etre un nombre entier positif") 
+              msgBox("The number of bootstrap must be a positive integer") 
               n.boot<-NULL
             }
             while(is.null(n.boot)){
-              writeLines("Veuillez preciser le nombre de bootstrap. Pour ne pas avoir de bootstrap, choisir 1")
-              n.boot<-dlgInput("Nombre de bootstrap ?", 1)$res
-              if(length(n.boot)==0) {Resultats<-fiabilite()
-              return(Resultats)}
+              writeLines("Please specify the number of bootstrap. To not have a bootstrap, choose 1")
+              n.boot<-dlgInput("Number of bootstrap?", 1)$res
+              if(length(n.boot)==0) {Results<-fiabilite()
+              return(Results)}
               strsplit(n.boot, ":")->n.boot
               tail(n.boot[[1]],n=1)->n.boot
               as.numeric(n.boot)->n.boot
               if(is.na(n.boot) ||  n.boot%%1!=0 || n.boot<1){
-                msgBox("Le nombre de bootstrap doit etre un nombre entier positif") 
+                msgBox("The number of bootstrap must be a positive integer") 
                 n.boot<-NULL
               }
             }
@@ -115,73 +115,73 @@ fiabilite <-
           }else{
             n.boot<-0
             if(type=="mixte") {
-              writeLines("Veuillez preciser les variables ordinales ?") 
-              ord<-dlgList(X, multiple = TRUE, title="Variables ordinales ?")$res
+              writeLines("Please specify ordinal variables?") 
+              ord<-dlgList(X, multiple = TRUE, title="Ordinal variables?")$res
               if(length(ord)==0){
-                Resultats<-fiabilite()
-                return(Resultats)
+                Results<-fiabilite()
+                return(Results)
               }
             }else ord<-X
             Matrice<-tetrapoly(data=data[,X],X=X,info=T, ord=ord,group=NULL,estimator='two.step',output='cor', imp=imp,html=F)[[1]]
             if(all(class(Matrice)!="matrix")) {
-              sortie<-dlgMessage("Vous essayez de faire un alpha sur autre chose qu'un matrice. Voulez-vous sortir de cette analyse?", type="yesno")$res
+              sortie<-dlgMessage("You're trying to alpha on something other than a matrix. Do you want to get out of this analysis?", type="yesno")$res
               if(sortie=="yes") return(analyse()) else Matrice<-tetrapoly(data=data[,X],X=X,info=T, ord=ord,group=NULL,estimator='two.step',output='cor', imp="rm")[[1]]
             }
             
             psych::alpha(Matrice, keys=keys,n.obs=length(data[,1]))->cron
           }
           
-          round(cron$total,3)->Resultats$"Alpha de Cronbach sur la totalite de l'echelle"
-          if(n.boot>1) cron$boot.ci->Resultats$"Intervalle de confiance base sur le bootstrap"
+          round(cron$total,3)->Results$"Cronbach's alpha over the entire scale"
+          if(n.boot>1) cron$boot.ci->Results$"Bootstrap Confidence Interval"
           cron$total[,1]->a1
           cron$total[,6]->ase
-          data.frame(Lim.inf.IC.95=a1-1.96*ase, alpha=a1, Lim.sup.IC.95=a1+1.96*ase)->Resultats$"Intervalle de confiance base sur l'erreur standard de l'alpha"
-          round(data.frame(cron$alpha.drop, cron$item.stats ),3)->Resultats$"fiabilite par item supprime"
+          data.frame(Lower CI limit.95=a1-1.96*ase, alpha=a1, Lim.up.CI.95=a1+1.96*ase)->Results$"Confidence interval based on standard error of alpha"
+          round(data.frame(cron$alpha.drop, cron$item.stats ),3)->Results$"reliability per item removed"
           
       }
       
-      if(choix=="Correlation intra-classe"| choix=="ICC"){psych::ICC(data[,X], missing=FALSE)->ICC.out
-        ICC.out[[1]]->Resultats$"correlation intra-classe"
-        names(Resultats$"correlation intra-classe")<-c("type", "ICC", "F", "ddl1", "ddl2", "valeur.p", "lim.inf","lim.sup")
-        Resultats$"informations"<-paste("le nombre de juge =", length(X), "et le nombre d'observations =", ICC.out$n.obs) } 
+      if(choice=="Intra-class correlation"| choice=="ICC"){psych::ICC(data[,X], missing=FALSE)->ICC.out
+        ICC.out[[1]]->Results$"intra-class correlation"
+        names(Results$"intra-class correlation")<-c("type", "ICC", "F", "dof1", "dof2", "p-value", "inf.lim","sup.lim")
+        Results$"informations"<-paste("the number of judges =", length(X), "and the number of observations =", ICC.out$n.obs) } 
     }
     
     
-    if(choix=="Coefficient de concordance de Kendall"){  
-      msg4<-"Veuilez choisir le second juge"
-      Y<-.var.type(X=Y, data=data, type=type, check.prod=F, message=msg4,  multiple=F, title="Juge 2", out=X)
+    if(choice=="Kendall coefficient of concordance"){  
+      msg4<-"Please choose the second judge"
+      Y<-.var.type(X=Y, data=data, type=type, check.prod=F, message=msg4,  multiple=F, title="Judge 2", out=X)
       if(is.null(Y)) {
-        Resultats<-fiabilite()
-        return(Resultats)}
+        Results<-fiabilite()
+        return(Results)}
       data<-Y$data
       Y<-Y$X
       cohen.kappa(data[,c(X,Y)], w=NULL,n.obs=NULL,alpha=.05)->CK.out
-      dimnames(CK.out$confid)<-list(c("Coefficient kappa non pondere","Coefficient kappa pondere"),c("lim.inf","estimation","lim.sup"))
-      round(CK.out$confid,3)->Resultats$"Coefficient de concordance de Kendall"
-      CK.out$agree->Resultats$"Accord"
-      Resultats$information<-paste("le nombre d'observations =", CK.out$n.obs)
+      dimnames(CK.out$confid)<-list(c("Unweighted kappa coefficient","Weighted kappa coefficient"),c("inf.lim","estimation","sup.lim"))
+      round(CK.out$confid,3)->Results$"Kendall coefficient of concordance"
+      CK.out$agree->Results$"Agreement"
+      Results$information<-paste("the number of observations =", CK.out$n.obs)
     }
     
-    if(dial) dlgList(c("TRUE","FALSE"), preselect="FALSE", multiple = FALSE, title="voulez-vous sauvegarder?")$res->sauvegarde
+    if(dial) dlgList(c("TRUE","FALSE"), preselect="FALSE", multiple = FALSE, title="do you want to save?")$res->sauvegarde
     if(length(sauvegarde)==0) {
-      Resultats<-fiabilite()
-      return(Resultats)
+      Results<-fiabilite()
+      return(Results)
     }
     
     paste(X, collapse="','", sep="")->X
     if(!is.null(ord)) paste(ord, collapse="','", sep="")->ord
     if(!is.null(keys)) paste(ord, collapse="','", sep="")->keys
     
-    Resultats$Call<-paste0("fiabilite(X=c('", X,"'),Y=", ifelse(is.null(Y), "NULL", paste0("'",Y,"'")), ",data=", nom, ",choix='", choix,"',ord=", 
+    Results$Call<-paste0("reliability (X = c ('", X,"'),Y=", ifelse(is.null(Y), "NULL", paste0("'",Y,"'")), ",data=", nom, ", choice = '", choice,"',ord=", 
                            ifelse(!is.null(ord),paste0("c('", ord, "')"), "NULL" ), ",outlier='", outlier, "', keys=", ifelse(!is.null(keys), paste0("c('",keys,"')"), "NULL"),
-                           ",n.boot=", ifelse(!is.null(n.boot), n.boot, "NULL"), ", sauvegarde=", sauvegarde, ")")
+                           ",n.boot=", ifelse(!is.null(n.boot), n.boot, "NULL"), ", backup =", sauvegarde, ")")
     
-    .add.history(data=data, command=Resultats$Call, nom=nom)
-    .add.result(Resultats=Resultats, name =paste("cor.polychorique", Sys.time() ))  
+    .add.history(data=data, command=Results$Call, nom=nom)
+    .add.result(Results=Results, name =paste("psychoanalyst", Sys.time() ))  
     
     
-    if(sauvegarde)save(Resultats=Resultats, choix=choix, env=.e)
-    ref1(packages)->Resultats$"References"
-   if(html) try(ez.html(Resultats), silent=T)
-    return(Resultats)
+    if(sauvegarde)save(Results=Results, choice=choice, env=.e)
+    ref1(packages)->Results$"References"
+   if(html) try(ez.html(Results), silent=T)
+    return(Results)
   }
