@@ -1,31 +1,31 @@
-ez.reshape<-function(data=NULL, varying = NULL, v.names = NULL, 
+ez.reshape<-function(data=NULL, varying = NULL, v.names = NULL,
                      idvar = "id",  IV.names=NULL, IV.levels=NULL  ){
   #data 	: a data frame
-  # varying : names of sets of variables in the wide format that correspond to single variables in long format (‘time-varying’). 
-  #This is canonically a list of vectors of variable names, 
-  #but it can optionally be a matrix of names, or a single vector of names. 
-  #In each case, the names can be replaced by indices which are interpreted as referring to names(data). 
-  #v.names : names of variables in the long format that correspond to multiple variables in the wide format. 
-  # timevar : the variable in long format that differentiates multiple records from the same group or individual. 
-  # If more than one record matches, the first will be taken (with a warning). 
-  #idvar : Names of one or more variables in long format that identify multiple records from the same group/individual. 
+  # varying : names of sets of variables in the wide format that correspond to single variables in long format (‘time-varying’).
+  #This is canonically a list of vectors of variable names,
+  #but it can optionally be a matrix of names, or a single vector of names.
+  #In each case, the names can be replaced by indices which are interpreted as referring to names(data).
+  #v.names : names of variables in the long format that correspond to multiple variables in the wide format.
+  # timevar : the variable in long format that differentiates multiple records from the same group or individual.
+  # If more than one record matches, the first will be taken (with a warning).
+  #idvar : Names of one or more variables in long format that identify multiple records from the same group/individual.
   #These variables may also be present in wide format.
   # times : the values to use for a newly created timevar variable in long format
-  # IV.names : list with the name of the independant variables names created in the long format 
-  # IV.levels : list with the levels of the independant variables created in the long format  
-  
-  options (warn=-1) 
+  # IV.names : list with the name of the independant variables names created in the long format
+  # IV.levels : list with the levels of the independant variables created in the long format
+
+  options (warn=-1)
   # chargement des packages
   packages<-c( "svDialogs", "reshape2")
   try(lapply(packages, library, character.only=T), silent=T)->test2
   if(class(test2)== "try-error") return(ez.install())
   .e <- environment()
   Results<-list()
-  if(!is.null(data) & class(data)!="character") deparse(substitute(data))->data 
-  
-  
-  output<-.ez.reshape.in(data=data, varying = varying, v.names = v.names, 
-                         idvar = idvar, IV.names=IV.names,IV.levels=IV.levels )  
+  if(!is.null(data) & class(data)!="character") deparse(substitute(data))->data
+
+
+  output<-.ez.reshape.in(data=data, varying = varying, v.names = v.names,
+                         idvar = idvar, IV.names=IV.names,IV.levels=IV.levels )
   if(is.null(output)) return(NULL)
   data<-output$data
   varying<-output$varying
@@ -37,31 +37,31 @@ ez.reshape<-function(data=NULL, varying = NULL, v.names = NULL,
   N.modalitys2<-output$N.modalitys2
   times<-output$times
   dostop<-output$dostop
-  longdata<-.ez.reshape.out(data=data, varying = varying, v.names = v.names, 
-                            idvar = idvar,times=times, 
-                            IV.names=IV.names,IV.levels=IV.levels, N.modalitys2=N.modalitys2 )  
-  
+  longdata<-.ez.reshape.out(data=data, varying = varying, v.names = v.names,
+                            idvar = idvar,times=times,
+                            IV.names=IV.names,IV.levels=IV.levels, N.modalitys2=N.modalitys2 )
+
   assign(paste0(nom, ".long"),longdata, envir = .GlobalEnv)
   View(longdata)
   if(length(IV.names)>1 & dostop){
     cat (.ez.reshape.msg("msg",9))
     line <- readline()
     dlgMessage(.ez.reshape.msg("title", 9), "yesno")$res->suppression
-    if(suppression=="no") return(ez.reshape(data=data, varying=varying))  
+    if(suppression=="no") return(ez.reshape(data=data, varying=varying))
   }
-  
-  
+
+
   assign("intra",IV.names,envir=.e)
-  
+
   varying.call<-c()
   for(i in 1:length(varying)){
     if(i>1) varying.call<-paste0(varying.call, ",")
     varying.call0<-paste0("c('",  paste(varying[[i]], collapse="','", sep=""))
-    
+
     varying.call0<-paste0(varying.call0, "')")
     varying.call<-paste0(varying.call, varying.call0)
   }
-  
+
   v.names.call<-paste(v.names, collapse="','", sep="")
   idvar.call<-paste(idvar, collapse="','", sep="")
   IV.names.call<-paste(IV.names, collapse="','", sep="")
@@ -70,28 +70,28 @@ ez.reshape<-function(data=NULL, varying = NULL, v.names = NULL,
     for(i in 1:length(IV.levels)){
       if(i>1) IV.levels.call<-paste0(IV.levels.call, ",")
       IV.levels.call0<-paste0("c('",  paste(IV.levels[[i]], collapse="','", sep=""))
-      
+
       IV.levels.call0<-paste0(IV.levels.call0, "')")
       IV.levels.call<-paste(IV.levels.call, IV.levels.call0)
     }
     IV.levels.call<-paste0("list(", IV.levels.call ,"))" )
   }else IV.levels.call<-"NULL)"
-  
-  
-  
-  Call<-paste0("ez.reshape(data=",nom, ", varying =list(", varying.call,"), v.names =c('",v.names.call, 
+
+
+
+  Call<-paste0("ez.reshape(data=",nom, ", varying =list(", varying.call,"), v.names =c('",v.names.call,
                "'),idvar =c('", idvar.call,"'),IV.names=list('", IV.names.call,
                "'), IV.levels=" , IV.levels.call)
-  
+
   writeLines(Call)
   .add.history(data=data, command=Call, nom=nom)
-  
+
   return(longdata)
 }
 
 .ez.reshape.msg<-function(type, number){
   # type : either "msg" or "title"
-  # number : number of message 
+  # number : number of message
   if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())) {
     msg<-c("Please choose the set of columns corresponding to the modalities of the variables in repeated measures",
            "Columns corresponding to the variable",
@@ -101,13 +101,13 @@ ez.reshape<-function(data=NULL, varying = NULL, v.names = NULL,
            "you have selected", "colonnes",
            "the product of the modalities of each of the variables must correspond to the number of selected columns.",
            "Appuyez [Betweene] pour continuer")
-    
-    
-    title<-c("Columns in repeated measures" ,"Number of variables measured", "Name of the variable measured", 
+
+
+    title<-c("Columns in repeated measures" ,"Number of variables measured", "Name of the variable measured",
              "How many factors can be repeated?",
-             "Name of factor","How many terms","modality", "Names of modalities for", 
+             "Name of factor","How many terms","modality", "Names of modalities for",
              "Is the long format structure of your data correct?")
-    
+
   } else {
     msg<-c("Please choose all the columns corresponding to the repeaed measure levels",
            "Columns corresponding to variable",
@@ -117,19 +117,19 @@ ez.reshape<-function(data=NULL, varying = NULL, v.names = NULL,
            "you have selected","columns",
            "The product of the number of levels of each factor must  equal to the number of selected columns.",
            "Press [enter] to continue")
-    title<-c("Columns in repeated measures", "Number of measured variables", "Name of measured variable", 
+    title<-c("Columns in repeated measures", "Number of measured variables", "Name of measured variable",
              "How many repeated measures variables?",
-             "name of the factor", "How many levels", "level", "Name of levels for", 
+             "name of the factor", "How many levels", "level", "Name of levels for",
              "Is the long format data frame correct ?")
   }
-  
+
   ifelse(type=="msg", r<-msg, r<-title)
-  r<-r[number]   
+  r<-r[number]
   return(r)}
 
 
 
-.ez.reshape.in<-function(data, varying = NULL, v.names = NULL, 
+.ez.reshape.in<-function(data, varying = NULL, v.names = NULL,
                          idvar = "id",  IV.names=NULL, IV.levels=list()) {
   resultats<-list()
   dostop<-F
@@ -138,28 +138,28 @@ ez.reshape<-function(data=NULL, varying = NULL, v.names = NULL,
   if(length(data)==0) return(NULL)
   nom<-data[[1]]
   data<-data[[2]]
-  
-  
+
+
   if(is.null(varying) || !unlist(varying) %in%names(data) ){
     varying<-list()
     n.var<-NA
     dostop<-T
     while(is.na(n.var)){
       n.var <- dlgInput(.ez.reshape.msg("title",2), 1)$res
-      if(length(n.var)==0) { 
+      if(length(n.var)==0) {
         return(ez.reshape())}
       strsplit(n.var, ":")->n.var
       tail(n.var[[1]],n=1)->n.var
       as.numeric(n.var)->n.var
-      if(is.na(n.var)) msgBox(.ez.reshape.msg("msg",5))  
+      if(is.na(n.var)) msgBox(.ez.reshape.msg("msg",5))
     }
-    varying2<-.var.type(X= unlist(varying) , info=T, data=data, type=NULL, 
-                        check.prod=F, message=.ez.reshape.msg("msg",1),  multiple=T, 
+    varying2<-.var.type(X= unlist(varying) , info=T, data=data, type=NULL,
+                        check.prod=F, message=.ez.reshape.msg("msg",1),  multiple=T,
                         title=.ez.reshape.msg("title",1), out=NULL)
     if(is.null(varying2)) {
       return(ez.reshape())}
-    
-    varying2<-varying2$X 
+
+    varying2<-varying2$X
     if(n.var>1) {
       v.names<-c()
       for(i in 1:(n.var-1)){
@@ -180,7 +180,7 @@ ez.reshape<-function(data=NULL, varying = NULL, v.names = NULL,
       tail(var.name[[1]],n=1)->var.name
       var.name<-gsub("[^[:alnum:]]", ".", var.name)
       v.names<-c(v.names, var.name)
-      
+
     } else {
       varying[[1]]<-  varying2
       v.names <- dlgInput(paste(.ez.reshape.msg("title",3),1), "Variable")$res
@@ -189,15 +189,15 @@ ez.reshape<-function(data=NULL, varying = NULL, v.names = NULL,
       v.names<-gsub("[^[:alnum:]]", ".", v.names)
       tail(v.names[[1]],n=1)->v.names
     }
-    
+
   } else n.var=length(v.names)
-  
-  
-  if(!is.null(setdiff(names(data),unlist(varying)))) idvar<-setdiff(names(data),unlist(varying)) 
+
+
+  if(!is.null(setdiff(names(data),unlist(varying)))) idvar<-setdiff(names(data),unlist(varying))
     data$IDeasy<-paste0("p", 1:nrow(data))
     data$IDeasy<-factor(data$IDeasy)
     idvar<-c(idvar,"IDeasy")
-  
+
   if(n.var==1) times=unlist(varying) else {
     x<-varying[[1]]
     y<-varying[[2]]
@@ -209,16 +209,16 @@ ez.reshape<-function(data=NULL, varying = NULL, v.names = NULL,
       for(i in 2:length(varying)){
         concat<-paste0(concat, ",varying[[", i, "]]")
       }
-      concat<-paste0(concat, ")") 
+      concat<-paste0(concat, ")")
       times<-eval(parse(text= concat))
-    } 
+    }
   }
-  
+
   if(is.null(IV.names)| (length(IV.names)>1 & is.null(IV.levels)) |
      (!is.null(IV.levels) &&  prod(sapply(IV.levels, length))!=length(varying[[1]])) ) {
     dostop<-T
     if(is.null(IV.names) & length(varying[[1]])>3) N.factors.<- dlgInput(.ez.reshape.msg("title",4), 1)$res else {
-      N.factors.-"1"
+      N.factors<-"1"
     }
     while(length(N.factors.=="0"){
       writeLines(.ez.reshape.msg("msg",3))
@@ -229,14 +229,14 @@ ez.reshape<-function(data=NULL, varying = NULL, v.names = NULL,
     as.numeric(N.factors.->N.factor.
     if(is.na(N.factors.) { writeLines(.ez.reshape.msg("msg",5))
       return(NULL)}
-    
-    
+
+
   }
-  c()->N.modalitys2 
+  c()->N.modalitys2
   if(is.null(IV.names) || !is.character(unlist(IV.names))){
     list()->IV.names # liste pour stocker le nom des factors.
-    
-    
+
+
     if(N.factors.=1){
       dlgInput(.ez.reshape.msg("title",5), "Variable.1")$res->IV.names[[1]]
       if(length(IV.names [[1]])==0) return(ez.reshape(data=data, varying=varying))
@@ -247,7 +247,7 @@ ez.reshape<-function(data=NULL, varying = NULL, v.names = NULL,
       c()->N.modalitys2 # nombre de modalités sur chaque facteur
       while(prod(N.modalitys2)!=length(varying[[1]])){
         # liste pour stocker le nom des modalités
-        
+
         writeLines(paste(.ez.reshape.msg("msg",6), length(varying[[1]]),.ez.reshape.msg("msg",7) ))
         writeLines(.ez.reshape.msg("msg",8))
         for(i in 1:N.factors. {
@@ -263,15 +263,15 @@ ez.reshape<-function(data=NULL, varying = NULL, v.names = NULL,
           as.numeric(N.modalitys)->N.modalitys
           if(is.na(N.modalitys)) writeLines(.ez.reshape.msg("msg",5))
           c(N.modalitys2,N.modalitys)->N.modalitys2
-          dlgForm(setNames(as.list(paste(.ez.reshape.msg("title",7), 1:N.modalitys2[i])), 
+          dlgForm(setNames(as.list(paste(.ez.reshape.msg("title",7), 1:N.modalitys2[i])),
                            paste(.ez.reshape.msg("title",7), 1:N.modalitys2[i])),
                   paste(.ez.reshape.msg("title",8), IV.names[[i]]) )$res->IV.levels[[i]]
         }
-        
+
       }
     }
   }
-  
+
   resultats$nom<-nom
   resultats$data<-data
   resultats$varying<-varying
@@ -283,36 +283,36 @@ ez.reshape<-function(data=NULL, varying = NULL, v.names = NULL,
   resultats$times<-times
   resultats$dostop<-dostop
   return(resultats)
-}       
+}
 
 
-.ez.reshape.out<-function(data, varying = NULL, v.names = NULL, 
+.ez.reshape.out<-function(data, varying = NULL, v.names = NULL,
                           idvar = "id", times, IV.names=NULL,IV.levels=NULL,N.modalitys2=NULL )    {
     longdata<-reshape(data, direction="long",idvar= idvar, varying=varying, v.names=v.names, times = times,
                       new.row.names =paste0("p", 1:(nrow(data)*length(varying[[1]])) ))
   rownames(longdata)<-c()
-  if(is.null(N.modalitys2)) { 
+  if(is.null(N.modalitys2)) {
     for(i in 1:length(IV.levels)){
       N.modalitys2<-c(N.modalitys2, length(IV.levels[[i]]))
     }
   }
-  
+
   if(length(IV.names)==1) {
-    colnames(longdata)[which(colnames(longdata)=="time")]<-IV.names[[1]] 
+    colnames(longdata)[which(colnames(longdata)=="time")]<-IV.names[[1]]
     longdata[,unlist(IV.names)]<-factor(longdata[,unlist(IV.names)])
   }else {
     for(i in 1:length(IV.names)){
       if(i==length(IV.names)){a<-1} else {
         a<-prod(N.modalitys2[(i+1):length(IV.names)])
       }
-      gl(n=N.modalitys2[[i]], k=length(data[,1])*a, length=length(data[,1])*prod(N.modalitys2), 
+      gl(n=N.modalitys2[[i]], k=length(data[,1])*a, length=length(data[,1])*prod(N.modalitys2),
          labels=IV.levels[[i]])->longdata$variable1
       names(longdata)<-c(names(longdata[1:(length(longdata)-1)]),IV.names[[i]])
     }
     longdata[,unlist(IV.names)]<-lapply(longdata[, unlist(IV.names)], factor)
   }
-  
-  
+
+
   return(longdata)
 }
 
@@ -336,12 +336,12 @@ LCS <- function (a, b) {
   m <- length(a)
   n <- length(b)
   if (m == 0 || n == 0) stop ("vector of length zero")
-  
+
   # creates a table
   M <- matrix(nrow = m + 1, ncol = n + 1)
   M[, 1] <- 0
   M[1, ] <- 0
-  
+
   # fills the table
   for (i in 2:(m + 1)) {
     for (j in 2:(n + 1)) {
@@ -349,10 +349,10 @@ LCS <- function (a, b) {
       else { M[i, j] <- max(c(M[i, j - 1], M[i - 1, j])) }
     }
   }
-  
+
   # length of the longest common subsequence
   LLCS <- M[m + 1, n + 1]
-  
+
   # determines one possible longest common subsequence
   # by means of "trace-back" by the table filled out
   i <- m + 1; j <- n + 1
@@ -368,7 +368,7 @@ LCS <- function (a, b) {
       else { j <- j - 1 }
     }
   }
-  
+
   # calculates the quality similarity index
   QSI <- round(LLCS / max(m, n), digits = 2)
   invisible(list(a = a, b = b, LLCS = LLCS, LCS = LCS, QSI = QSI , va = va, vb = vb))

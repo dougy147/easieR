@@ -2,14 +2,14 @@ aov.plus <-
   function(aov.plus.list=NULL, info=T, html=T){
     options (warn=-1)
     packages<-c("svDialogs","emmeans")
-    if(any(lapply(packages, require, character.only=T))==FALSE)  {install.packages(packages) 
+    if(any(lapply(packages, require, character.only=T))==FALSE)  {install.packages(packages)
       require(packages)}
-      .e <- environment()  
+      .e <- environment()
 
     if(is.null(aov.plus.list)){
       Filter( function(x) 'aovplus' %in% class( get(x) ), ls(envir=.GlobalEnv))->nom1
       if(length(nom1)==0) {
-        writeLines("il n'y a pas d'objet compatible avec aov.plus dans la memoire de R. 
+        writeLines("il n'y a pas d'objet compatible avec aov.plus dans la memoire de R.
                    Vous devez realiser une analyse de variance au prealable")
         return(ez.anova())}
       if(length(nom1)==1)  aov.plus.list<-get(nom1) else{
@@ -18,9 +18,9 @@ aov.plus <-
         if(length(nom1)==0) {nom1<-NULL
         aov.plus.list<-NULL}
         if(!is.null(nom1))  aov.plus.list<-get(nom1)
-      } 
+      }
     }
-    
+
 
 
     if(length(aov.plus.list)==3){
@@ -29,23 +29,23 @@ aov.plus <-
       if(length(type)==0) return("you left aov.more")
       if(type=="Complete data") aov.plus.list[[2]]->aov.plus.list else aov.plus.list[[2]]->aov.plus.list
     }else aov.plus.list[[2]]->aov.plus.list
-    
-    
+
+
     writeLines("Cette fonction permet de fournir les means and adjusted standard errors ainsi que le graphique correspondant.
                Avec le choice post hoc sur les interactions, vous pouvez tester les effets d'interaction 2 a 2 et les effet simples.")
-    choice<-dlgList(c("means and adjusted standard errors","contrasts"), 
-                   multiple = TRUE, title="What data do you want to analyze?")$res 
+    choice<-dlgList(c("means and adjusted standard errors","contrasts"),
+                   multiple = TRUE, title="What data do you want to analyze?")$res
     if(length(choice)==0) return(analyse())
-    
+
     Results<-list()
     noms<-names(summary(aov.plus.list[["em.out"]]))[which(sapply(summary(aov.plus.list[["em.out"]]),class) =="factor")]
-    
+
     if(any(choice=="means and adjusted standard errors")){
       writeLines("For what combination of factors do you want to display the adjusted means?")
-      factors.-dlgList(noms, multiple = TRUE, title="What do you want to display?")$res
-      if(length(factors.==0) return(aov.plus()) 
+      factors<-dlgList(noms, multiple = TRUE, title="What do you want to display?")$res
+      if(length(factors.==0) return(aov.plus())
       formula<-paste0("~",factors.[1]])
-    if(length(factors.>1){      
+    if(length(factors.>1){
       for(i in 2:length(factors.){
         formula<-paste(formula, "+", factors.i])
       }}
@@ -53,27 +53,27 @@ aov.plus <-
       Results$"Adjusted Averages-Graph"<-emmip(object= aov.plus.in$`Complete data`$em.out,as.formula(formula) , CIs=T)
       em.out<-emmeans(object= aov.plus.in$`Complete data`$em.out,as.formula(formula), CIs=T)
       Results$"Adjusted averages"<-data.frame(em.out)
- 
+
     }
-    
+
     if(any(choice=="contrasts")){
       writeLines("Please specify the contrasts.")
       if(length(choice)==0) return(aov.plus())
       p.adjust<-dlgList(c("holm", "hochberg", "hommel", "bonferroni", "fdr","tukey","scheffe",
                 "sidak","dunnettx","mvt" ,"none" ), preselect="holm", multiple = FALSE, title="Type of correction?")$res
       if(length(p.adjust)==0) p.adjust<-"none"
-    
+
         cont.data<-data.frame(aov.plus.in$`Complete data`$em.out)
         cont.data<-cont.data[, noms]
         cont.data<-fix(cont.data)
         suppress<-which(colSums(is.na(cont.data)) > 0)
         if(length(suppress>0)) cont.data<-cont.data[,-suppress]
         Results$Contrates$coefficients<-cont.data
-        emm.out<-contrast(aov.plus.in$`Complete data`$em.out, 
+        emm.out<-contrast(aov.plus.in$`Complete data`$em.out,
                                                 method= list(cont.data[, which(sapply(cont.data, class)=="numeric")]), adjust=p.adjust)
         emm.out<-data.frame(emm.out)
         names(emm.out)[6]<-"p-value"
-       
+
         emm.out$contrast<-names(cont.data)[which(sapply(cont.data, class)=="numeric")]
         Results$Contrates$contrasts<-emm.out
         }
@@ -82,5 +82,5 @@ aov.plus <-
 #    if(sauvegarde==T) save(Results=Results ,choice ="Results.aov.more", env=.e)
      if(html) ez.html(Results)
       return(Results)
-    
+
   }
