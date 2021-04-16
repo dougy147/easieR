@@ -4,7 +4,7 @@ ez.report<-function(html=NULL){
   if(is.null(html)){  choix<- c("html", "MS WORD")   
   if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())) {
     
-    title<-"Quel format souhaitez-vous ?"
+    title<-"What format do you want?"
   }else{
        title<-"Which output do you want?"
   }

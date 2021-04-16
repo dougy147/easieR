@@ -67,7 +67,7 @@ function(){
     )
 
           list()->Resultats
-    Resultats$"packages.installes.correctement"<-pack.to.inst[ which(lapply(pack.to.inst, require, character.only=T)==TRUE) ]
+    Resultats$"packages.installed.correctly"<-pack.to.inst[ which(lapply(pack.to.inst, require, character.only=T)==TRUE) ]
     Resultats$"Package.mal.installes"<-pack.to.inst[ which(lapply(pack.to.inst, require, character.only=T)==FALSE) ]
     return(Resultats)
 }

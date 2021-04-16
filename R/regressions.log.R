@@ -26,15 +26,15 @@ regressions.log <-
       if(dial && is.null(modele)){
         if(info) writeLines("Veuillez choisir le(s) type(s) de relations entre les variables. Les effets additifs prennent la forme de
                             y=X1+X2 tandis que les effets d'interaction prennent la forme de Y=X1+X2+X1:X2")
-        dlgList(c("Effets additifs", "Effets d'interaction", "Specifier le modele"), preselect="Regressions", multiple = TRUE, title="Quel type de regression ?")$res->link
+        dlgList(c("Additive effects", "Interaction effects", "Specify the model"), preselect="Regressions", multiple = TRUE, title="What kind of regression?")$res->link
         if(length(link)==0) return(NULL)} else link<-"none"
       
       if(length(Y)>1){
-        msgBox("Il ne peut y avoir qu'une seule variable dependante.")
+        msgBox("There can only be one dependent variable.")
         Y<-NULL }
-      if(any(link %in% c("Effets additifs", "Effets d'interaction"))){
-        msg3<-"Veuillez choisir la variable dependante."
-        Y<-.var.type(X=Y, info=info, data=data, type=NULL, check.prod=F, message=msg3,  multiple=FALSE, title="Variable dependante", out=NULL)
+      if(any(link %in% c("Additive effects", "Interaction effects"))){
+        msg3<-"Please choose the dependent variable."
+        Y<-.var.type(X=Y, info=info, data=data, type=NULL, check.prod=F, message=msg3,  multiple=FALSE, title="Dependent variable", out=NULL)
         if(is.null(Y)) {
           reg.log.in()->Resultats
           return(Resultats)}
@@ -42,27 +42,27 @@ regressions.log <-
         Y<-Y$X
         
         if(length(unique(data[,Y]))!=2) {
-          msg1<-paste("Votre veriable dependante a", length(unique(data[,Y])), "modalites. Elle est incompatible avec une regression logistique. Elle doit etre dichotomique" )
+          msg1<-paste("Your veriable dependent has", length(unique(data[,Y])), "terms and conditions. It is incompatible with a logistic regression. She must be dichotomous" )
           msgBox(msg1)
           if(class(data[,Y]) %in%c("numeric","integer")){
             dlgMessage("voulez-vous convertir la variable dependante en une variable dichotomique,  ?","yesno")$res->conv
             
             if(conv=="no") return(reg.log.in())  else{
-              if(info) writeLines("Veuillez specifier le critere sur lequel vous souhaitez dichotomiser votre variable.Vous pouvez utiliser la mediane ou choisir un seuil specifique.")
-              dlgList(c("Mediane", "Seuil"), preselect="Mediane", multiple = FALSE, title="Quel critere de codage voulez-vous ?")$res->codage
+              if(info) writeLines("Please specify the criterion on which you want to dichotomize your variable. You can use the median or choose a specific threshold.")
+              dlgList(c("Median", "Threshold"), preselect="Median", multiple = FALSE, title="What coding criteria do you want?")$res->codage
               if(length(codage)==0) return(reg.log.in())
-              if(codage=="Mediane") data[,Y]<-ifelse(data[,Y]>median(data[,Y]),1, 0)
+              if(codage=="Median") data[,Y]<-ifelse(data[,Y]>median(data[,Y]),1, 0)
               View(data)
               readline()
-              if(codage=="Seuil") {
+              if(codage=="Threshold") {
                 seuil<-NA
                 while(is.na(seuil)){
-                  seuil<-dlgInput("Veuillez preciser la valeur de separation", median(data[,Y]))$res 
+                  seuil<-dlgInput("Please specify the separation value", median(data[,Y]))$res 
                   if(length(seuil)==0) return(reg.log.in())
                   strsplit(seuil, ":")->seuil
                   tail(seuil[[1]],n=1)->seuil
                   as.numeric(seuil)->seuil
-                  if(is.na(seuil) || seuil>max(data[,Y]) || seuil<min(data[,Y])) {msgBox("La valeur doit etre numerique et comprise entre le minimum et le maximum de la variable dependante.")
+                  if(is.na(seuil) || seuil>max(data[,Y]) || seuil<min(data[,Y])) {msgBox("The value must be numeric and between the minimum and the maximum of the dependent variable.")
                     Y<-NA}
                 }
                 data[,Y]<-ifelse(data[,Y]>seuil,1, 0)
@@ -71,10 +71,10 @@ regressions.log <-
             }
           }
           if(class(data[,Y]) %in%c("factor","character")){
-            dlgMessage("Voulez-vous faire des regroupements entre les modalites ?","yesno")$res->reg
+            dlgMessage("Do you want to make groupings between the modalities?","yesno")$res->reg
             if(reg=="no") return(reg.log.in()) else {
               if(info) writeLines("Veuillez specifier la/les modalite(s) qui serviront pour la ligne de base (e.g. 0). Les autres modalites seront regroupes dans la categorie 1.")
-              reg<- dlgList(levels(data[,Y]), preselect=NULL, multiple = TRUE, title="Modalites a regrouper")$res
+              reg<- dlgList(levels(data[,Y]), preselect=NULL, multiple = TRUE, title="Modalities to be regrouped")$res
               setdiff(levels(data[,Y]),reg)->reste
               data[,Y]<-ifelse(data[,Y]%in%reg, 0,1) 
               data[,Y]<-factor(data[,Y])
@@ -83,9 +83,9 @@ regressions.log <-
         }
         
         
-        if(any(link=="Effets additifs") || !is.null(X_a)| any(X_a %in% names(data)==F)) {
-          msg3<-"Veuillez choisir la variable dependante."
-          X_a<-.var.type(X=Y, info=info, data=data, type=NULL, check.prod=F, message=msg3,  multiple=TRUE, title="Variables modele additif", out=Y)
+        if(any(link=="Additive effects") || !is.null(X_a)| any(X_a %in% names(data)==F)) {
+          msg3<-"Please choose the dependent variable."
+          X_a<-.var.type(X=Y, info=info, data=data, type=NULL, check.prod=F, message=msg3,  multiple=TRUE, title="Additive model variables", out=Y)
           if(is.null(X_a)) {
             reg.log.in()->Resultats
             return(Resultats)}
@@ -94,11 +94,11 @@ regressions.log <-
           
         }else X_a<-NULL 
         
-        if(any(link=="Effets d'interaction") || !is.null(X_i) & (length(X_i)<2 | any(X_i %in% names(data)==F))) {
-          msg3<-"Veuillez choisir les predicteurs a entrer dans le modele d'interaction. Il est necessaire d'avoir au moins deux variables"
+        if(any(link=="Interaction effects") || !is.null(X_i) & (length(X_i)<2 | any(X_i %in% names(data)==F))) {
+          msg3<-"Please choose the predictors to enter in the interaction model. It is necessary to have at least two variables"
           X_i<-c()
           while(length(X_i)<2){
-            X_i<-.var.type(X=Y, info=info, data=data, type=NULL, check.prod=F, message=msg3,  multiple=TRUE, title="Variables modele interactif", out=c(X_a,Y))
+            X_i<-.var.type(X=Y, info=info, data=data, type=NULL, check.prod=F, message=msg3,  multiple=TRUE, title="Interactive model variables", out=c(X_a,Y))
             if(is.null(X_i)) {
               reg.log.in()->Resultats
               return(Resultats)}
@@ -128,12 +128,12 @@ regressions.log <-
       
       
       
-      if(any(link=="Specifier le modele")) modele<-fix(modele)
+      if(any(link=="Specify the model")) modele<-fix(modele)
       variables<-terms(as.formula(modele))
       variables<-as.character( attributes(variables)$variables)[-1]
       pred<-attributes(terms(as.formula(modele)))$term.labels
       if(any(ftable(data[,which(lapply(sapply(data,unique),length)<5)])<3)) {
-        msgBox("Les observations sont en nombre insuffisant (<3) pour certaines combinaisons de niveaux des variables du modele")
+        msgBox("There are insufficient observations (<3) for certain combinations of levels of the variables of the model")
         return(ftable(data[,which(lapply(sapply(data,unique),length)<5)]))
       }
       if(dial){
@@ -142,7 +142,7 @@ regressions.log <-
           while(length(pred)!=0){
             if(info)  writeLines("L'ordre d'entree des variables est important pour le calcul du maximum de vraisemblance. Veuillez
                                  preciser l'ordre d'entree des variables") 
-            V1<-dlgList(pred, multiple = FALSE,title="Quelle variable a cette etape")$res
+            V1<-dlgList(pred, multiple = FALSE,title="Which variable at this stage")$res
             c(pred.ord,V1)->pred.ord
             setdiff(pred,V1)->pred}
         }else pred.ord<-pred
@@ -153,7 +153,7 @@ regressions.log <-
       
       model.test<-try(model.matrix(modele, data), silent=T)
       if(class(model.test)=="try-error") {
-        msgBox("Le modele specifie est incorrect. Verifiez vos variables et votre modele")
+        msgBox("The model specified is incorrect. Check your variables and your model")
         return(reg.log.in())
       }
       
@@ -168,7 +168,7 @@ regressions.log <-
       
       if(dial){
         if(info) writeLines('voulez-vous integrer les probabilites a votre base de donnees ?')
-        dlgList(c(TRUE, FALSE), preselect=FALSE, multiple = FALSE, title="Probabilites ?")$res->proba
+        dlgList(c(TRUE, FALSE), preselect=FALSE, multiple = FALSE, title="Probabilities?")$res->proba
         
       }
       
@@ -188,9 +188,9 @@ regressions.log <-
       variables<-terms(as.formula(modele))
       variables<-as.character( attributes(variables)$variables)[-1]
       pred<-attributes(terms(as.formula(modele)))$term.labels
-      Resultats$"Statistiques descriptives"<-.stat.desc.out(X=variables, groupes=NULL, data=data, tr=.1, type=3, plot=T)
+      Resultats$"Descriptive statistics"<-.stat.desc.out(X=variables, groupes=NULL, data=data, tr=.1, type=3, plot=T)
       
-      if(scale==T || scale=="Centre") {Resultats$info<-"En accord avec les recommandations de Schielzeth 2010, les donnees ont ete prealablement centrees"
+      if(scale==T || scale=="Center") {Resultats$info<-"In accordance with the recommendations of Schielzeth 2010, the data were previously centered"
       fun<-function(X){X-mean(X)}
       variables[-1]->pred2
       sapply(X=data[, names(which(sapply(data[,pred2],class)!="factor"))], fun)->data[,names(which(sapply(data[,pred2],class)!="factor"))]
@@ -218,9 +218,9 @@ regressions.log <-
         hier<-paste0(hier,")")
         hier<-eval(parse(text=hier))
         
-        attributes(hier)$heading[1]<-"Table de l'analyse de la deviance des modeles hierarchiques"
+        attributes(hier)$heading[1]<-"Hierarchical models deviance analysis table"
         round(1-pchisq(hier$Deviance,hier$Df,lower.tail=F),4)->hier$valeur.p
-        names(hier)<-c("ddl.resid", "Deviance.resid","ddl.effet", "Deviance", "valeur.p")
+        names(hier)<-c("dof.resid", "Deviance.resid","dof.effect", "Deviance", "p-value")
         Resultats$"Analyse hierarchique des modeles "<-hier
       }
       
@@ -242,56 +242,56 @@ regressions.log <-
       
       summary(mod[[length(mod)]])->resultats
       as(resultats$call,"character")->texte
-      paste("le modele teste est" , texte[2])->Resultats$"Modele teste"
+      paste("the model tested is" , texte[2])->Resultats$"Model tested"
       
       cbind(rms::vif(mod[[length(mod)]]), 1/rms::vif(mod[[length(mod)]]))->MC
-      dimnames(MC)[[2]]<-c("Facteur d'inflation de la variance", "Tolerance")
-      round(MC,4)->Resultats$"Test de multicolinearite"
+      dimnames(MC)[[2]]<-c("Variance inflation factor", "Tolerance")
+      round(MC,4)->Resultats$"Multicolinearity test"
       
       sum(Amelioration_du_MV$Df[2:length(Amelioration_du_MV$Df)])->ddl
       Amelioration_du_MV$`Resid. Dev`[1]-Amelioration_du_MV$`Resid. Dev`[length(Amelioration_du_MV$`Resid. Dev`)]->chi.carre.modele
       round(1-pchisq(chi.carre.modele,ddl),4)->valeur.p
       logisticPseudoR2s(mod[[length(mod)]])->Pseudo.R.carre
       data.frame(chi.carre.modele, ddl, valeur.p,Pseudo.R.carre[1],Pseudo.R.carre[2],Pseudo.R.carre[3])->mod.glob
-      names(mod.glob)<-c("chi.2.modele", "ddl", "valeur.p","Hosmer and Lemeshow R^2","Cox and Snell R^2","Nagelkerke R^2")
-      mod.glob->Resultats$"Significativite du modele global"
+      names(mod.glob)<-c("chi.2.model", "dof", "p-value","Hosmer and Lemeshow R ^ 2","Cox and Snell R^2","Nagelkerke R^2")
+      mod.glob->Resultats$"Significance of the global model"
       
       
       Amelioration_du_MV$chi.deux.prob<-1-pchisq(Amelioration_du_MV$Deviance, Amelioration_du_MV$Df)
       round(Amelioration_du_MV,4)->Amelioration_du_MV
-      names(Amelioration_du_MV)<-c("ddl predicteur", "MV","ddl.residuels","MV residuel","valeur.p")
-      Resultats$"Amelioration de la vraisemblance pour chaque variable"<-data.frame(Amelioration_du_MV)
+      names(Amelioration_du_MV)<-c("predictor dof", "MV","dof.residuels","Residual MV","p-value")
+      Resultats$"Improved likelihood for each variable"<-data.frame(Amelioration_du_MV)
       
       data.frame(resultats$coefficients)->table
       (table$z.value)^2->table$Wald.statistic
       exp(table$Estimate)->table$Odd.Ratio
       round(table,4)->table
-      names(table)<-c("b","Erreur.standard","valeur.Z","p.Wald", "Wald","Odd.ratio")
+      names(table)<-c("b","Standard.error","value.Z","p.Wald", "Wald","Odd.ratio")
       cbind(table, round(exp(confint(mod[[length(mod)]])),4))->table
-      table$interpretation<-ifelse(table$Odd.ratio>=1,paste(table$Odd.ratio, "fois plus"), paste(round(1/table$Odd.ratio,4), "fois moins"))
-      table->Resultats$"Table des coefficients"
+      table$interpretation<-ifelse(table$Odd.ratio>=1,paste(table$Odd.ratio, "times more"), paste(round(1/table$Odd.ratio,4), "times less"))
+      table->Resultats$"Table of coefficients"
       
       R_sq<-NULL
       for(i in 1:length(mod)){logisticPseudoR2s(mod[[i]])->R_squared
         rbind(R_sq, R_squared)->R_sq}
       diff(R_sq,lag=1)->R_sq[2.]
       dimnames(R_sq)[[1]]<-pred
-      dimnames(R_sq)[[2]]<-c("Hosmer and Lemeshow R^2","Cox and Snell R^2","Nagelkerke R^2")
-      R_sq->Resultats$"Delta du pseudo R carre"
+      dimnames(R_sq)[[2]]<-c("Hosmer and Lemeshow R ^ 2","Cox and Snell R^2","Nagelkerke R^2")
+      R_sq->Resultats$"Delta of pseudo R square"
       
       if(proba=="TRUE")	{ 
-        round(fitted(mod[[length(mod)]]),4)->data$"Probabilites predites"
+        round(fitted(mod[[length(mod)]]),4)->data$"Predicted probabilities"
         head(data)
         print(nom)
         assign(x=nom, value=data, envir=.GlobalEnv)}
       
       if(select.m!="none"){
-        select.m<-switch(select.m,"Forward - pas-a-pas ascendant"="forward", "Backward- pas-a-pas descendant"="backward", "Bidirectionnel"="both",
+        select.m<-switch(select.m,"Forward - step by step ascending"="forward", "Backward - step by step descending"="backward", "Bidirectional"="both",
                          "forward"="forward", "bidirectional"="both","backward"="backward" )
         glm(modele, data=data, family="binomial")->glm.r1
         
         steps<-stepAIC(glm.r1, direction=select.m) 
-        Resultats$"Methode de selection - criteres d'information d'Akaike"<-steps$anova
+        Resultats$"Selection method - Akaike information criteria"<-steps$anova
         modele<-as.formula(attributes(steps$anova)$heading[5])
       }
       
@@ -324,10 +324,10 @@ regressions.log <-
     group<-reg.in.output$reg.options$group
     proba<-reg.in.output$proba
     
-    if(!is.null(reg.in.output$reg.options$CV) && reg.in.output$reg.options$CV==TRUE) print("La validation croisee n'est pas encore disponible.")
+    if(!is.null(reg.in.output$reg.options$CV) && reg.in.output$reg.options$CV==TRUE) print("Cross validation is not yet available.")
     
-    if(any(outlier==  "Donnees completes")){
-      Resultats$"Donnees completes"<-  reg.log.out(data=data, modele=modele,  select.m=select.m, step=step, scale=scale, proba=proba, nom=nom)
+    if(any(outlier==  "Complete data")){
+      Resultats$"Complete data"<-  reg.log.out(data=data, modele=modele,  select.m=select.m, step=step, scale=scale, proba=proba, nom=nom)
       if(!is.null(group))   {  
         R1<-list()
         G<-data[,group]
@@ -335,14 +335,14 @@ regressions.log <-
         G<-split(data, G)
         for(i in 1:length(G)){
           resg<-  try(reg.log.out(data=G[[i]], modele=modele,  select.m=select.m, step=step, scale=scale,proba=proba), silent=T)
-          if(class(resg)=="try-error")   R1[[length(R1)+1]]<-"Le nombre d'observations est insuffisant pour mener a bien les analyses pour ce groupe" else R1[[length(R1)+1]]<-resg
+          if(class(resg)=="try-error")   R1[[length(R1)+1]]<-"The number of observations is insufficient to carry out the analyzes for this group" else R1[[length(R1)+1]]<-resg
           names(R1)[length(R1)]<-names(G)[i]
         }
-        Resultats$"Donnees completes"$"Analyse par groupe"<-R1
+        Resultats$"Complete data"$"Group analysis"<-R1
       } 
       
     } 
-    if(any(outlier=="Identification des valeurs influentes")|any(outlier=="Donnees sans valeur influente")|inf==T){
+    if(any(outlier=="Identification of influential values")|any(outlier=="Data without influencing value")|inf==T){
       
       lm.r1<-glm(modele, data, na.action=na.exclude ,family="binomial")
       as.character(attributes(terms(modele))$variables)->variables
@@ -359,7 +359,7 @@ regressions.log <-
         data[which(apply(mesure_influence$is.inf, 1, any)),"est.inf"]<-"*"
         
         data[order(data$res.student.p.Bonf), ]->data
-        writeLines("Les observations marquees d'un asterisque sont considerees comme influentes au moins sur un critere")
+        writeLines("Observations marked with an asterisk are considered influential at least on one criterion.")
         View(data)
         suppression<-"yes"
         outliers<-data.frame()
@@ -370,12 +370,12 @@ regressions.log <-
           line <- readline()
           sup<-NA
           while(is.na(sup)){
-            sup <- dlgInput("Quelle observation souhaitez-vous retirer des analyses ? 0=aucune", 0)$res
+            sup <- dlgInput("What observation do you want to get from the analyzes? 0 = none", 0)$res
             if(length(sup)==0) return(regressions())
             strsplit(sup, ":")->sup
             tail(sup[[1]],n=1)->sup
             as.numeric(sup)->sup
-            if(is.na(sup)) msgBox("Vous devez entrer le numero de l'observation")  
+            if(is.na(sup)) msgBox("You must enter the observation number")  
           }
           if(sup==0) suppression<-"no" else {
             rbind(outliers, nettoyees[sup,])->outliers
@@ -395,18 +395,18 @@ regressions.log <-
       }
       nettoyees->>nettoyees   
       
-      if(any(outlier== "Identification des valeurs influentes")){
+      if(any(outlier== "Identification of influential values")){
         length(data[,1])-length(nettoyees[,1])->N_retire # identifier le nombre d observations retirees sur la base de la distance de cook
         paste(N_retire/length(data[,1])*100,"%")->Pourcentage_retire # fournit le pourcentage retire
-        data.frame("N.retirees"=N_retire, "Pourcentage.obs.retirees"=Pourcentage_retire)->Resultats$"Synthese du nombre d'observations considerees comme influentes"
-        if(length(outliers)!=0) Resultats$"Identification des valeurs influentes"$"Observations considerees comme influentes"<-outliers
+        data.frame("N.retirees"=N_retire, "Percentage.obs.removed"=Pourcentage_retire)->Resultats$"Summary of the number of observations considered to be influential"
+        if(length(outliers)!=0) Resultats$"Identification of influential values"$"Observations considered influential"<-outliers
         
       }
-      if(any(outlier== "Donnees sans valeur influente")) {
-        if(N_retire!=0 | all(outlier!="Donnees completes")){
+      if(any(outlier== "Data without influencing value")) {
+        if(N_retire!=0 | all(outlier!="Complete data")){
           so<- try(reg.log.out(data=nettoyees,modele=modele,  select.m=select.m, step=step, scale=scale,proba=proba, nom=paste0(nom,".nettoyees")),silent=T)
-          if(class(so)=="try-error") Resultats$"Donnees sans valeur influente"<-"La suppression des valeurs influentes entraîne un effectif trop faible sur certaines modalites pour mener a bien l'analyse" else{
-            Resultats$"Donnees sans valeur influente"<-so 
+          if(class(so)=="try-error") Resultats$"Data without influencing value"<-"The removal of influential values leads to too few numbers in certain modalities to carry out the analysis." else{
+            Resultats$"Data without influencing value"<-so 
             
             if(!is.null(group))   {  
               R1<-list()
@@ -416,10 +416,10 @@ regressions.log <-
               for(i in 1:length(G)){
                 resg<- try( reg.log.out(data=G[[i]], modele=modele,  VC=VC, select.m=select.m, method=method, step=step, group=group,  scale=scale,proba=proba), silent=T)
                 
-                if(class(resg)=="try-error")   R1[[length(R1)+1]]<-"Le nombre d'observations est insuffisant pour mener a bien les analyses pour ce groupe" else R1[[length(R1)+1]]<-resg
+                if(class(resg)=="try-error")   R1[[length(R1)+1]]<-"The number of observations is insufficient to carry out the analyzes for this group" else R1[[length(R1)+1]]<-resg
                 names(R1)[length(R1)]<-names(G)[i]
               }
-              Resultats$"Donnees sans valeur influente"$"Analyse par groupe"<-R1
+              Resultats$"Data without influencing value"$"Group analysis"<-R1
             } 
           } 
           
@@ -442,12 +442,12 @@ regressions.log <-
       step.call<-paste0(step.call, ")")
     }
     Resultats$Call<-paste0("regressions.log(data=", nom, ",modele=",  modele, ",outlier=c('", outlier, "'),inf=", inf, ",select.m='", select.m,"',step=", ifelse(!is.null(step), step.call,"NULL"),
-                           ",group=", ifelse(is.null(group), "NULL", paste0("c('",group,"')")),",dial=T, info=T,sauvegarde=", sauvegarde,",proba=",proba ,")")
+                           ",group=", ifelse(is.null(group), "NULL", paste0("c('",group,"')")),", dial = T, info = T, save =", sauvegarde,",proba=",proba ,")")
     
     
     .add.history(data=data, command=Resultats$Call, nom=nom)
-    .add.result(Resultats=Resultats, name =paste("Regressions.logistique", Sys.time() ))  
-    if(sauvegarde)   if(sauvegarde) save(Resultats=Resultats, choix="Regressions.logistique", env=.e)
+    .add.result(Resultats=Resultats, name =paste("Regressions.logistics", Sys.time() ))  
+    if(sauvegarde)   if(sauvegarde) save(Resultats=Resultats, choix="Regressions.logistics", env=.e)
     Resultats$"References"<-ref1(packages)
     if(html) try(ez.html(Resultats), silent=T)
     return(Resultats)

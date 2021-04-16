@@ -1,5 +1,5 @@
 factor.an <-
-  function(data=NULL, X=NULL, nF=NULL, rotation="none", methode="ml", sat=0.3, outlier=c("Donnees completes"),
+  function(data=NULL, X=NULL, nF=NULL, rotation="none", methode="ml", sat=0.3, outlier=c("Complete data"),
            imp=NULL, ord=NULL, sauvegarde=FALSE, scor.fac=FALSE,n.boot=1, hier=F, nfact2=1, choix="afe",info=T, html=T){
     
     # data : dataframe
@@ -9,7 +9,7 @@ factor.an <-
     # "promax",  "oblimin",  "simplimax","bentlerQ", "geominQ","biquartimin", "cluster")
     # methode : character. One among c("ml", "minres" "minchi", "wls","gls","pa")
     # sat : numeric. Level of loading below which loading is not printed. 
-    # outlier : one among "Donnees completes" or "Donnees sans valeur influente"
+    # outlier : one among "Complete data" or "Data without influencing value"
     # imp : character. How should missing values be treated ? One among "mean" (use mean), "median" (use median), "amelia", "rm" (remove)
     # ord : character vector. Which variables among X are ordinal ? (or dichotomous)
     # sauvegarde : logical. Should result be saved in rtf ? 
@@ -25,15 +25,15 @@ factor.an <-
       
       Resultats<-list()
       if(is.null(data) | is.null(X))  {dial<-TRUE}else dial<-F
-      if(dial || is.null(choix) || length(choix)!=1 ||choix %in% c("Analyse factorielle exploratoire","afe",
-                                                                   "afc","acp","Analyse factorielle confirmatoire","Analyse en composante principale")==FALSE){
+      if(dial || is.null(choix) || length(choix)!=1 ||choix %in% c("Exploratory factor analysis","afe",
+                                                                   "afc","acp","Confirmatory factor analysis","Principal component analysis")==FALSE){
         dial<-T  
-        if(info) writeLines("Veuillez choisir l'analyse que vous desirez realiser.")
-        dlgList(c("Analyse factorielle exploratoire", 
-                  "Analyse factorielle confirmatoire",
-                  "Analyse en composante principale"), preselect=NULL, multiple = FALSE, title="Quelle analyse voulez vous realiser?")$res->choix
+        if(info) writeLines("Please choose the analysis you want to perform.")
+        dlgList(c("Exploratory factor analysis", 
+                  "Confirmatory factor analysis",
+                  "Principal component analysis"), preselect=NULL, multiple = FALSE, title="What analysis do you want to perform?")$res->choix
         if(length(choix)==0) return(NULL)
-        if(choix=="Analyse factorielle confirmatoire") return(ez.cfa())
+        if(choix=="Confirmatory factor analysis") return(ez.cfa())
         try( windows(record=T), silent=T)->win
         if(class(win)=="try-error") quartz()
         
@@ -48,8 +48,8 @@ factor.an <-
       }else{
         deparse(substitute(data))->nom  
       }
-      if(choix=="fa" | choix=="Analyse factorielle exploratoire") msg3<-"Veuillez choisir les variables que vous desirez analyser. Vous devez choisir au moins 5 variables" else{
-        msg3<-"Veuillez choisir les variables que vous desirez analyser. Vous devez choisir au moins 3 variables"
+      if(choix=="fa" | choix=="Exploratory factor analysis") msg3<-"Please choose the variables you want to analyze. You must choose at least 5 variables" else{
+        msg3<-"Please choose the variables you want to analyze. You must choose at least 3 variables"
       }
       
       X<-.var.type(X=X, info=info, data=data, type="numeric", check.prod=F, message=msg3,  multiple=T, title="Variables", out=NULL)
@@ -61,17 +61,17 @@ factor.an <-
       
       
       
-      if(dial || length(outlier)>1 || outlier %in% c("Donnees completes", "Donnees sans valeur influente") ==FALSE){
-        if(info) writeLines("Desirez-vous l'analyse sur les donnees completes ou sur les donnees pour lesquelles les valeurs influentes ont ete enlevees ?")
-        if(info) writeLines("les valeurs influentes sont identifiees sur la base de la distance de Mahalanobis avec un seuil du chi a 0.001")
-        outlier<- dlgList(c("Donnees completes", "Donnees sans valeur influente"), preselect="Donnees completes",multiple = FALSE, title="Quels resultats voulez-vous obtenir ?")$res
+      if(dial || length(outlier)>1 || outlier %in% c("Complete data", "Data without influencing value") ==FALSE){
+        if(info) writeLines("Do you want the analysis on the complete data or on the data for which the influencing values have been removed?")
+        if(info) writeLines("influencing values are identified based on the Mahalanobis distance with a chi threshold of 0.001")
+        outlier<- dlgList(c("Complete data", "Data without influencing value"), preselect="Complete data",multiple = FALSE, title="What results do you want to achieve?")$res
         if(length(outlier)==0) { Resultats<-fa.in()
         return(Resultats)}
       }
       
-      if(outlier=="Donnees sans valeur influente"){
+      if(outlier=="Data without influencing value"){
         inf<-VI.multiples(data,X)
-        Resultats$"Valeurs considerees comme influentes"<-inf$"Valeurs considerees comme influentes"
+        Resultats$"Values considered influential"<-inf$"Values considered influential"
         data<-inf$data
       }
       
@@ -79,8 +79,8 @@ factor.an <-
       
       if(dial){
         if(info) writeLines("Veuillez preciser le type de variables. Des correlations tetra/polychoriques seront realisees sur les variables dichotomiques/ordinales et Bravais-Pearson sur les variables continues")
-        if(length(unique(unlist(data[,X])))<9) {type<-dlgList(c("dichotomiques/ordinales","continues", "mixte"), preselect=NULL, multiple = FALSE, title="Nature des variables ?")$res}else {
-          type<-dlgList(c("continues", "mixte"), preselect=NULL, multiple = FALSE, title="Nature des variables ?")$res 
+        if(length(unique(unlist(data[,X])))<9) {type<-dlgList(c("dichotomiques/ordinales","continues", "mixte"), preselect=NULL, multiple = FALSE, title="Nature of the variables?")$res}else {
+          type<-dlgList(c("continues", "mixte"), preselect=NULL, multiple = FALSE, title="Nature of the variables?")$res 
         }
         
         if(length(type)==0) {Resultats<-fa.in()
@@ -95,50 +95,50 @@ factor.an <-
         cor<-"poly"
         methode<-c("minres")
         if(type=="mixte") {cor<-"mixed"
-        if(info) writeLines("Veuillez preciser les variables ordinales ?") 
-        ord<-dlgList(X, multiple = TRUE, title="Variables ordinales ?")$res
+        if(info) writeLines("Please specify ordinal variables?") 
+        ord<-dlgList(X, multiple = TRUE, title="Ordinal variables?")$res
         if(length(ord)==0) {Resultats<-fa.in()
         return(Resultats)}
         }else ord<-X
         Matrice<-try(tetrapoly(data=data[,X],X=X,info=T, ord=ord,group=NULL,estimator='two.step',output='cor',imp=imp, html=F)[[1]],silent=T)
         if(all(class(Matrice)!="matrix")) {
-          sortie<-dlgMessage("La matrice de correlation n'a pu etre realisee. Voulez-vous reessayer ?", type="yesno")$res
+          sortie<-dlgMessage("The correlation matrix could not be performed. Do you want to try again?", type="yesno")$res
           if(sortie=="yes") return(NULL) else Matrice<-try(tetrapoly(data=data[,X],X=X,info=T, ord=ord,group=NULL,estimator='two.step',output='cor', imp="rm")[[1]],silent=T)
           if(class(Matrix)=="try-error")  {Matrice<-corr.test(data[,X], method="Spearman")$r
-          msgBox("Les correlations polychoriques ont echoue. Les correlations utilisees sont des rho de Spearman")}
+          msgBox("Polychoric correlations have failed. The correlations used are Spearman's rho")}
         }
       }    
       
       Matrice1 <- mat.sort(Matrice)
       if(length(X)>30) numbers<-F else numbers<-T
-      try(cor.plot(Matrice1, show.legend=FALSE, main="Matrice de correlation utilisee pour AFE", labels=NULL, n.legend=0, MAR=TRUE, numbers=numbers,cex=1), silent=T)
-      round(Matrice,3)->Resultats$"Matrice de correlations"
+      try(cor.plot(Matrice1, show.legend=FALSE, main="Correlation matrix used for AFE", labels=NULL, n.legend=0, MAR=TRUE, numbers=numbers,cex=1), silent=T)
+      round(Matrice,3)->Resultats$"Correlation matrix"
       round(unlist(cortest.bartlett(data[,X])),4)->bartlett
-      names(bartlett)<-c("chi.carre","valeur.p","ddl")
+      names(bartlett)<-c("chi.carre","p-value","dof")
       ### doit etre significatif (attention depend de la taille de l echantillon)
-      bartlett->Resultats$"Mesure d'adequation de la matrice"$"Test de Barlett"
+      bartlett->Resultats$"Matrix adequacy measure"$"Barlett test"
       KMO1<-KMO(Matrice)
-      if(is.na(KMO1)) {msgBox("Le KMO sur la matrice n'a pu etre obtenu. Nous tentons de realiser un lissage de la matrice de correlation")
+      if(is.na(KMO1)) {msgBox("The KMO on the matrix could not be obtained. We try to perform a smoothing of the correlation matrix")
         Matrice<-cor.smooth(Matrice)
         KMO1<-KMO(Matrice)}
       if(is.na(KMO1)) {
-        msgBox("Le KMO sur la matrice n'a pu etre obtenu.")
-        Resultats$"Mesure d'adequation de la matrice"$"Indice de Kaiser-Meyer-Olkin global"<-"Le KMO n'a pas pu etre calcule. Verifiez votre matrice de correlation."
+        msgBox("The KMO on the matrix could not be obtained.")
+        Resultats$"Matrix adequacy measure"$"Global Kaiser-Meyer-Olkin Index"<-"The KMO could not be calculated. Check your correlation matrix."
       } else {
-        round(KMO1$MSA,3)->Resultats$"Mesure d'adequation de la matrice"$"Indice de Kaiser-Meyer-Olkin global" ### doit etre superieur a 0.5 sinon la matrice ne convient pas pour analyse factorielle. Dans lÃÂÃÂideal, avoir au moins 0.8. Si des X presentent un KMO<0.5, on peut envisager de les supprimer. 
-        round(KMO1$MSAi,3)->Resultats$"Mesure d'adequation de la matrice"$'Indice de Kaiser-Meyer-Olkin par item'
-        round(det(Matrice),5)->Resultats$"Mesure d'adequation de la matrice"$"Determinant de la matrice de correlation"
-        Resultats$"Mesure d'adequation de la matrice"$"Determinant de la matrice de correlations : information"<-"risque de multicolinearite si le determinant de la matrice est inferieur a 0.00001"
+        round(KMO1$MSA,3)->Resultats$"Matrix adequacy measure"$"Global Kaiser-Meyer-Olkin Index" ### doit etre superieur a 0.5 sinon la matrice ne convient pas pour analyse factorielle. Dans lÃÂÃÂideal, avoir au moins 0.8. Si des X presentent un KMO<0.5, on peut envisager de les supprimer. 
+        round(KMO1$MSAi,3)->Resultats$"Matrix adequacy measure"$'Indice de Kaiser-Meyer-Olkin par item'
+        round(det(Matrice),5)->Resultats$"Matrix adequacy measure"$"Determinant of the correlation matrix"
+        Resultats$"Matrix adequacy measure"$"Determinant of the correlation matrix: information"<-"risk of multicollinearity if the determinant of the matrix is less than 0.00001"
       }
       
       
       if(dial){
-        print(Resultats$"Mesure d'adequation de la matrice")
-        print("le KMO doit absolument etre superieur a 0.5")
+        print(Resultats$"Matrix adequacy measure")
+        print("the KMO must absolutely be greater than 0.5")
         cat ("Appuyez sur [entree] pour continuer")
         line <- readline()  
-        dlgMessage(c("La matrice est-elle satisfaisante pour une AFE ?", "Continuer ?"), "okcancel")$res->res.kmo
-        if(res.kmo=="cancel") {print("vous avez quitte l'AFE")
+        dlgMessage(c("Is the matrix satisfactory for an AFE?", "Carry on ?"), "okcancel")$res->res.kmo
+        if(res.kmo=="cancel") {print("you left AFE")
           return(analyse())}
       }
       
@@ -146,7 +146,7 @@ factor.an <-
       if(dial || length(methode)>1 || is.null(methode) || methode%in%c("minres","wls","gls","pa", "ml","minchi")==FALSE){
         if(info) writeLines("Pour les variables ordinales et dichomiques, preferez la methode du minimum des residus - minres -
                             ou des moindres carres ponderes - wls. Pour les variables continues, le maximum de vraisemblance si la normalite est respectee - ml")
-        methode<-dlgList(c("minres","wls","gls","pa", "ml","minchi"), preselect= methode, multiple = FALSE, title="Quel algorithme desirez-vous?")$res
+        methode<-dlgList(c("minres","wls","gls","pa", "ml","minchi"), preselect= methode, multiple = FALSE, title="Which algorithm would you like?")$res
         if(length(methode)==0) {Resultats<-fa.in()
         return(Resultats)}
         
@@ -155,16 +155,16 @@ factor.an <-
       eigen(Matrice)$values->eigen
       parallel(length(data[,1]), length(X), 100)->P1
       nScree(x =eigen, aparallel=P1$eigen$mevpea)->result
-      result->Resultats$"analyses paralleles"
+      result->Resultats$"parallel analyzes"
       plotnScree(result)
       if(dial | is.null(nF) | !is.numeric(nF)) {
-        msgBox(paste("le nombre de facteurs a retenir selon l'analyse en parallele est de",result$Components$nparallel, "facteurs." ))
+        msgBox(paste("the number of factors to be retained according to the parallel analysis is",result$Components$nparallel, "factors." ))
         cat ("Appuyez sur [entree] pour continuer")
         line <- readline() 
         nF<-NA
         while(!is.numeric(nF)) {
-          writeLines("Veuillez preciser le nombre de facteurs.") 
-          nF <- dlgInput("Nombre de facteurs ?", 2)$res
+          writeLines("Please specify the number of factors.") 
+          nF <- dlgInput("Number of factors?", 2)$res
           if(length(nF)==0) {Resultats<-fa.in()
           return(Resultats)
           }
@@ -172,7 +172,7 @@ factor.an <-
           tail(nF[[1]],n=1)->nF
           as.numeric(nF)->nF
           if(any((nF%%1==0)%in% c(FALSE, NA))|| nF<0 || nF>(length(X)/2) ){
-            msgBox("Le nombre de facteur doit etre un entier positif inferieur au nombre de variables")
+            msgBox("The number of factors must be a positive integer less than the number of variables")
             nF<-NA
           }
         }
@@ -182,18 +182,18 @@ factor.an <-
       
       if(dial & nF>1 || (length(rotation)>1 | rotation %in% c("none", "varimax", "quartimax", "bentlerT", "equamax", "varimin", "geominT","bifactor",
                                                               "promax",  "oblimin",  "simplimax","bentlerQ", "geominQ","biquartimin", "cluster")==FALSE)){
-        if(choix=="acp" | choix=="Analyse en composante principale") rotation<- c("none", "varimax", "quartimax", "promax",  "oblimin",  "simplimax","cluster") else{
+        if(choix=="acp" | choix=="Principal component analysis") rotation<- c("none", "varimax", "quartimax", "promax",  "oblimin",  "simplimax","cluster") else{
           rotation<-c("none", "varimax", "quartimax", "bentlerT", "equamax", "varimin", "geominT","bifactor", "promax",  "oblimin",  
                       "simplimax","bentlerQ", "geominQ","biquartimin", "cluster")
         }
-        writeLines("Veuillez choisir le type de rotation. Oblimin est adapte en sciences humaines")
-        rotation<-dlgList(rotation, preselect= "oblimin", multiple = FALSE, title="Quelle rotation")$res
+        writeLines("Please choose the type of rotation. Oblimin is adapted in humanities")
+        rotation<-dlgList(rotation, preselect= "oblimin", multiple = FALSE, title="What a rotation")$res
         if(length(rotation)==0) {Resultats<-fa.in()
         return(Resultats)}
       }
       if(dial | !is.logical(scor.fac)){
-        writeLines("Voulez-vous que les scores factoriels soient integres a vos donnees ?")
-        dlgList(c("TRUE","FALSE"), preselect="FALSE", multiple = FALSE, title="Scores factoriels?")$res->scor.fac
+        writeLines("Do you want factor scores included in your data?")
+        dlgList(c("TRUE","FALSE"), preselect="FALSE", multiple = FALSE, title="Factor scores?")$res->scor.fac
         if(length(scor.fac)==0) {Resultats<-fa.in()
         return(Resultats)}
       }
@@ -204,7 +204,7 @@ factor.an <-
       while(is.null(sat)){
         if(info)  writeLines("Le critere de saturation permet de n'afficher dans le tableau de resultats 
                              que les saturation superieure au seuil fixe")
-        sat <- dlgInput("Quel est le critere de saturation que vous voulez utiliser ?", 0.3)$res
+        sat <- dlgInput("What is the saturation criterion you want to use?", 0.3)$res
         
         if(length(sat)==0) {Resultats<-fa.in()
         return(Resultats)  }
@@ -212,32 +212,32 @@ factor.an <-
         tail(sat[[1]],n=1)->sat
         as.numeric(sat)->sat
         if(is.na(sat)) {sat<-NULL
-        msgBox("Le critere de saturation doit etre compris entre 0 et 1.") }
+        msgBox("The saturation criterion must be between 0 and 1.") }
       }
       
       
       
-      if(choix=="Analyse factorielle exploratoire") {  
+      if(choix=="Exploratory factor analysis") {  
         if(!is.null(n.boot) && ((class(n.boot)!="numeric" & class(n.boot)!="integer") ||  n.boot%%1!=0 || n.boot<1)){
-          msgBox("Le nombre de bootstrap doit etre un nombre entier positif") 
+          msgBox("The number of bootstrap must be a positive integer") 
           n.boot<-NULL
         }
         while(is.null(n.boot)){
-          writeLines("Veuillez preciser le nombre de bootstrap. Pour ne pas avoir de bootstrap, choisir 1")
-          n.boot<-dlgInput("Nombre de bootstrap ?", 1)$res
+          writeLines("Please specify the number of bootstrap. To not have a bootstrap, choose 1")
+          n.boot<-dlgInput("Number of bootstrap?", 1)$res
           if(length(n.boot)==0) {Resultats<-fa.in()
           return(Resultats)}
           strsplit(n.boot, ":")->n.boot
           tail(n.boot[[1]],n=1)->n.boot
           as.numeric(n.boot)->n.boot
           if(is.na(n.boot) ||  n.boot%%1!=0 || n.boot<1){
-            msgBox("Le nombre de bootstrap doit etre un nombre entier positif") 
+            msgBox("The number of bootstrap must be a positive integer") 
             n.boot<-NULL
           }
         }
         if(dial & nF>1 & methode!="pa" & rotation%in%c("oblimin","simplimax", "promax") || hier==T && nFact2>=nF/2){
           if(info) writeLines(" Desirez-vous tester une structure hierarchique ? L'omega teste une structure hierarchique et une AFE hierarchique seront realisees.")
-          dlgList(c("TRUE","FALSE"), preselect="FALSE", multiple = FALSE, title="Faut-il realiser une analyse hierarchique ?")$res->hier
+          dlgList(c("TRUE","FALSE"), preselect="FALSE", multiple = FALSE, title="Should a hierarchical analysis be carried out?")$res->hier
           if(length(hier)==0) {Resultats<-fa.in()
           return(Resultats)  
           }
@@ -245,8 +245,8 @@ factor.an <-
             nfact2<-NA
             while(!is.numeric(nfact2)) {
               nfact2<-NA
-              writeLines("Veuillez preciser le nombre de facteurs de la structure hierarchique.") 
-              nfact2 <- dlgInput("Nombre de facteurs du niveau superieur ?", 1)$res
+              writeLines("Please specify the number of factors of the hierarchical structure.") 
+              nfact2 <- dlgInput("Number of higher level factors?", 1)$res
               if(length(nfact2)==0) {Resultats<-fa.in()
               return(Resultats)
               }
@@ -254,7 +254,7 @@ factor.an <-
               tail(nfact2[[1]],n=1)->nfact2
               as.numeric(nfact2)->nfact2
               if(any(nfact2%%1==0 %in% c(FALSE, NA))|| nfact2<0 || nfact2>=nF/2 ){
-                msgBox("Le nombre de facteur doit etre un entier positif inferieur au nombre de facteurs")
+                msgBox("The number of factors must be a positive integer less than the number of factors")
                 nfact2<-NA
               }
             }
@@ -266,8 +266,8 @@ factor.an <-
       
       
       if(dial | !is.logical(sauvegarde)){
-        if(info) writeLines("Desirez-vous sauvegarder les resultats dans un fichier externe ?")
-        dlgList(c("TRUE","FALSE"), preselect="FALSE", multiple = FALSE, title="Voulez-vous sauvegarder?")$res->sauvegarde
+        if(info) writeLines("Do you want to save the results in an external file?")
+        dlgList(c("TRUE","FALSE"), preselect="FALSE", multiple = FALSE, title="Do you want to save?")$res->sauvegarde
         if(length(sauvegarde)==0) {Resultats<-fa.in()
         return(Resultats)    
         }
@@ -295,64 +295,64 @@ factor.an <-
     
     fa.out<-function(Matrice, data, X, nF, methode, rotation, sat, scor.fac, n.boot, nom, hier=FALSE, cor="cor", nfact2){
       
-      if( cor=="cor") { Resultats$"Normalite multivariee"<-.normalite(data, X)} else cor<-"mixed"
+      if( cor=="cor") { Resultats$"Multivariate normalcy"<-.normalite(data, X)} else cor<-"mixed"
       if(n.boot==1) {
         FA.results<-fa(Matrice,nfactors= nF, n.obs=length(data[,1]),fm=methode, rotate=rotation, n.iter=1) # realise l AFE
       } else {
         FA.results<-try(fa(data[,X], nfactors= nF, fm=method, rotate=rotation, n.iter=n.boot, cor=cor), silent=T)
         if(class(FA.results)=="try-error") { 
-          msgBox("Le modele n'a pas pu converger. Les parametres ont ete adaptes pour permettre au modele de converger")
+          msgBox("The model could not converge. The parameters have been adapted to allow the model to converge")
           FA.results<-try(fa(data[,X], nfactors= nF, fm=methode, rotate=rotation, n.iter=1, cor="cor", SMC=F), silent=T)
           if(class(FA.results)=="try-error"){
-            msgBox("Nous n'avons pas reussi a faire converger le modele. Veuillez verifier votre matrice de correlations et reessayer avec d'autres parametres")
+            msgBox("We have not succeeded in making the model converge. Please check your correlation matrix and try again with other parameters")
             return(analyse())}
         }
       }
       
       
       Resultats<-list()
-      Resultats$analyse<-paste("analyse factorielle en utilisant la fonction fa du package psych avec la methode", FA.results$fm)
-      if(rotation=="none") Resultats$rotation<-"il n'y a pas de rotation" else Resultats$rotation<-paste("la rotation est un rotation", rotation)
+      Resultats$analyse<-paste("factorial analysis using the function fa of the package psych with the method", FA.results$fm)
+      if(rotation=="none") Resultats$rotation<-"there is no rotation" else Resultats$rotation<-paste("rotation is rotation", rotation)
       FA.results<-fa.sort(FA.results,polar=FALSE)
       loadfa<-round(as(FA.results$loadings, "matrix"),3)
       loadfa[which(abs(loadfa)<sat)]<-" "
-      data.frame("communaute"=round(FA.results$communality,3),
+      data.frame("communality"=round(FA.results$communality,3),
                  "specifite"=round(FA.results$uniquenesses,3),
-                 "complexite"=round(FA.results$complexity,2))->communaute
-      Resultats$"saturations standardisees basees sur la matrice de correlations"<-data.frame(loadfa, communaute)
+                 "complexity"=round(FA.results$complexity,2))->communaute
+      Resultats$"standardized saturations based on the correlation matrix"<-data.frame(loadfa, communaute)
       
       var.ex <- round(FA.results$Vaccounted,3)
-      if(nF>1){dimnames(var.ex)[[1]]<-c("Sommes des carres des saturations", "proportion de variance expliquee",
-                                        "proportion de variance expliquee cumulee", "Proportion de l'explication", 
-                                        "Proportion cumulee de l'explication")} else {
-                                          dimnames(var.ex)[[1]]<-c("Sommes des carres des saturations", "proportion de variance expliquee")
+      if(nF>1){dimnames(var.ex)[[1]]<-c("Sum of saturation squares", "proportion of variance explained",
+                                        "cumulative explained variance proportion", "Proportion of explanation", 
+                                        "Cumulative proportion of the explanation")} else {
+                                          dimnames(var.ex)[[1]]<-c("Sum of saturation squares", "proportion of variance explained")
                                         }
-      Resultats$"Variance expliquee"<-var.ex
+      Resultats$"Variance explained"<-var.ex
       
       paste("ML",1:nF)->noms1
       if(nF>1 & rotation=="oblimin"){
         round(FA.results$Phi, 3)->cor.f
-        Resultats$"correlations entre facteurs"<-cor.f}
-      paste("la complexite moyenne est de", round(mean(FA.results$complexity),3), "Cela teste si", nF, "facteurs suffise(nt)" )-> Resultats$"Complexite moyenne"
+        Resultats$"correlations between factors"<-cor.f}
+      paste("the average complexity is", round(mean(FA.results$complexity),3), "This tests whether", nF, "factors suffice" )-> Resultats$"Medium complexity"
       if(length(X)>5){
         round(matrix(c(FA.results$null.chisq, FA.results$null.dof,FA.results$null.model,
                        FA.results$dof, FA.results$objective, FA.results$RMSEA,
                        FA.results$TLI,FA.results$BIC, FA.results$SABIC,FA.results$rms, FA.results$crms, FA.results$fit.off, 
                        FA.results$chi, FA.results$EPVAL, FA.results$STATISTIC, FA.results$PVAL, FA.results$n.obs), ncol=1),4)->stats
-        c("chi carre du modele null", "Degres de liberte du modele null", "fonction objective du modele null",
-          "degres de liberte du modele", "fonction objective du modele", "RMSEA", "limite inferieure du RMSEA", "limite superieure du RMSEA",
-          "Seuil de confiance (1- alpha)", "facteur de fiabilite de Tucker Lewis - TLI", "BIC", "EBIC", 
-          "RMSR", "RMSR corrige", "Adequation basee sur les valeurs en dehors de la diagonale", "chi carre empirique", "valeur de la proabilite du chi carre empirique",
-          "chi carre du maximum de vraisemblance", "valeur de la probabilite du chi carre du maximum de vraisemblance", "nombre total d'observations")->dimnames(stats)[[1]]
+        c("chi square of the null model", "Degrees of freedom of the null model", "objective function of the null model",
+          "degrees of freedom of the model", "objective function of the model", "RMSEA", "lower limit of RMSEA", "upper limit of RMSEA",
+          "Confidence threshold (1- alpha)", "Tucker Lewis Reliability Factor - TLI", "BIC", "EBIC", 
+          "RMSR", "RMSR corrects", "Matching based on values outside the diagonal", "empirical chi square", "value of the proability of the empirical square footage",
+          "chi-square of maximum likelihood", "value of the chi-square probability of the maximum likelihood", "total number of observations")->dimnames(stats)[[1]]
         
-        "valeurs"->dimnames(stats)[[2]]
-        stats->Resultats$"Indices d'adequation et d'ajustement"
+        "values"->dimnames(stats)[[2]]
+        stats->Resultats$"Suitability and adjustment indices"
         if(all(FA.results$R2<1)){
           round(rbind((FA.results$R2)^0.5,FA.results$R2,2*FA.results$R2-1),2)->stats
-          dimnames(stats)[[1]]<-c("Correlations des scores avec les facteurs", "R carre multiple des scores avec les facteurs",
-                                  "Correlation minimale possible des scores avec les facteurs")
+          dimnames(stats)[[1]]<-c("Correlations of scores with factors", "R multiple square of scores with factors",
+                                  "Minimum possible correlation of scores with factors")
           dimnames(stats)[[2]]<-noms1
-          stats->Resultats$"Correlations des scores avec les facteurs" 
+          stats->Resultats$"Correlations of scores with factors" 
         }
         
         if(n.boot>1) {
@@ -361,10 +361,10 @@ factor.an <-
             cbind(round(FA.results$cis$ci[,i],3), 
                   round(as(FA.results$loadings, "matrix"),3)[,i],
                   round(FA.results$cis$ci[,i+nF],3))->IC2
-            dimnames(IC2)[[2]]<-c("lim.inf", dimnames(FA.results$loadings)[[2]][i],"lim.sup")
+            dimnames(IC2)[[2]]<-c("inf.lim", dimnames(FA.results$loadings)[[2]][i],"sup.lim")
             cbind(IC, IC2)->IC
           }
-          IC->Resultats$"Intervalle de confiance des saturations sur la base du bootstrap - peut etre biaise en presence de Heyhood case"
+          IC->Resultats$"Confidence interval of saturations based on bootstrap - may be biased in the presence of Heyhood case"
         }
       }
       print(fa.diagram(FA.results))#representation graphique des saturations}
@@ -378,52 +378,52 @@ factor.an <-
       }
       
       data<-data.frame(data,Scores.fac)
-      names(data)[(length(data)+1-nF):length(data)]<-paste0("facteur.", 1:nF)
+      names(data)[(length(data)+1-nF):length(data)]<-paste0("factor.", 1:nF)
       assign(nom, data,envir=.GlobalEnv)
       
       }
       
       if(hier) {
         if(cor!="cor") poly<-TRUE else poly<-FALSE
-        Resultats$"Analyse factorielle hierarchique"$Omega<-psych::omega(data[,X], nfactors=nF, n.iter=n.boot,fm=methode, poly=poly, flip=T, digits=3, sl=T, plot=T, n.obs=length(data[,1]), rotate=rotation)
+        Resultats$"Hierarchical factor analysis"$Omega<-psych::omega(data[,X], nfactors=nF, n.iter=n.boot,fm=methode, poly=poly, flip=T, digits=3, sl=T, plot=T, n.obs=length(data[,1]), rotate=rotation)
         multi<-fa.multi(Matrice, nfactors=nF, nfact2=nfact2, n.iter=1,fm=methode, n.obs=length(data[,1]), rotate=rotation)
         multi$f2->FA.results
         
         FA.results<-fa.sort(FA.results,polar=FALSE)
         loadfa<-round(as(FA.results$loadings, "matrix"),3)
         loadfa[which(abs(loadfa)<sat)]<-" "
-        data.frame("communaute"=round(FA.results$communality,3),
+        data.frame("communality"=round(FA.results$communality,3),
                    "specifite"=round(FA.results$uniquenesses,3),
-                   "complexite"=round(FA.results$complexity,2))->communaute
-        Resultats$"Analyse factorielle hierarchique"$"saturations standardisees basees sur la matrice de correlations"<-data.frame(loadfa, communaute)
+                   "complexity"=round(FA.results$complexity,2))->communaute
+        Resultats$"Hierarchical factor analysis"$"standardized saturations based on the correlation matrix"<-data.frame(loadfa, communaute)
         
         var.ex <- round(FA.results$Vaccounted,3)
-        if(nfact2>1){dimnames(var.ex)[[1]]<-c("Sommes des carres des saturations", "proportion de variance expliquee",
-                                              "proportion de variance expliquee cumulee", "Proportion de l'explication", 
-                                              "Proportion cumulee de l'explication")} else {
-                                                dimnames(var.ex)[[1]]<-c("Sommes des carres des saturations", "proportion de variance expliquee")
+        if(nfact2>1){dimnames(var.ex)[[1]]<-c("Sum of saturation squares", "proportion of variance explained",
+                                              "cumulative explained variance proportion", "Proportion of explanation", 
+                                              "Cumulative proportion of the explanation")} else {
+                                                dimnames(var.ex)[[1]]<-c("Sum of saturation squares", "proportion of variance explained")
                                               }
-        Resultats$"Analyse factorielle hierarchique"$"Variance expliquee"<-var.ex
+        Resultats$"Hierarchical factor analysis"$"Variance explained"<-var.ex
         
         paste("ML",1:nfact2)->noms1
         
-        paste("la complexite moyenne est de", round(mean(FA.results$complexity),3), "Cela teste si", nF, "facteurs suffise(nt)" )-> Resultats$"Complexite moyenne"
+        paste("the average complexity is", round(mean(FA.results$complexity),3), "This tests whether", nF, "factors suffice" )-> Resultats$"Medium complexity"
         
         round(matrix(c( FA.results$null.dof,FA.results$null.model,
                         FA.results$dof, FA.results$objective, 
                         FA.results$rms, FA.results$fit.off), ncol=1),4)->stats
-        c( "Degres de liberte du modele null", "fonction objective du modele null",
-           "degres de liberte du modele", "fonction objective du modele",    "RMSR", 
-           "Adequation basee sur les valeurs en dehors de la diagonale")->dimnames(stats)[[1]]
+        c( "Degrees of freedom of the null model", "objective function of the null model",
+           "degrees of freedom of the model", "objective function of the model",    "RMSR", 
+           "Matching based on values outside the diagonal")->dimnames(stats)[[1]]
         
-        "valeurs"->dimnames(stats)[[2]]
-        stats->Resultats$"Analyse factorielle hierarchique"$"Indices d'adequation et d'ajustement"
+        "values"->dimnames(stats)[[2]]
+        stats->Resultats$"Hierarchical factor analysis"$"Suitability and adjustment indices"
         if(all(FA.results$R2<1)){
           round(rbind((FA.results$R2)^0.5,FA.results$R2,2*FA.results$R2-1),2)->stats
-          dimnames(stats)[[1]]<-c("Correlations des scores avec les facteurs", "R carre multiple des scores avec les facteurs",
-                                  "Correlation minimale possible des scores avec les facteurs")
+          dimnames(stats)[[1]]<-c("Correlations of scores with factors", "R multiple square of scores with factors",
+                                  "Minimum possible correlation of scores with factors")
           dimnames(stats)[[2]]<-noms1
-          stats->Resultats$"Analyse factorielle hierarchique"$"Correlations des scores avec les facteurs"
+          stats->Resultats$"Hierarchical factor analysis"$"Correlations of scores with factors"
           fa.multi.diagram(multi)
         }
       }
@@ -434,40 +434,40 @@ factor.an <-
       principal(Matrice, nfactors= nF, n.obs=length(data[,1]), rotate=rotation)->PCA
       list()->Resultats
       Resultats$analyse<-paste("analyse en composante principale en utilisant la fonction [principal] du package psych, l'algorithme est", PCA$fm)
-      if(!is.null(rotation)) Resultats$rotation<-paste("la rotation est un rotation", rotation) 
+      if(!is.null(rotation)) Resultats$rotation<-paste("rotation is rotation", rotation) 
       
       PCA<-fa.sort(PCA,polar=FALSE)
       loadfa<-round(as(PCA$loadings, "matrix"),3)
       loadfa[which(abs(loadfa)<sat)]<-" " 
-      data.frame("communaute"=round(PCA$communality,3),
+      data.frame("communality"=round(PCA$communality,3),
                  "specifite"=round(PCA$uniquenesses,3),
-                 "complexite"=round(PCA$complexity,2))->communaute
-      Resultats$"saturations standardisees basees sur la matrice de correlations"<-data.frame(loadfa, communaute)
+                 "complexity"=round(PCA$complexity,2))->communaute
+      Resultats$"standardized saturations based on the correlation matrix"<-data.frame(loadfa, communaute)
       var.ex<-round(PCA$Vaccounted,3)
       
-      if(nF>1){dimnames(var.ex)[[1]]<-c("Sommes des carres des saturations", "proportion de variance expliquee",
-                                        "proportion de variance expliquee cumulee", "Proportion de l'explication", 
-                                        "Proportion cumulee de l'explication")} else {
-                                          dimnames(var.ex)[[1]]<-c("Sommes des carres des saturations", "proportion de variance expliquee")
+      if(nF>1){dimnames(var.ex)[[1]]<-c("Sum of saturation squares", "proportion of variance explained",
+                                        "cumulative explained variance proportion", "Proportion of explanation", 
+                                        "Cumulative proportion of the explanation")} else {
+                                          dimnames(var.ex)[[1]]<-c("Sum of saturation squares", "proportion of variance explained")
                                         }
-      Resultats$"Variance expliquee"<-var.ex
+      Resultats$"Variance explained"<-var.ex
       
       paste("TC",1:nF)->noms1
       if(nF>1 & rotation=="oblimin"){  round(PCA$r.scores,3)->cor.f
-        Resultats$"correlations entre facteurs"<-cor.f}
-      paste("la complexite moyenne est de", mean(PCA$complexity), "Cela teste si", nF, "facteurs suffise(nt)" )-> Resultats$"Complexite moyenne"
+        Resultats$"correlations between factors"<-cor.f}
+      paste("the average complexity is", mean(PCA$complexity), "This tests whether", nF, "factors suffice" )-> Resultats$"Medium complexity"
       round(matrix(c(PCA$null.dof,PCA$null.model,
                      PCA$dof, PCA$objective, 
                      PCA$rms, PCA$fit.off, 
                      PCA$chi, PCA$EPVAL, PCA$STATISTIC, PCA$PVAL, PCA$n.obs), ncol=1),4)->stats
       
       
-      c("Degres de liberte du modele null", "fonction objective du modele null","degres de liberte du modele", "fonction objective du modele",
-        "RMSR",  "Adequation basee sur les valeurs en dehors de la diagonale", "chi carre empirique", "valeur de la probabilite du chi carre empirique",
-        "chi carre du maximum de vraisemblance", "valeur de la probabilite du chi carre du maximum de vraisemblance", "nombre total d'observations")->dimnames(stats)[[1]]
+      c("Degrees of freedom of the null model", "objective function of the null model","degrees of freedom of the model", "objective function of the model",
+        "RMSR",  "Matching based on values outside the diagonal", "empirical chi square", "value of the probability of the empirical chi-square",
+        "chi-square of maximum likelihood", "value of the chi-square probability of the maximum likelihood", "total number of observations")->dimnames(stats)[[1]]
       
-      "valeurs"->dimnames(stats)[[2]]
-      stats->Resultats$"Indices d'adequation et d'ajustement"
+      "values"->dimnames(stats)[[2]]
+      stats->Resultats$"Suitability and adjustment indices"
       if(scor.fac){
         Scores.fac<-c()
         sapply(data[,X], scale)->centrees
@@ -478,7 +478,7 @@ factor.an <-
           cbind(Scores.fac,centrees2)->Scores.fac
         }
         data<-data.frame(data,Scores.fac)
-        names(data)[(length(data)+1-nF):length(data)]<-paste0("facteur.", 1:nF)
+        names(data)[(length(data)+1-nF):length(data)]<-paste0("factor.", 1:nF)
         assign(nom, data,envir=.GlobalEnv)
         
       }
@@ -511,18 +511,18 @@ factor.an <-
     cor<-fa.options$cor
     hier<-fa.options$hier
     nfact2<-fa.options$nfact2
-    Resultats$"Matrice de correlations"<-fa.options$"Matrice de correlations"
-    Resultats$"Mesure d'adequation de la matrice"<-fa.options$"Mesure d'adequation de la matrice"
-    Resultats$"analyses paralleles"<-fa.options$"analyses paralleles"
+    Resultats$"Correlation matrix"<-fa.options$"Correlation matrix"
+    Resultats$"Matrix adequacy measure"<-fa.options$"Matrix adequacy measure"
+    Resultats$"parallel analyzes"<-fa.options$"parallel analyzes"
     
     
     
-    if(fa.options$choix==  "Analyse factorielle exploratoire" |choix=="afe"){
-      Resultats$"Analyse factorielle"<-fa.out(Matrice=Matrice, data=data, X=X, nF=nF, methode=methode, rotation=rotation, sat=sat, 
+    if(fa.options$choix==  "Exploratory factor analysis" |choix=="afe"){
+      Resultats$"Factor analysis"<-fa.out(Matrice=Matrice, data=data, X=X, nF=nF, methode=methode, rotation=rotation, sat=sat, 
                                               scor.fac=scor.fac, n.boot=n.boot, nom=nom, hier=hier, cor=cor, nfact2=nfact2)  }
     
-    if(fa.options$choix==  "Analyse en composante principale" |choix=="acp"){
-      Resultats$"Analyse en composante principale"<-acp.out(Matrice=Matrice, data=data, X=X, nF=nF, methode=methode, rotation=rotation, sat=sat, scor.fac=scor.fac, nom=nom)
+    if(fa.options$choix==  "Principal component analysis" |choix=="acp"){
+      Resultats$"Principal component analysis"<-acp.out(Matrice=Matrice, data=data, X=X, nF=nF, methode=methode, rotation=rotation, sat=sat, scor.fac=scor.fac, nom=nom)
     }
     
     
@@ -530,7 +530,7 @@ factor.an <-
     if(!is.null(fa.options$ord)) paste(fa.options$ord, collapse="','", sep="")->ord
     Resultats$Call<-paste0("factor.an(data=", nom, ",X=c('",X, "'),nF=", nF,", rotation='", rotation, "',methode='",methode, "',sat=", sat,
                            ",outlier='", outlier, "',imp=", ifelse(is.null(imp), "NULL", paste0("'",imp,"'")),",ord=", ifelse(!is.null(ord), paste0("c('", ord,"')"), "NULL"),
-                           ",sauvegarde=", sauvegarde, ",scor.fac=", scor.fac, ",n.boot=", n.boot,",hier=", hier, ",nfact2=", nfact2, ",choix='", fa.options$choix, "',info=T)"
+                           ", backup =", sauvegarde, ",scor.fac=", scor.fac, ",n.boot=", n.boot,",hier=", hier, ",nfact2=", nfact2, ", choice = '", fa.options$choix, "',info=T)"
     )
     
     
@@ -539,7 +539,7 @@ factor.an <-
     
     
     if(fa.options$sauvegarde) save(Resultats=Resultats, choix=fa.options$choix, env=.e)
-    ref1(packages)->Resultats$"References des packages utilises pour cette analyse"
+    ref1(packages)->Resultats$"References of the packages used for this analysis"
     if(html) ez.html(Resultats)
     return(Resultats)
     
