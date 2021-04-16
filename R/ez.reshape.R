@@ -93,20 +93,20 @@ ez.reshape<-function(data=NULL, varying = NULL, v.names = NULL,
   # type : either "msg" or "title"
   # number : number of message 
   if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())) {
-    msg<-c("Veuillez choisir l'ensemble des colonnes correspondant aux modalites des variables en mesures repetees",
-           "Colonnes correspondant à la variable",
-           "vous devez specifier le nombre de facteurs en mesure repetee",
-           "Vous n avez pas precise le nombre de facteurs en mesure repetee, voulez-vous quitte ?",
-           "La valeur entree n'est pas numerique, vous devez entrer une valeur numerique",
-           "vous avez selectionne", "colonnes",
-           "le produit des modalites de chacune des variables doit correspondre au nombre de colonnes selectionnees.",
+    msg<-c("Please choose the set of columns corresponding to the modalities of the variables in repeated measures",
+           "Columns corresponding to the variable",
+           "you must specify the number of factors able to repeat",
+           "You did not specify the number of factors able to repeat, do you want to quit?",
+           "The entered value is not numeric, you must enter a numeric value",
+           "you have selected", "colonnes",
+           "the product of the modalities of each of the variables must correspond to the number of selected columns.",
            "Appuyez [entree] pour continuer")
     
     
-    title<-c("Colonnes en mesures repetees" ,"Nombre de variables mesurees", "Nom de la variable mesuree", 
-             "Combien de facteurs en mesure repetee ?",
-             "Nom du facteur","Combien de modalites","modalite", "Noms des modalites pour", 
-             "Est-ce que la structure dans un format long de vos donnees est correcte ?")
+    title<-c("Columns in repeated measures" ,"Number of variables measured", "Name of the variable measured", 
+             "How many factors can be repeated?",
+             "Name of factor","How many terms","modality", "Names of modalities for", 
+             "Is the long format structure of your data correct?")
     
   } else {
     msg<-c("Please choose all the columns corresponding to the repeaed measure levels",
@@ -118,7 +118,7 @@ ez.reshape<-function(data=NULL, varying = NULL, v.names = NULL,
            "The product of the number of levels of each factor must  equal to the number of selected columns.",
            "Press [enter] to continue")
     title<-c("Columns in repeated measures", "Number of measured variables", "Name of measured variable", 
-             "How many repeated measures variables ?",
+             "How many repeated measures variables?",
              "name of the factor", "How many levels", "level", "Name of levels for", 
              "Is the long format data frame correct ?")
   }

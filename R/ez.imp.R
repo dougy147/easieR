@@ -19,28 +19,28 @@ ez.imp <-
     deparse(substitute(data))->nom  }
     nom<-paste0(nom,".complet")
     
-    if(dial || imp%in% c("Ne rien faire - Garder l'ensemble des observations", "Suppression des observations avec valeurs manquantes", "Remplacer par la moyenne",
-                         "Remplacer par la mediane","Multiple imputation - Amelia","rien","rm", "mean","median", "amelia") == FALSE){
-      writeLines("Nombre de valeurs manquantes par variable. Comment voulez-vous les traiter ?")
+    if(dial || imp%in% c("Do nothing - Keep all observations", "Removing cases with missing values", "Replace with the mean",
+                         "Replace with median","Multiple imputation - Amelia","nothing","rm", "mean","median", "amelia") == FALSE){
+      writeLines("Number of missing values per variable. How do you want to treat them?")
       print(sapply(data, function(x) sum(length(which(is.na(x))))) )
       
-      imp<- dlgList(c("Ne rien faire - Garder l'ensemble des observations", "Suppression des observations avec valeurs manquantes", "Remplacer par la moyenne",
-                      "Remplacer par la mediane","Multiple imputation - Amelia"), preselect=FALSE, multiple = TRUE, title="Traitement des valeurs manquantes")$res
+      imp<- dlgList(c("Do nothing - Keep all observations", "Removing cases with missing values", "Replace with the mean",
+                      "Replace with median","Multiple imputation - Amelia"), preselect=FALSE, multiple = TRUE, title="Treatment of missing values")$res
       if(length(imp)==0){
         return(NULL)
       }
     }
     if(length(imp)==0) return(NULL)
-    if(imp == "Ne rien faire - Garder l'ensemble des observations" || imp=="rien") return(data)
-    if(imp== "Suppression des observations avec valeurs manquantes"|| imp=="rm"){
+    if(imp == "Do nothing - Keep all observations" || imp=="nothing") return(data)
+    if(imp== "Removing cases with missing values"|| imp=="rm"){
       data<-data[complete.cases(data),]
       if(dial)  assign(nom, data, envir=.GlobalEnv)
     }
-    if(imp=="Remplacer par la moyenne"|| imp=="mean"){
+    if(imp=="Replace with the mean"|| imp=="mean"){
       for(i in 1 : length(data)) {data[which(is.na(data[,i])),i]<-mean(data[,i], na.rm=T)}
       if(dial)  assign(nom, data, envir=.GlobalEnv)
     }
-    if(imp== "Remplacer par la mediane"|| imp=="median"){
+    if(imp== "Replace with median"|| imp=="median"){
       for(i in 1 : length(data)) {data[which(is.na(data[,i])),i]<-median(data[,i], na.rm=T)}
       if(dial)  assign(nom, data, envir=.GlobalEnv)
     }

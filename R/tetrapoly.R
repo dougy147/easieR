@@ -18,8 +18,8 @@ tetrapoly <-
     Resultats<-list()
     
     if(is.null(data) | is.null(X))  {dial<-TRUE
-    if(info) writeLines("Veuillez choisir le type de correlations que vous desirez realiser. Pour les variables dichotomiques, les correlations seront des correlations tetrachoriques")
-    dlgList(c("correlations polychoriques", "correlations mixtes"), preselect=NULL, multiple = FALSE, title="Type de correlations ?")$res->method
+    if(info) writeLines("Please choose the type of correlations you want to achieve. For dichotomous variables, the correlations will be tetrachoric correlations")
+    dlgList(c("polychoric correlations", "mixed correlations"), preselect=NULL, multiple = FALSE, title="Type of correlations?")$res->method
     if(length(method)==0) return(choix.corr())
     } else dial<-F
     
@@ -42,18 +42,18 @@ tetrapoly <-
     data<-X$data
     X<-X$X
     
-    if(!is.null(ord) & any(ord %in%X==F)||(dial && method=="correlations mixtes" ) ){
-      if(info) writeLines("Veuillez choisir les variables ordinales.")
-      ord<-dlgList(X, preselect=X, multiple = TRUE, title="Variables ordinales ?")$res
+    if(!is.null(ord) & any(ord %in%X==F)||(dial && method=="mixed correlations" ) ){
+      if(info) writeLines("Please choose ordinal variables.")
+      ord<-dlgList(X, preselect=X, multiple = TRUE, title="Ordinal variables?")$res
       if(length(ord)==0){
         Resultats<-tetrapoly(data=NULL,X=NULL, sauvegarde=F, ord=NULL ,info=T, group=NULL, estimator=estimator, output=output)
         return(Resultats)
       }
     } else ord<-X
     if(any(is.na(data[,X]))) {
-      if(is.null(imp))  {msgBox("Des valeurs manquantes ont ete detectees. Comment voulez-vous les traiter ? Garder l'ensemble des observations peut biaiser les resultats.")
-        imp<- dlgList(c("Ne rien faire - Garder l'ensemble des observations", "Suppression des observations avec valeurs manquantes","Remplacer par la mediane","Multiple imputation - Amelia"), 
-                      preselect=FALSE, multiple = TRUE, title="Traitement des valeurs manquantes ?")$res}
+      if(is.null(imp))  {msgBox("Missing values have been detected. How do you want to treat them? Keeping all the observations can bias the results.")
+        imp<- dlgList(c("Do nothing - Keep all observations", "Removing cases with missing values","Replace with median","Multiple imputation - Amelia"), 
+                      preselect=FALSE, multiple = TRUE, title="Treatment of missing values?")$res}
       if(length(imp)==0){
         Resultats<-tetrapoly(data=NULL,X=NULL, sauvegarde=F, ord=NULL ,info=T, group=NULL, estimator=estimator, output=output)
         return(Resultats)
@@ -62,7 +62,7 @@ tetrapoly <-
       data<-data.frame(data1, data[which(dimnames(data)[[1]] %in% dimnames(data1)[[1]]),group])
     }  
     if(dial || !is.logical(sauvegarde)){
-      sauvegarde<- dlgList(c(TRUE, FALSE), preselect=FALSE, multiple = FALSE, title="Voulez-vous sauver les resultats ?")$res
+      sauvegarde<- dlgList(c(TRUE, FALSE), preselect=FALSE, multiple = FALSE, title="Do you want to save the results?")$res
       if(length(sauvegarde)==0) {
         Resultats<-tetrapoly(data=NULL,X=NULL, sauvegarde=F, ord=NULL ,info=T, group=NULL, estimator=estimator, output=output)
         return(Resultats)
@@ -75,10 +75,10 @@ tetrapoly <-
                            ",info=T, group=", ifelse(!is.null(group),paste0("'",group,"'"), "NULL"), ",estimator='", estimator, "',output='", output, "')")
     
     .add.history(data=data, command=Resultats$Call, nom=nom)
-    .add.result(Resultats=Resultats, name =paste("cor.polychorique", Sys.time() ))  
+    .add.result(Resultats=Resultats, name =paste("psychoanalyst", Sys.time() ))  
     
     
-    if(sauvegarde) save(Resultats=Resultats, choix="cor.polychorique", env=.e)
+    if(sauvegarde) save(Resultats=Resultats, choix="psychoanalyst", env=.e)
     
     ref1(packages)->Resultats$"References"
     if(html) ez.html(Resultats)

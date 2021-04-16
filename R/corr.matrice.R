@@ -1,5 +1,5 @@
 corr.matrice <-
-  function(X=NULL, Y=NULL, Z=NULL,data=NULL, group=NULL,method="pearson",param=c("H0","FB"), sauvegarde=F, outlier=c("Donnees completes"),n.boot=1,  rscale=0.354, info=T,
+  function(X=NULL, Y=NULL, Z=NULL,data=NULL, group=NULL,method="pearson",param=c("H0","FB"), sauvegarde=F, outlier=c("Complete data"),n.boot=1,  rscale=0.354, info=T,
            p.adjust="holm",out.m=2, na.rm=NULL, html=T) { 
     # X : character or vector. First set of variables
     # Y : character or vector. Second set of variables Must be NULL if Z is not
@@ -9,25 +9,25 @@ corr.matrice <-
     # method : one among c("pearson", "spearman", "kendall") 
     # param :  one or both among "H0" (null hypoethesis testing) et "FB"(bayesian factors)
     # sauvegarde : logical. Must the analyses be saved ? 
-    # outlier : One among   c("Donnees completes", "Donnees sans valeur influente")
-    # rscale : numeric. If not null, bayesian factors are computed. Can also be "moyen", "large", "ultralarge"
+    # outlier : One among   c("Complete data", "Data without influencing value")
+    # rscale : numeric. If not null, bayesian factors are computed. Can also be "medium", "wide", "ultralarge"
     # info : logical. Must information be displayed in dialog box interface. 
     # correction : character. Probability adjustement. See p.adjust for list of possibilities
     # out.m : 1 for deleting one observation at the time in outlier detection. 2 for all at the same time. 
     # na.rm : character. How to deal with missing values ? 
     # html : Logical. Should output be a HTML page ? 
     
-    corr.matrice.in<-function(X=NULL, Y=NULL, Z=NULL, group=NULL, data=NULL, p.adjust="holm", rscale=0.354,sauvegarde=F,outlier="Donnees completes", info=T, method="pearson", param=c("H0","FB"), n.boot=NULL){
+    corr.matrice.in<-function(X=NULL, Y=NULL, Z=NULL, group=NULL, data=NULL, p.adjust="holm", rscale=0.354,sauvegarde=F,outlier="Complete data", info=T, method="pearson", param=c("H0","FB"), n.boot=NULL){
       Resultats<-list()
       if(!is.null(X) & !is.null(data) & (is.null(Y) | is.null(Z))) {dial<-F 
-      if(is.null(Z)) choix<-"Correlations" else choix<-"Correlations partielle et semi partielle"
-      if(!is.null(Y)) carre<-"rectangulaire" else carre<-"carree"
+      if(is.null(Z)) choix<-"Correlations" else choix<-"Partial and semi-partial correlations"
+      if(!is.null(Y)) carre<-"rectangular" else carre<-"carree"
       }  else {dial<-T
       choix<-NULL}
       
       if(is.null(choix) ){
-        if(info) writeLines("Veuillez preciser le type de correlation que vous souhaitez realiser.")
-        choix<-dlgList(c("Correlations", "Correlations partielles"), preselect="Correlations", multiple = FALSE, title="Correlations ou correlations partielles?")$res
+        if(info) writeLines("Please specify the type of correlation you wish to achieve.")
+        choix<-dlgList(c("Correlations", "Partial correlations"), preselect="Correlations", multiple = FALSE, title="Correlations or partial correlations?")$res
         if(length(choix)==0) return(NULL)
       }
       
@@ -39,12 +39,12 @@ corr.matrice <-
       if(choix=="Correlations" & dial==T){
         writeLines("Une matrice carree est une matrice avec toutes les Correlations 2 a 2. 
                    Une matrice rectangulaire est une matrice dans laquelle un premier ensemble de variables est mis en correlations avec un second jeu de variables")
-        carre<-dlgList(c("carree", "rectangulaire"), multiple = FALSE, title="type de matrice")$res
+        carre<-dlgList(c("carree", "rectangular"), multiple = FALSE, title="die type")$res
         if(length(carre)==0){Resultats<-corr.matrice.in()
         return(Resultats)}
       } else carre<-"carree"
       
-      msg3<-"Veuillez choisir le premier jeu de variables"
+      msg3<-"Please choose the first set of variables"
       
       
       X<-.var.type(X=X, info=info, data=data, type="numeric", check.prod=F, message=msg3,  multiple=T, title="Variables", out=NULL)
@@ -54,9 +54,9 @@ corr.matrice <-
         return(Resultats)}
       data<-X$data
       X1<-X$X
-      if(carre=="rectangulaire"){
-        msg4<-"Veuillez choisir le second jeu de variables"
-        Y<-.var.type(X=Y, info=info, data=data, type="numeric", check.prod=F, message=msg4,  multiple=T, title="Second jeu de variables", out=X1)
+      if(carre=="rectangular"){
+        msg4<-"Please choose the second set of variables"
+        Y<-.var.type(X=Y, info=info, data=data, type="numeric", check.prod=F, message=msg4,  multiple=T, title="Second set of variables", out=X1)
         if(is.null(Y)) {
           corr.matrice.in(X=NULL, Y=NULL, data=NULL, method=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,
                           n.boot=NULL, rscale=0.353)->Resultats
@@ -65,9 +65,9 @@ corr.matrice <-
         Y<-Y$X 
         
       }
-      if(choix=="Correlations partielles"){
-        msg6<-"Veuillez preciser la ou les variables a controler" 
-        Z<-.var.type(X=Y, info=info, data=data, type="numeric", check.prod=F, message=msg6,  multiple=T, title="Variable-s a controler", out=c(X1,Y))
+      if(choix=="Partial correlations"){
+        msg6<-"Please specify the variable (s) to control" 
+        Z<-.var.type(X=Y, info=info, data=data, type="numeric", check.prod=F, message=msg6,  multiple=T, title="Variable-s to control", out=c(X1,Y))
         if(is.null(Z)) {
           corr.matrice.in(X=NULL, Y=NULL, data=NULL, method=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,
                           n.boot=NULL, rscale=0.353)->Resultats
@@ -82,38 +82,38 @@ corr.matrice <-
         if(info==TRUE) writeLines("Si vous souhaitez realiser l'analyse pour differents sous-echantillons en fonction d'un critere categoriel (i.e., realiser une analyse par groupe)
                                   \n choisissez oui. Dans ce cas, l'analyse est realisee sur l'echantillon complet et sur les sous-echantillons.
                                   \n Si vous desirez l'analyse pour l'echantillon complet uniquement, chosissez non.")
-        dlgList(c("oui", "non"), preselect="non", multiple = FALSE, title="Analyse par groupe?")$res->par.groupe
+        dlgList(c("Yes", "non"), preselect="non", multiple = FALSE, title="Group analysis?")$res->par.groupe
         if(length(par.groupe)==0) {
           corr.matrice.in(X=NULL, Y=NULL, data=NULL,method=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,
                           n.boot=NULL, rscale=0.353)->Resultats
           return(Resultats)
         } } else par.groupe<-"non"
-      msg5<-"Veuillez choisir le facteur de classement categoriel."
-      if(par.groupe=="oui" || !is.null(group)){group<-.var.type(X=group, info=info, data=data, type="factor", check.prod=F, message=msg5,  multiple=TRUE, title="Variable-s", out=c(X1,Y,Z)) 
+      msg5<-"Please choose the categorical ranking factor."
+      if(par.groupe=="Yes" || !is.null(group)){group<-.var.type(X=group, info=info, data=data, type="factor", check.prod=F, message=msg5,  multiple=TRUE, title="Variable-s", out=c(X1,Y,Z)) 
       if(length(group)==0) {   corr.matrice.in(X=NULL, Y=NULL, data=NULL, method=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,
                                                n.boot=NULL, rscale=0.353)->Resultats
         return(Resultats)}
       data<-group$data
       group<-group$X 
       if(any(ftable(data[,group])<3)){
-        msgBox("Certaines combinaisons des modalites ont moins de 3 observations. Vous devez avoir au moins 3 observations pour chaque combinaison")
+        msgBox("Some combinations of modalities have less than 3 observations. You must have at least 3 observations for each combination")
         corr.matrice.in(X=NULL, Y=NULL, data=NULL, method=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,
                         n.boot=NULL, rscale=0.353)->Resultats
         return(Resultats)
       }
       }
       
-      if(dial || length(outlier)>1 || outlier %in% c("Donnees completes", "Donnees sans valeur influente") ==FALSE){
-        if(info) writeLines("Desirez-vous l'analyse sur les donnees completes ou sur les donnees pour lesquelles les valeurs influentes ont ete enlevees ?")
-        outlier<- dlgList(c("Donnees completes", "Donnees sans valeur influente"), preselect=c("Donnees completes"),
-                          multiple = FALSE, title="Quels resultats voulez-vous obtenir ?")$res
+      if(dial || length(outlier)>1 || outlier %in% c("Complete data", "Data without influencing value") ==FALSE){
+        if(info) writeLines("Do you want the analysis on the complete data or on the data for which the influencing values have been removed?")
+        outlier<- dlgList(c("Complete data", "Data without influencing value"), preselect=c("Complete data"),
+                          multiple = FALSE, title="What results do you want to achieve?")$res
         if(length(outlier)==0) { Resultats<-corr.matrice.in(X=NULL, Y=NULL, data=NULL, method=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,
                                                             n.boot=NULL, rscale=0.353)
         return(Resultats)}
       }
       if(dial || length(method)>1 || method %in% c("pearson", "spearman","kendall") ==FALSE){
-        if(info) writeLines("Veuillez choisir le type de correlations que vous desirez realiser")
-        method<-dlgList(c("pearson", "spearman","kendall"), preselect="pearson", multiple = FALSE, title="Type de correlations ?")$res
+        if(info) writeLines("Please choose the type of correlations you want to achieve")
+        method<-dlgList(c("pearson", "spearman","kendall"), preselect="pearson", multiple = FALSE, title="Type of correlations?")$res
         if(length(method)==0) { Resultats<-corr.matrice.in(X=NULL, Y=NULL, data=NULL, method=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,
                                                            n.boot=NULL, rscale=0.353)
         return(Resultats)}
@@ -123,13 +123,13 @@ corr.matrice <-
       if(is.null(Y) & is.null(Z)){
         
         if(!is.null(n.boot) && ((class(n.boot)!="numeric" & class(n.boot)!="integer") ||  n.boot%%1!=0 || n.boot<1)){
-          msgBox("Le nombre de bootstrap doit etre un nombre entier positif") 
+          msgBox("The number of bootstrap must be a positive integer") 
           n.boot<-NULL
         }
         while(is.null(n.boot)){
-          writeLines("Veuillez preciser le nombre de bootstrap. Pour ne pas avoir de bootstrap, choisir 1")
+          writeLines("Please specify the number of bootstrap. To not have a bootstrap, choose 1")
           
-          n.boot<-dlgInput("Nombre de bootstrap ?", 1)$res
+          n.boot<-dlgInput("Number of bootstrap?", 1)$res
           if(length(n.boot)==0) {Resultats<-corr.matrice.in(X=NULL, Y=NULL, data=NULL, method=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,
                                                             n.boot=NULL, rscale=0.353)
           return(Resultats)}
@@ -137,44 +137,44 @@ corr.matrice <-
           tail(n.boot[[1]],n=1)->n.boot
           as.numeric(n.boot)->n.boot
           if(is.na(n.boot) ||  n.boot%%1!=0 || n.boot<1){
-            msgBox("Le nombre de bootstrap doit etre un nombre entier positif") 
+            msgBox("The number of bootstrap must be a positive integer") 
             n.boot<-NULL
           }
         }
       } 
       
       
-      if((dial)|| !is.null(rscale) & ((is.numeric(rscale) & (rscale<0.1 | rscale>2)) || (!is.numeric(rscale) & rscale%in% c("moyen", "large", "ultralarge")==F))) {
+      if((dial)|| !is.null(rscale) & ((is.numeric(rscale) & (rscale<0.1 | rscale>2)) || (!is.numeric(rscale) & rscale%in% c("medium", "wide", "ultralarge")==F))) {
         if(info) writeLines("Voulez-vous les tests d'hypothees nuls ou/et les facteurs bayesiens ?")   
-        param<-dlgList(c("Facteurs bayesiens","Tests de H0"), preselect=c("Facteurs bayesiens","Tests de H0"), multiple = T, title="Approche statistique ?")$res
+        param<-dlgList(c("Bayesian factors","H0 tests"), preselect=c("Bayesian factors","H0 tests"), multiple = T, title="Statistical approach?")$res
         if(length(param)==0) { Resultats<-corr.matrice.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,
                                                           n.boot=NULL, rscale=0.353)
         return(Resultats)}
         
-        if(any(param=="Facteurs bayesiens") | any(param=="FB")){
-          if(info) writeLines("Veuillez preciser la distribution a priori de Cauchy")
+        if(any(param=="Bayesian factors") | any(param=="FB")){
+          if(info) writeLines("Please specify the a priori distribution of Cauchy")
           
-          rscale<-dlgList(c("moyen", "large", "ultralarge"), preselect="moyen", multiple = F, title="Quelle distribution voulez-vous  ?")$res 
+          rscale<-dlgList(c("medium", "wide", "ultralarge"), preselect="medium", multiple = F, title="Quelle distribution voulez-vous  ?")$res 
           if(length(rscale)==0) {
             Resultats<-corr.matrice.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,
                                        n.boot=NULL, rscale=0.353)
             return(Resultats)
           }
-          ifelse(rscale=="moyen", rscale<-2^0.5/4, ifelse(rscale=="large", rscale<-0.5, ifelse(rscale=="ultralarge", rscale<-2^0.5/2, rscale<-rscale)))} else rscale<-NULL
+          ifelse(rscale=="medium", rscale<-2^0.5/4, ifelse(rscale=="wide", rscale<-0.5, ifelse(rscale=="ultralarge", rscale<-2^0.5/2, rscale<-rscale)))} else rscale<-NULL
       } 
       
-      if(any(param=="Tests de H0") |any(param=="H0")){
+      if(any(param=="H0 tests") |any(param=="H0")){
         if(dial | length(p.adjust)!=1 || p.adjust %in% c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY","fdr", "none")==FALSE){
-          writeLines("Veuillez preciser le type de correction de la probabilite que vous desirez realiser")
-          dlgList(c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY","fdr", "none"), preselect=NULL, multiple = FALSE, title="Type de correction ?")$res->p.adjust
+          writeLines("Please specify the type of probability correction you want to perform")
+          dlgList(c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY","fdr", "none"), preselect=NULL, multiple = FALSE, title="Type of correction?")$res->p.adjust
           if(length(p.adjust)==0) {Resultats<-corr.matrice.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,
                                                               n.boot=NULL, rscale=0.353)->Resultats
           return(Resultats)}
         } 
       } else p.adjust<-"none"
       if(dial | length(sauvegarde)!=1 || !is.logical(sauvegarde )){
-        writeLines("voulez-vous sauvegarder les resultats")
-        sauvegarde<- dlgList(c(TRUE, FALSE), preselect=FALSE, multiple = TRUE, title="Enregistrer les resultats ?")$res
+        writeLines("do you want to save the results")
+        sauvegarde<- dlgList(c(TRUE, FALSE), preselect=FALSE, multiple = TRUE, title="Save the results?")$res
         if(length(sauvegarde)==0) {Resultats<-corr.matrice.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,
                                                               n.boot=NULL, rscale=0.353)->Resultats
         return(Resultats)}
@@ -182,9 +182,9 @@ corr.matrice <-
       } 
       
       if(any(is.na(data[,c(X1,Y,Z)]))){ 
-        msgBox("Des valeurs manquantes ont ete detectees. Comment voulez-vous les traiter ? Garder l'ensemble des observations peut biaiser les resultats.")
-        imp<- dlgList(c("Ne rien faire - Garder l'ensemble des observations", "Suppression des observations avec valeurs manquantes", "Remplacer par la moyenne",
-                        "Remplacer par la mediane","Multiple imputation - Amelia"), preselect=FALSE, multiple = TRUE, title="Traitement des valeurs manquantes")$res
+        msgBox("Missing values have been detected. How do you want to treat them? Keeping all the observations can bias the results.")
+        imp<- dlgList(c("Do nothing - Keep all observations", "Removing cases with missing values", "Replace with the mean",
+                        "Replace with median","Multiple imputation - Amelia"), preselect=FALSE, multiple = TRUE, title="Treatment of missing values")$res
         if(length(imp)==0){
           Resultats<-corr.matrice.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,
                                      n.boot=NULL, rscale=0.353)
@@ -215,8 +215,8 @@ corr.matrice <-
     
     corr.matrice.out<-function(data, X, Y, Z, p.adjust, method,sauvegarde, rscale, n.boot, param){
       Resultats<-list()
-      Resultats$"Statistiques descriptives"<-.stat.desc.out(X=c(X,Y,Z), groupes=NULL, data=data, tr=.1, type=3, plot=F)
-      Resultats$"Normalite multivariee"<-.normalite(data, c(X,Y,Z)) 
+      Resultats$"Descriptive statistics"<-.stat.desc.out(X=c(X,Y,Z), groupes=NULL, data=data, tr=.1, type=3, plot=F)
+      Resultats$"Multivariate normalcy"<-.normalite(data, c(X,Y,Z)) 
       
       if(is.null(Z)){
         if(is.null(Y)) { Y1<-NULL
@@ -229,7 +229,7 @@ corr.matrice <-
         corr.test(x=X1, y=Y1, use = "pairwise",method=method,adjust=p.adjust, alpha=.05,ci=TRUE)->matrice  
         r1<-round(matrice$r,3)
         if(is.null(Y)) r1[which(lower.tri(r1, diag = T))]<-"-"
-        Resultats$"Matrice de correlation"<-as.data.frame(r1)
+        Resultats$"Correlation matrix"<-as.data.frame(r1)
         
       } else{
         data[,c(X,Z)]->d2
@@ -239,25 +239,25 @@ corr.matrice <-
         r1<-round(matrice$r, 3)
         class(r1)<-"matrix"
         r1[which(lower.tri(r1, diag = T))]<-"-"
-        Resultats$"Matrice de Correlations partielles" <-as.data.frame(r1)
+        Resultats$"Partial Correlations Matrix" <-as.data.frame(r1)
       }    
       
       class(r1)<-"matrix"
       dimnames(r1)[[1]]<-paste(dimnames(r1)[[1]], "r")
-      matrice$n->Resultats$"taille de l'echantillon"
+      matrice$n->Resultats$"sample size"
       
-      if(any(param=="H0")|any(param=="Tests de H0")) {paste("la correction appliquee est la correction de",p.adjust)->Resultats$Correction[1]
-        if(is.null(Y)) Resultats$Correction[2]<-"Seules les valeurs au-dessus de la diagonales sont ajustees pour comparaisons multiples"
+      if(any(param=="H0")|any(param=="H0 tests")) {paste("the correction applied is the correction of",p.adjust)->Resultats$Correction[1]
+        if(is.null(Y)) Resultats$Correction[2]<-"Only values above the diagonals are adjusted for multiple comparisons"
         round(matrice$p,3)->r2
         class(r2)<-c("matrix", "p.value")
-        Resultats$"matrice des probabilites"<-r2
+        Resultats$"probability matrix"<-r2
         dimnames(r2)[[1]]<-paste0(dimnames(r2)[[1]], ".p")
         if(is.null(Y)) r2[which(lower.tri(r2, diag = T))]<-NA
         r1<-rbind(r1,r2)
       }
       if(method=="kendall") {
         r2<-round(sin(0.5*pi*matrice$r)^2,3) # from David A. Walker 2003 JMASM9: Converting Kendall's Tau For Correlational Or Meta-Analytic Analyses 
-        Resultats$"Information"<-"La taille d'effet est calculee a partir de la formule proposee par Walker, 2003"   
+        Resultats$"Information"<-"The effect size is calculated from the formula proposed by Walker, 2003"   
       } else r2<-round(matrice$r^2,3)
       
       
@@ -270,13 +270,13 @@ corr.matrice <-
         r3<-format(r3, scientific=T)
         if(is.null(Y)) r3[which(lower.tri(r3, diag = T))]<-"-"
         dimnames(r3)[[1]]<-paste0(dimnames(r3)[[1]], ".FB")
-        Resultats$"Facteurs bayesiens"<-as.data.frame(r3)
+        Resultats$"Bayesian factors"<-as.data.frame(r3)
         r1<-rbind(r1, r3)
       }
       class(r2)<-"matrix"
       if(is.null(Y)) r2[which(lower.tri(r2, diag = T))]<-"-"
-      Resultats$"matrice des r.deux" <-as.data.frame(r2)
-      dimnames(r2)[[1]]<-paste(dimnames(r2)[[1]], "r^2")
+      Resultats$"r.deux matrix" <-as.data.frame(r2)
+      dimnames(r2)[[1]]<-paste(dimnames(r2)[[1]], "r ^ 2")
       r1<-rbind(r1, r2)
       r1<-data.frame(r1)
 	    if(is.null(Y)){
@@ -286,12 +286,12 @@ corr.matrice <-
       r1[is.na(r1)]<-"-" 
 		    }
       nice.mat<-list()
-      nice.mat$"Matrice de correlations"<-(r1)
+      nice.mat$"Correlation matrix"<-(r1)
       if(html) try(ez.html(nice.mat), silent =T)
 
       
-      if(is.null(Y) & is.null(Z) & (!is.null(n.boot) && n.boot > 100)) round(cor.ci(data[,X], n.iter=n.boot, plot=FALSE)$ci,4)->Resultats$"Intervalle de confiance estime par bootstrap" else  round(matrice$ci,4)->Resultats$"Intervalle de confiance" 
-      names(Resultats[[length(Resultats)]])<-c("lim.inf","r","lim.sup","valeur.p")
+      if(is.null(Y) & is.null(Z) & (!is.null(n.boot) && n.boot > 100)) round(cor.ci(data[,X], n.iter=n.boot, plot=FALSE)$ci,4)->Resultats$"Confidence interval estimated by bootstrap" else  round(matrice$ci,4)->Resultats$"Confidence interval" 
+      names(Resultats[[length(Resultats)]])<-c("inf.lim","r","sup.lim","p-value")
       
       return(Resultats)  
       
@@ -325,13 +325,13 @@ corr.matrice <-
     p.adjust<-corr.options$p.adjust
     n.boot<-corr.options$n.boot
     
-    if(outlier=="Donnees sans valeur influente"){
+    if(outlier=="Data without influencing value"){
       inf<-VI.multiples(data, X=c(X,Y,Z))
-      Resultats$"Valeurs considerees comme influentes"<-inf$"Valeurs considerees comme influentes"
+      Resultats$"Values considered influential"<-inf$"Values considered influential"
       data<-inf$data
     }
     
-    Resultats$"Matrice des correlations"<-corr.matrice.out(data=data, X=X, Y=Y, Z=Z, p.adjust=p.adjust, method=method,sauvegarde=sauvegarde, rscale=rscale, n.boot=n.boot, param=param)
+    Resultats$"Matrix of correlations"<-corr.matrice.out(data=data, X=X, Y=Y, Z=Z, p.adjust=p.adjust, method=method,sauvegarde=sauvegarde, rscale=rscale, n.boot=n.boot, param=param)
     
     
     
@@ -359,14 +359,14 @@ corr.matrice <-
                            "'), Y=", ifelse(!is.null(Y),paste0("c('",Y,"')"), "NULL"), 
                            ", Z =", ifelse(!is.null(Z),paste0("c('",Z,"')"), "NULL"), ",data=",  corr.options$nom, ", p.adjust='", p.adjust,
                            "', group=", ifelse(!is.null(group),paste0("c('",group,"')"), "NULL"), 
-                           ", param=c('", param, "'), sauvegarde=", sauvegarde, ",outlier=c('", outlier, "'), info=T, rscale=", ifelse(!is.null(rscale),rscale, "NULL"), ", n.boot=", n.boot, ")")
+                           ", param=c('", param, "'), save =", sauvegarde, ",outlier=c('", outlier, "'), info=T, rscale=", ifelse(!is.null(rscale),rscale, "NULL"), ", n.boot=", n.boot, ")")
     
     .add.history(data=data, command=Resultats$Call, nom=corr.options$nom)
     .add.result(Resultats=Resultats, name =paste(choix, Sys.time() ))
     
     
     
-    if(sauvegarde) save(Resultats=Resultats, choix=paste("correlation de", method), env=.e)
+    if(sauvegarde) save(Resultats=Resultats, choix=paste("correlation of", method), env=.e)
     ref1(packages)->Resultats$"References"
     if(html) try(ez.html(Resultats), silent=T)
     return(Resultats)
