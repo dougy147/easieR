@@ -172,9 +172,9 @@ fiabilite <-
     if(!is.null(ord)) paste(ord, collapse="','", sep="")->ord
     if(!is.null(keys)) paste(ord, collapse="','", sep="")->keys
     
-    Resultats$Call<-paste0("reliability (X = c ('", X,"'),Y=", ifelse(is.null(Y), "NULL", paste0("'",Y,"'")), ",data=", nom, ", choice = '", choix,"',ord=", 
+    Resultats$Call<-paste0("fiabilite(X=c('", X,"'),Y=", ifelse(is.null(Y), "NULL", paste0("'",Y,"'")), ",data=", nom, ",choix='", choix,"',ord=", 
                            ifelse(!is.null(ord),paste0("c('", ord, "')"), "NULL" ), ",outlier='", outlier, "', keys=", ifelse(!is.null(keys), paste0("c('",keys,"')"), "NULL"),
-                           ",n.boot=", ifelse(!is.null(n.boot), n.boot, "NULL"), ", backup =", sauvegarde, ")")
+                           ",n.boot=", ifelse(!is.null(n.boot), n.boot, "NULL"), ", sauvegarde=", sauvegarde, ")")
     
     .add.history(data=data, command=Resultats$Call, nom=nom)
     .add.result(Resultats=Resultats, name =paste("psychoanalyst", Sys.time() ))  

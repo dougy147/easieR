@@ -179,7 +179,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
              "What results do you want to achieve?", "Quelle taille d effet voulez-vous  ?","How much of the edges do you want to use?",
              "Do you want to save?", "a priori",  "Comparison 2 to 2", "no","What kind of contrast do you want?",
              "Contrasts for", "specify your contrasts","What is the baseline?", "Descriptive statistics","Model tested",
-             "Descriptive statistics of the variable","Descriptive statistics of the interaction between","Warning",
+             "Descriptive statistics of the variable","Descriptive statistics of the interaction between","Warning!",
              "Normality tests","Ancova application conditions","Test de l'absence de difference entre les groupes sur ",
              "Test for homogeneity of slopes between groups on the dependent variable",
              "Levene test verifying the homogeneity of variances","Mauchly test testing the sphericity of the covariance matrix",

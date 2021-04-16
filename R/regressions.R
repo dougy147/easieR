@@ -320,7 +320,7 @@ regressions <-
           
         }
         
-        dimnames(r_carre)<-list(ligne=NULL, c("R.two", "Delta R.two", "R.deux.aj"))
+        dimnames(r_carre)<-list(ligne=NULL, c("R.two", "Delta R.two", "R.two.aj"))
         data.frame(table,r_carre)->table
         table[is.na(table)]<-""
         table->Resultats$"betas table"
@@ -454,7 +454,7 @@ regressions <-
         data$res.student.p<-2*pt(abs(data$res.student), df=lm.r1$df.residual, lower.tail=F)
         data$res.student.p.Bonf<-p.adjust(data$res.student.p,"bonferroni")
         data$est.inf<-" "
-        data[which(apply(mesure_influence$is.inf, 1, any)),"est.inf"]<-"*"
+        data[which(apply(mesure_influence$is.inf, 1, any)),"is.inf"]<-"*"
         ols_plot_dfbetas(lm.r1)
         data[order(data$res.student.p.Bonf), ]->data
         writeLines("Observations marked with an asterisk are considered influential at least on one criterion.")
@@ -541,7 +541,7 @@ regressions <-
     }
     Resultats$Call<-paste0("regressions(data=", nom, ",modele=",  modele, ",outlier=c('", outlier, "'),inf=", inf, ",CV=", CV,",select.m='", select.m,"',step=", ifelse(!is.null(step), step.call,"NULL"),
                            ",group=", ifelse(is.null(group), "NULL", paste0("c('",group,"')")),
-                           ",criteria=", criteria, ",scale=", scale, ", dial = T, info = T, save =", sauvegarde, ",n.boot=", n.boot, ",param=c('", param, "'),rscale=", round(rscale,3), ")")
+                           ",criteria=", criteria, ",scale=", scale, ",dial=T, info=T,sauvegarde=", sauvegarde, ",n.boot=", n.boot, ",param=c('", param, "'),rscale=", round(rscale,3), ")")
     
     
     .add.history(data=data, command=Resultats$Call, nom=nom)

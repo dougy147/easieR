@@ -114,7 +114,7 @@ factor.an <-
       try(cor.plot(Matrice1, show.legend=FALSE, main="Correlation matrix used for AFE", labels=NULL, n.legend=0, MAR=TRUE, numbers=numbers,cex=1), silent=T)
       round(Matrice,3)->Resultats$"Correlation matrix"
       round(unlist(cortest.bartlett(data[,X])),4)->bartlett
-      names(bartlett)<-c("chi.carre","p-value","dof")
+      names(bartlett)<-c("chi.squared","p-value","dof")
       ### doit etre significatif (attention depend de la taille de l echantillon)
       bartlett->Resultats$"Matrix adequacy measure"$"Barlett test"
       KMO1<-KMO(Matrice)
@@ -530,7 +530,7 @@ factor.an <-
     if(!is.null(fa.options$ord)) paste(fa.options$ord, collapse="','", sep="")->ord
     Resultats$Call<-paste0("factor.an(data=", nom, ",X=c('",X, "'),nF=", nF,", rotation='", rotation, "',methode='",methode, "',sat=", sat,
                            ",outlier='", outlier, "',imp=", ifelse(is.null(imp), "NULL", paste0("'",imp,"'")),",ord=", ifelse(!is.null(ord), paste0("c('", ord,"')"), "NULL"),
-                           ", backup =", sauvegarde, ",scor.fac=", scor.fac, ",n.boot=", n.boot,",hier=", hier, ",nfact2=", nfact2, ", choice = '", fa.options$choix, "',info=T)"
+                           ",sauvegarde=", sauvegarde, ",scor.fac=", scor.fac, ",n.boot=", n.boot,",hier=", hier, ",nfact2=", nfact2, ",choix='", fa.options$choix, "',info=T)"
     )
     
     

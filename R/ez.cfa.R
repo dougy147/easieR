@@ -210,7 +210,7 @@ ez.cfa <-
             msgBox("The value must be between 0 and 1") 
             opt.list$zero.add<-NA} else{
               writeLines("Please specify the value for tables larger than 2x2")
-              zero.add2<-dlgInput("array> 2x2?", 0)$res
+              zero.add2<-dlgInput("tableau > 2x2 ?", 0)$res
               if(length(zero.add2)==0) {Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
               return(Resultats)}
               strsplit(zero.add2, ":")->zero.add2
@@ -527,7 +527,7 @@ ez.cfa <-
     if(!is.null(cfa.options$ord)) paste(cfa.options$ord, collapse="','", sep="")->ord
     paste(cfa.options$output, collapse="','", sep="")->output
     call<-paste0("ez.cfa(modele='", cfa.options$modele, "',data=", cfa.options$nom, ",ord=", ifelse(is.null(cfa.options$ord), "NULL",paste0("c('",ord,"')")),",outlier='", outlier, 
-                 "', imp='",imp,"',output=c('", output,"'), save =", cfa.options$sauvegarde, ", mimic='", cfa.options$opt.list$mimic, "'")
+                 "', imp='",imp,"',output=c('", output,"'), sauvegarde=", cfa.options$sauvegarde, ", mimic='", cfa.options$opt.list$mimic, "'")
     
     for(i in 1:length(def.values)){
       if(names(def.values)[i]!="group" & names(def.values)[i]!="mimic") n<-which(names(cfa.options$opt.list) == names(def.values)[i]) else n<-NULL

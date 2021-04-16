@@ -173,7 +173,7 @@ corr.complet <-
           
         } else {
           BP<-cor.test(data[, X1], data[ ,Y1], method = "pearson")
-          Resultats$"Parametric test"$"Bravais Pearson correlation"<-round(data.frame("r"=BP$estimate,"r. two"=BP$estimate^2, "CI lim inf"=BP$conf.int[1],"CI lim sup"=BP$conf.int[2], "t"=BP$statistic, 
+          Resultats$"Parametric test"$"Bravais Pearson correlation"<-round(data.frame("r"=BP$estimate,"r. two"=BP$estimate^2, "CI inf lim"=BP$conf.int[1],"CI sup lim"=BP$conf.int[2], "t"=BP$statistic, 
                                                                                            "dof"=BP$parameter, "p-value"=BP$p.value),4)
         } 
         
@@ -498,7 +498,7 @@ corr.complet <-
                            "'), Y=c('", Y, 
                            "'), Z =", ifelse(!is.null(Z),paste0("c('",Z,"')"), "NULL"), ",data=",  corr.options$nom, 
                            ", group=", ifelse(!is.null(group),paste0("c('",group,"')"), "NULL"), 
-                           ", param=c('", param, "'), save =", save, ",outlier=c('", outlier, "'),z=", ifelse(!is.null(z),z, "NULL"),
+                           ", param=c('", param, "'), save=", save, ",outlier=c('", outlier, "'),z=", ifelse(!is.null(z),z, "NULL"),
                            ", info=T, rscale=", rscale, 
                            ", n.boot=", ifelse(is.null(n.boot), "NULL",n.boot),", html=", html, ")")
     

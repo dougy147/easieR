@@ -175,7 +175,7 @@ chi <-
       dims<-dim(chi.r$expected)
       V<-round((x/((min(dims)-1)*n))^0.5,3)
       V.sq<-round(V^2,3)
-      resultats<-data.frame("V"=V, "V.carre"=V.sq)
+      resultats<-data.frame("V"=V, "V.squared"=V.sq)
       return(resultats)}
     chi.out<-function(data=NULL, X=NULL, Y=NULL, p=NULL, choix=NULL, Effectifs=NULL, n.boot=NULL, SampleType=NULL,
                       fixedMargin=NULL, choix2=NULL, rscale=2^0.5/2,priorConcentration=1){
@@ -209,14 +209,14 @@ chi <-
           mon.chi<-chisq.test(tab, B=n.boot, correct=F)
           mon.chi$expected->Resultats$"Expected workforce"
           if(any(choix2 %in% c("Non-parametric test","Robust testing - involving bootstraps")))    {
-            SY<-data.frame( "chi.deux"=round(mon.chi$statistic,4), 
+            SY<-data.frame( "chi.two"=round(mon.chi$statistic,4), 
                             "dof"=mon.chi$parameter, Cramer(mon.chi))
             if(any(choix2=="Non-parametric test")) SY$valeur.p<-round(mon.chi$p.value,4) 
             try(fisher.test(tab),silent=T)->fisher
             if(class(fisher)!="try-error") SY$Fisher.Exact.Test=round(fisher$p.value,4)
             if(all(dim(tab)==2)){
               mon.chi<-chisq.test(tab, B=n.boot, correct=T)
-              AY<-data.frame("chi.deux"=round(mon.chi$statistic,4),"dof"=mon.chi$parameter,   Cramer(mon.chi),valeur.p=round(mon.chi$p.value,4) ,Fisher.Exact.Test="" )
+              AY<-data.frame("chi.two"=round(mon.chi$statistic,4),"dof"=mon.chi$parameter,   Cramer(mon.chi),valeur.p=round(mon.chi$p.value,4) ,Fisher.Exact.Test="" )
               if(any(choix2=="Non-parametric test")) AY$valeur.p<-round(mon.chi$p.value,4)
               SY<-rbind(SY, AY)
               dimnames(SY)[[1]]<-c("Without Yates correction", "With Yates correction") 
@@ -232,7 +232,7 @@ chi <-
             p<-mon.chi$observed/sum(mon.chi$observed)
             q<-mon.chi$expected/sum(mon.chi$expected)
             RVES<-(-1/(log(min(q[which(p!=0)]), base=exp(1)))) *sum(p *log(p[which(p!=0)]/q[which(p!=0)], base=exp(1))) # ES from JOHNSTON et al. 2006
-            RV<-data.frame("chi.carre"=RV, "dof"=mon.chi$parameter, "p-value"=round(PRV,4), "Size.effect"=round(RVES,4))
+            RV<-data.frame("chi.squared"=RV, "dof"=mon.chi$parameter, "p-value"=round(PRV,4), "Size.effect"=round(RVES,4))
             Resultats$"Likelihood ratio (G test)"<-RV
           }
           # facteur bayesien
@@ -273,9 +273,9 @@ chi <-
         if(choix=="McNemar test"){
           if(any(choix2== "Non-parametric test"))    {
             MCN<-mcnemar.test(tab, correct=F)
-            MCN<-data.frame("chi.deux"=round(MCN$statistic,3), "dof"=MCN$parameter, "p-value"= round(MCN$p.value,4))
+            MCN<-data.frame("chi.two"=round(MCN$statistic,3), "dof"=MCN$parameter, "p-value"= round(MCN$p.value,4))
             MCN2<-mcnemar.test(tab, correct=T)
-            MCN2<-data.frame("chi.deux"=round(MCN2$statistic,3), "dof"=MCN2$parameter, "p-value"= round(MCN2$p.value,4))
+            MCN2<-data.frame("chi.two"=round(MCN2$statistic,3), "dof"=MCN2$parameter, "p-value"= round(MCN2$p.value,4))
             MCN<-rbind(MCN, MCN2)
             dimnames(MCN)[[1]]<-c("McNemar test without continuity correction", "McNemar test with continuity correction" )
             MCN->Resultats$"McNemar test with Yates correction" # test de McNemar    
@@ -345,11 +345,11 @@ chi <-
     if(!is.null(chi.options$SampleType)) paste(chi.options$SampleType, collapse="','", sep="")->SampleType
     paste(chi.options$fixedMargin, collapse="','", sep="")->FM
     paste0("chi(X=c('", X,ifelse(!is.null(Y), paste0("'),Y=c('", Y, "')"), "'), Y=NULL"), 
-           ifelse(is.null(chi.options$Effectifs),", Numbers = NULL", paste0(", Workforce = '", chi.options$Effectifs, "'")),
+           ifelse(is.null(chi.options$Effectifs),",Effectifs=NULL", paste0(", Samples = '", chi.options$Effectifs, "'")),
            ifelse(!is.null(Y), ", p=NULL", paste0(", p=c(", p,")")), 
-           ", choice = '", chi.options$analyse, "',data=", chi.options$nom.data, ",info=", info, ",n.boot=", ifelse(is.null(chi.options$n.boot), "NULL",chi.options$n.boot) , 
+           ", choix='", chi.options$analyse, "',data=", chi.options$nom.data, ",info=", info, ",n.boot=", ifelse(is.null(chi.options$n.boot), "NULL",chi.options$n.boot) , 
            ",priorConcentration =" ,priorConcentration, ",SampleType=", ifelse(is.null(chi.options$SampleType), 'NULL', paste0("c('",SampleType,"')")), 
-           ",fixedMargin=", ifelse(is.null(chi.options$fixedMargin), 'NULL', paste0("c('",FM,"')")), ", choice2 = c ('",choix2,
+           ",fixedMargin=", ifelse(is.null(chi.options$fixedMargin), 'NULL', paste0("c('",FM,"')")), ",choix2=c('",choix2,
            "'),rscale=", round(rscale,3), ")")->Resultats$Call
     .add.history(data=chi.options$data, command=Resultats$Call, nom=chi.options$nom)
     .add.result(Resultats=Resultats, name =paste(chi.options$analyse, Sys.time() ))

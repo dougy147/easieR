@@ -356,7 +356,7 @@ regressions.log <-
         data$res.student.p<-2*pt(abs(data$res.student), df=lm.r1$df.residual, lower.tail=F)
         data$res.student.p.Bonf<-p.adjust(data$res.student.p,"bonferroni")
         data$est.inf<-" "
-        data[which(apply(mesure_influence$is.inf, 1, any)),"est.inf"]<-"*"
+        data[which(apply(mesure_influence$is.inf, 1, any)),"is.inf"]<-"*"
         
         data[order(data$res.student.p.Bonf), ]->data
         writeLines("Observations marked with an asterisk are considered influential at least on one criterion.")
@@ -442,7 +442,7 @@ regressions.log <-
       step.call<-paste0(step.call, ")")
     }
     Resultats$Call<-paste0("regressions.log(data=", nom, ",modele=",  modele, ",outlier=c('", outlier, "'),inf=", inf, ",select.m='", select.m,"',step=", ifelse(!is.null(step), step.call,"NULL"),
-                           ",group=", ifelse(is.null(group), "NULL", paste0("c('",group,"')")),", dial = T, info = T, save =", sauvegarde,",proba=",proba ,")")
+                           ",group=", ifelse(is.null(group), "NULL", paste0("c('",group,"')")),",dial=T, info=T,sauvegarde=", sauvegarde,",proba=",proba ,")")
     
     
     .add.history(data=data, command=Resultats$Call, nom=nom)

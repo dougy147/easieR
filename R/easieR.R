@@ -508,7 +508,7 @@ VI.multiples<-function(data, X){
       shapiro.test(data[,"res"])->Shapiro_Wilk # realise le Shapiro-Wilk
       lillie.test(data[,"res"])->Lilliefors  # realise le Lilliefors
       round(data.frame(Shapiro_Wilk$statistic,Shapiro_Wilk$p.value, Lilliefors$statistic, Lilliefors$p.value),4)->normalite
-      names(normalite)<-c("W by Shapiro-Wilk", "p-value SW", "D from Lilliefors", "p-value Llfrs")
+      names(normalite)<-c("Shapiro-Wilk W", "p-value SW", "D from Lilliefors", "p-value Llfrs")
       dimnames(normalite)[1]<-" "
 #      format(normalite, width = max(sapply(names(normalite), nchar)), justify = "center")->normalite
       n2$"Normality test"<-normalite}
@@ -535,7 +535,7 @@ VI.multiples<-function(data, X){
                  "kurtosis"=mardia.results$kurtosis,"p.kurtosis"=mardia.results$p.kurt )->n2
     } else {
       msgBox("The matrix is singular and the Mardia test cannot be performed. Only univariate analyzes can be performed")
-       n2<-data.frame("W by Shapiro-Wilk"=NULL, "p-value SW"=NULL, "D from Lilliefors"=NULL, "p-value Llfrs"=NULL)
+       n2<-data.frame("Shapiro-Wilk W"=NULL, "p-value SW"=NULL, "D from Lilliefors"=NULL, "p-value Llfrs"=NULL)
       for(i in 1:length(X)){
         X[i]->Z
         .normalite(data=data, X=Z,Y=Y)->nor1

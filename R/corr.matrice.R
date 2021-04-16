@@ -275,7 +275,7 @@ corr.matrice <-
       }
       class(r2)<-"matrix"
       if(is.null(Y)) r2[which(lower.tri(r2, diag = T))]<-"-"
-      Resultats$"r.deux matrix" <-as.data.frame(r2)
+      Resultats$"r.two matrix" <-as.data.frame(r2)
       dimnames(r2)[[1]]<-paste(dimnames(r2)[[1]], "r ^ 2")
       r1<-rbind(r1, r2)
       r1<-data.frame(r1)
@@ -359,7 +359,7 @@ corr.matrice <-
                            "'), Y=", ifelse(!is.null(Y),paste0("c('",Y,"')"), "NULL"), 
                            ", Z =", ifelse(!is.null(Z),paste0("c('",Z,"')"), "NULL"), ",data=",  corr.options$nom, ", p.adjust='", p.adjust,
                            "', group=", ifelse(!is.null(group),paste0("c('",group,"')"), "NULL"), 
-                           ", param=c('", param, "'), save =", sauvegarde, ",outlier=c('", outlier, "'), info=T, rscale=", ifelse(!is.null(rscale),rscale, "NULL"), ", n.boot=", n.boot, ")")
+                           ", param=c('", param, "'), sauvegarde=", sauvegarde, ",outlier=c('", outlier, "'), info=T, rscale=", ifelse(!is.null(rscale),rscale, "NULL"), ", n.boot=", n.boot, ")")
     
     .add.history(data=data, command=Resultats$Call, nom=corr.options$nom)
     .add.result(Resultats=Resultats, name =paste(choix, Sys.time() ))
