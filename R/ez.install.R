@@ -74,9 +74,9 @@ ez.install <-
 
     # 2c. installer packages manquants si necessaires et si utilisateur le souhaite
     if(length(pack.uninst)>0){
-      inst <- menu(choices=c("oui","non"), graphics=TRUE, title="Do you want to install the missing packages?")
+      inst <- menu(choices=c("Yes","non"), graphics=TRUE, title="Do you want to install the missing packages?")
       if(length(inst)==0 || inst==2){
-        tk_messageBox(type="ok", caption="Attention", message="You have chosen not to install the missing packages, this may interfere with the execution of some functions. Restart easieR () if you want to install the packages.")
+        tk_messageBox(type="ok", caption="Warning", message="You have chosen not to install the missing packages, this may interfere with the execution of some functions. Restart easieR () if you want to install the packages.")
       } else {
         writeLines("Installing packages")
         print(pack.uninst)

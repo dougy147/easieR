@@ -109,7 +109,7 @@ ez.html <-
                        "ht<-set_text_color(ht, row = is,col =everywhere ,  value='red')",
                        "}", 
                        "if(any(class(table)=='p.value')){",
-                       "for(j in 1:ncol(tableau)){",
+                       "for (j in 1: ncol (array)) {",
                        "ht<-set_text_color(ht, row = is,col =everywhere ,  value='red')}}",
                        "ht",
                        "```")
@@ -150,7 +150,7 @@ ez.html <-
                      "ht<-set_text_color(ht, row = is,col =everywhere ,  value='red')",
                      "}", 
                      "if(any(class(table)=='p.value')){",
-                     "for(j in 1:ncol(tableau)){",
+                     "for (j in 1: ncol (array)) {",
                      "ht<-set_text_color(ht, row = is,col =everywhere ,  value='red')}}",
                      "ht",
                      "```")

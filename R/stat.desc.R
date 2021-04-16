@@ -30,7 +30,7 @@ stat.desc <-
       if(length(diff)>0){
         if(dial){
           writeLines("You can decompose the descriptive statistics by subgroup by choosing one or more categorical variables. Do you want to specify the subgroups?")
-          groupes<-dlgList(c("oui", "non"), multiple = F, preselect="non", title="Specifier groupes ?")$res
+          groupes<-dlgList(c("Yes", "non"), multiple = F, preselect="non", title="Specify groups?")$res
           if(length(groupes)==0) {stat.desc.in(x=X, groupes=NULL, data=NULL, tr=tr, type=type,save=save)->Resultats
             return(Resultats)}
           if(groupes=="non") groupes<-NULL
@@ -50,14 +50,14 @@ stat.desc <-
       
       if(dial==T | tr>1 | tr<0 | (type %in% 1:3==F) ) {
         writeLines("You can specify the truncation and parameters for flattening and skewness by choosing other options")
-        options<-dlgList(c("oui", "non"), multiple = F, preselect="non", title="Specify other options?")$res
+        options<-dlgList(c("Yes", "non"), multiple = F, preselect="non", title="Specify other options?")$res
         if(length(options)==0) {
           stat.desc.in(x=X, groupes=NULL, data=NULL, tr=tr, type=type,save=save)->Resultats
           return(Resultats)
         }
-        if(options=="oui") {opts2<-NA
+        if(options=="Yes") {opts2<-NA
         while(any(is.na(opts2))){
-          dlgForm(list("Troncature:NUM"=0.1, "Type of skew and kurtosis, must be between 1 and 3: NUM"=3),  "Please set the truncation threshold")$res->opts2
+          dlgForm(list("Truncation: NUM"=0.1, "Type of skew and kurtosis, must be between 1 and 3: NUM"=3),  "Please set the truncation threshold")$res->opts2
           if(opts2[[1]]>0.5 | opts2[[1]]<0 ) NA->opts2[[1]] else tr<-opts2[[1]]
           if(opts2[[2]]%in% 1:3)  type<-opts2[[2]]  else opts2[[2]]<-NA  
           

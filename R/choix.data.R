@@ -14,7 +14,7 @@ choix.data <-
     if(!is.null(data) && data%in% nom1) data->nom1
     if(length(nom1)==1)  data<-get(nom1) else{
       if(info=="TRUE") writeLines("Please choose the database")
-      nom1 <- dlgList(nom1, multiple = FALSE, title="Donnees ?")$res
+      nom1 <- dlgList(nom1, multiple = FALSE, title="Data?")$res
       if(length(nom1)==0) {nom1<-NULL
       data<-NULL}
       if(!is.null(nom1))  data<-get(nom1)

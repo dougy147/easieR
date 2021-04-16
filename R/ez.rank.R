@@ -26,7 +26,7 @@ ez.rank <-
       if(info) writeLines("Comment voulez-vous traiter les ex-aequo ? La methode *average* fait la moyenne entre les ex aequo (le plus habituel),
                         *first* attribue le premier rang ex aequo a la premiere valeur dans les donnees, *laste* a la derniere, *min* attribue la
                         valeur minimale a l'ensemble des ex aequo et *max* la valeur maximale.")
-      ties.method<-dlgList(c("average", "first", "last", "random", "max", "min"), multiple = F, preselect="average", title="Specifier effectifs ?")$res
+      ties.method<-dlgList(c("average", "first", "last", "random", "max", "min"), multiple = F, preselect="average", title="Specify workforce?")$res
     }
     if(length(X)==1) rangs<-rank(data[,X],ties.method=ties.method, na.last="keep" ) else sapply(data[,X], rank, ties.method=ties.method, na.last="keep")->rangs
     if(length(X)==1) data.frame(rangs)->rangs

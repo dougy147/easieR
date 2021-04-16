@@ -22,3 +22,12 @@ for file in /home/luc/documents/easieR/R/*;
 do sed -i "s/$fr/$anglais/g" $file;
 done;
 done < a_traduire
+
+while read line;
+do line=$(echo $line | sed 's/\"//g';
+lire_ligne_fichier1 ;
+lire_ligne_fichier2 ;
+for file in /home/luc/documents/easieR/R/*;
+do sed -i "s/$fr/$anglais/g" $file;
+done;
+done < a_traduire

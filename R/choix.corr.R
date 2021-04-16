@@ -9,13 +9,13 @@ choix.corr <-
                \n la comparaison de correlations permet de comparer 2 correlations dependantes ou independantes
                \n Le choix + autre correlations + permet d'avoir les correlation tetrachoriques et polychoriques")
     dlgList(c("Analyse detaillee (Bravais Pearson/Spearman/tau) pour une ou peu de correlations", 
-              "Correlation matrix", 
+              "Correlation matrices", 
               "Comparison of two correlations",
               "Other correlations"), preselect=NULL, multiple = FALSE, title="What analysis do you want?")$res->choix
     if(length(choix)==0) return(analyse())
     switch(choix,
            "Analyse detaillee (Bravais Pearson/Spearman/tau) pour une ou peu de correlations"=corr.complet(html=html)->Resultats,
-           "Correlation matrix"= corr.matrice(html=html)->Resultats,
+           "Correlation matrices"= corr.matrice(html=html)->Resultats,
            "Comparison of two correlations"= comp.corr(html=html)->Resultats,
            "Other correlations"= tetrapoly(html=html)->Resultats
     )

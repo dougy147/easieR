@@ -19,22 +19,22 @@ regressions <-
       if(dial && is.null(modele)){
         if(info) writeLines("Veuillez choisir le(s) type(s) de relations entre les variables. Les effets additifs prennent la forme de
                             y=X1+X2 tandis que les effets d'interaction prennent la forme de Y=X1+X2+X1:X2")
-        dlgList(c("Effets additifs", "Interaction effects", "Specifier le modele"), preselect="Regressions", multiple = TRUE, title="What kind of regression?")$res->link
+        dlgList(c("Additive effects", "Interaction effects", "Specify the model"), preselect="Regressions", multiple = TRUE, title="What kind of regression?")$res->link
         if(length(link)==0) return(NULL) } else link<-"none"
       
       if(length(Y)>1){
         msgBox("There can only be one dependent variable.")
         Y<-NULL }
-      if(any(link %in% c("Effets additifs", "Interaction effects"))){
+      if(any(link %in% c("Additive effects", "Interaction effects"))){
         msg3<-"Please choose the dependent variable."
-        Y<-.var.type(X=Y, info=info, data=data, type="numeric", check.prod=F, message=msg3,  multiple=FALSE, title="Variable dependante", out=NULL)
+        Y<-.var.type(X=Y, info=info, data=data, type="numeric", check.prod=F, message=msg3,  multiple=FALSE, title="Dependent variable", out=NULL)
         if(is.null(Y)) {
           regressions.in()->Resultats
           return(Resultats)}
         data<-Y$data
         Y<-Y$X
         
-        if(any(link=="Effets additifs") || !is.null(X_a)| any(X_a %in% names(data)==F)) {
+        if(any(link=="Additive effects") || !is.null(X_a)| any(X_a %in% names(data)==F)) {
           msg3<-"Please choose the dependent variable."
           X_a<-.var.type(X=Y, info=info, data=data, type=NULL, check.prod=F, message=msg3,  multiple=TRUE, title="Additive model variables", out=Y)
           if(is.null(X_a)) {
@@ -77,7 +77,7 @@ regressions <-
         
       }
       
-      if(any(link=="Specifier le modele")) {
+      if(any(link=="Specify the model")) {
         if(is.null(modele)) modele<-" "
         modele<-fix(modele)}
       modele<-as.formula(modele)
@@ -95,7 +95,7 @@ regressions <-
       data[complete.cases(data[,variables]),]->data
       msg.options1<-"The parametric test is classical regression and the robust tests are an estimate on an M estimator as well as a bootstrap."
       
-      options<-.ez.options(options=c("choix","outlier"), n.boot=n.boot,param=T, non.param=F, robust=T, Bayes=T, msg.options1=msg.options1, msg.options2=msg.options2, info=info, dial=dial, 
+      options<-.ez.options(options=c("choice","outlier"), n.boot=n.boot,param=T, non.param=F, robust=T, Bayes=T, msg.options1=msg.options1, msg.options2=msg.options2, info=info, dial=dial, 
                            choix=param,sauvegarde=sauvegarde, outlier=outlier, rscale=rscale)
       if(is.null(options)) return(regressions.in())
       
@@ -121,7 +121,7 @@ regressions <-
       pred<-attributes(terms(as.formula(modele)))$term.labels
       Resultats$"Descriptive statistics"<-.stat.desc.out(X=variables, groupes=NULL, data=dtrgeasieR, tr=.1, type=3, plot=T)
       
-       if(scale==T || scale=="Centre") {
+       if(scale==T || scale=="Center") {
          Resultats$info<-"In accordance with the recommendations of Schielzeth 2010, the data were previously centered"
         which(!sapply(dtrgeasieR[,pred[which(pred %in% variables)]],class)%in%c("factor", "character"))->centre
         centre<-pred[centre]
@@ -142,7 +142,7 @@ regressions <-
       }
       assign("lm.r1",lm.r1, env= .GlobalEnv)
       resid(lm.r1)->dtrgeasieR$residu
-      Resultats$"Tests de normalite"<-.normalite(data=dtrgeasieR, X="residu", Y=NULL)
+      Resultats$"Normality tests"<-.normalite(data=dtrgeasieR, X="residue", Y=NULL)
       if(length(variables)>1)  {
         cont<-variables[which(!sapply(dtrgeasieR[,variables],class)%in%c("factor","character"))]
         Resultats$"Multivariate normalcy"<-.normalite(data=dtrgeasieR, X=cont, Y=NULL)
@@ -150,7 +150,7 @@ regressions <-
         FIV<-ols_coll_diag(lm.r1) # calcul du facteur d inflation de la variance 
         FIV[[1]]<-data.frame(FIV[[1]])
         names(FIV)<-c("Multicolinearity test", "Index of eigenvalues")
-        names(FIV$`Test de multicolinearite`)<-c("variables", "Tolerance", "FIV")
+        names(FIV$`Test de multicolinearite`)<-c("variables", "Tolerance", "IVF")
         Resultats$"Multicolinearitis tests"<-FIV$`Test de multicolinearite`
         if(FIV$`Test de multicolinearite`$Tolerance==0) {
           msgBox("Multicolinearity is too important. The model is unstable")
@@ -161,7 +161,7 @@ regressions <-
         Resultats$"Index of eigenvalues"<-FIV$`Indice des valeurs propres`
         dwt(lm.r1, simulate=TRUE, method= "normal", reps=500)->DWT.results
         Resultats$"Durbin-Watson test - autocorrelations"<-round(data.frame("Autocorrelation"=DWT.results[[1]],
-                                                                               "statistique de D-W"=DWT.results[[2]],"valeur.p"=DWT.results[[3]]),4)
+                                                                               "D-W statistic"=DWT.results[[2]],"p-value"=DWT.results[[3]]),4)
         
         var.err<-ols_test_breusch_pagan(lm.r1, rhs=T)
         
@@ -172,8 +172,8 @@ regressions <-
       }
       if(select.m!="none"){
         dtrgeasieR<<-dtrgeasieR
-        if(method %in% c("F", "valeur du F", "p", "valeur de la probabilite")){
-          select.m<-switch(select.m,"Forward - step by step ascending"="Forward", "Backward - step by step descending"="Backward", "Bidirectionnel"="Both",
+        if(method %in% c("F", "F value", "p", "probability value")){
+          select.m<-switch(select.m,"Forward - step by step ascending"="Forward", "Backward - step by step descending"="Backward", "Bidirectional"="Both",
                            "forward"="Forward", "bidirectional"="Stepwise","backward"="Both" )
           
           if(select.m=="Forward") t<-capture.output({  ols.out <- ols_step_forward_p(lm.r1,penter = criteria, details=F)})
@@ -189,13 +189,13 @@ regressions <-
                                 RMSE=ols.out$rmse,
                                 r.carre=ols.out$rsquare,
                                 r.carre.adj=ols.out$adjr,
-                                Method=ifelse(methodname==T, ols.out$method, ifelse(methodname=="Forward" , "Variable ajoutee", "variable supprimee"))
+                                Method=ifelse(methodname==T, ols.out$method, ifelse(methodname=="Forward" , "Variable added", "variable deleted"))
           )
-          Resultats$"Methode de selection"<-ols.frame 
+          Resultats$"Selection method"<-ols.frame 
         }
         
         if(method %in% c("AIC - Akaike Information criterion","AIC")){ 
-          select.m<-switch(select.m,"Forward - step by step ascending"="Forward", "Backward - step by step descending"="Backward", "Bidirectionnel"="Both",
+          select.m<-switch(select.m,"Forward - step by step ascending"="Forward", "Backward - step by step descending"="Backward", "Bidirectional"="Both",
                            "forward"="Forward", "bidirectional"="Both","backward"="Backward" )
           lm.r1<-lm(modele, data=dtrgeasieR)
           if(select.m=="Forward") t0<-capture.output({  ols.out <- ols_step_forward_aic(lm.r1, details=T)}) 
@@ -205,20 +205,20 @@ regressions <-
           predname<-if(select.m!="Backward") rep(TRUE, length(ols.out$predictors)) else rep(FALSE,length(ols.out[[1]])+1 )
           methodname<-if(!is.null(ols.out$method)) rep(TRUE, length(ols.out$method)) else rep(select.m,length(ols.out[[4]]) )
           ols.frame<-data.frame(etape=1:ols.out$steps,
-                                predicteurs=ifelse(predname,ols.out$predictors, c("Modele complet", ols.out$predictor)) ,
+                                predicteurs=ifelse(predname,ols.out$predictors, c("Complete model", ols.out$predictor)) ,
                                 Somme.Carre=ols.out$rss,
                                 AIC=ols.out$aic,
                                 SC.res=ols.out$ess,
                                 r.carre=ols.out$rsq,
                                 r.carre.adj=ols.out$arsq,
-                                Method=ifelse(methodname==T, ols.out$method, ifelse(methodname=="Forward" , "Variable ajoutee", c(" ","variable supprimee")))
+                                Method=ifelse(methodname==T, ols.out$method, ifelse(methodname=="Forward" , "Variable added", c(" ","variable deleted")))
           )
           
           Resultats$"Selection method - Akaike information criteria"<-ols.frame
           
         }
         
-        if(any(param=="Bayes")|any(param=="Facteurs bayesiens")){
+        if(any(param=="Bayes")|any(param=="Bayesian factors")){
           BF.out<-try(regressionBF(modele, data=dtrgeasieR,progress=F, rscaleCont=rscale), silent=T)
           if(class(BF.out)!="try-error") {
             try(plot(BF.out) , silent=T)
@@ -243,7 +243,7 @@ regressions <-
           lm(modele.H, data=dtrgeasieR, na.action=na.exclude )->lm.H
           lm.H->modele.H1[[i]]}
         
-        if(any(param=="param")|any(param=="Test parametrique")) {
+        if(any(param=="param")|any(param=="Parametric test")) {
           hier<-paste0("anova(modele.H1[[1]],modele.H1[[2]]")
           if(length(modele.H1)>2){
             for(i in 3: length(modele.H1)){
@@ -253,7 +253,7 @@ regressions <-
           hier<-paste0(hier,")")
           hier<-eval(parse(text=hier))
           attributes(hier)$heading[1]<-"Analysis of variance table for hierarchical models"
-          names(hier)<-c("ddl.resid", "SC.resid","ddl.effet", "SC", "F", "valeur.p")
+          names(hier)<-c("dof.resid", "SC.resid","dof.effect", "SC", "F", "p-value")
           Resultats$"Analyse hierarchique des modeles "<-hier
           
           
@@ -268,13 +268,13 @@ regressions <-
             rbind(modele_avec_outliers, c(significativite_modele ,valeur.p))->modele_avec_outliers  
           }
           round(modele_avec_outliers,3)->modele_avec_outliers 
-          c("Erreur residuelle", "R.deux", "F", "Ddl(1)", "Ddl(2)","valeur.p")->dimnames(modele_avec_outliers)[[2]]
-          paste("etape", 1:length(modele_avec_outliers[,1]))->dimnames(modele_avec_outliers)[[1]]
+          c("Residual error", "R.two", "F", "DOF (1)", "DOF (2)","p-value")->dimnames(modele_avec_outliers)[[2]]
+          paste("step", 1:length(modele_avec_outliers[,1]))->dimnames(modele_avec_outliers)[[1]]
           Resultats$"Hierarchical models - significance of the complete model at each stage"<-modele_avec_outliers
           
         }
         
-        if(any(param=="Bayes")|any(param=="Facteurs bayesiens")) {
+        if(any(param=="Bayes")|any(param=="Bayesian factors")) {
           BF<-lmBF(formula= as.formula(formule.H1[[1]]), data=dtrgeasieR, rscaleFixed=rscale)
           BF.modele<-extractBF(BF, onlybf=T)
           BF.hier<-c(NA)
@@ -285,19 +285,19 @@ regressions <-
             OddBF<-numBF/denomBF
             BF.hier<-c(BF.hier, extractBF(OddBF, onlybf=T))}
           
-          BF.hier<-data.frame("Ratio of FBs between models"=BF.hier, "FB du modele"= BF.modele)
+          BF.hier<-data.frame("Ratio of FBs between models"=BF.hier, "Model FB"= BF.modele)
           dimnames(BF.hier)[[1]]<- unlist(as.character(formule.H1))
           Resultats$"Bayesian approach to hierarchical models"<-BF.hier
         }
         
       }
-      # "test parametrique", "non-parametric test","Robust testing - involving bootstraps", "Facteurs bayesiens"   
-      if(any(param=="param")|any(param=="Test parametrique")) {
+      # "parametric test", "non-parametric test","Robust testing - involving bootstraps", "Bayesian factors"   
+      if(any(param=="param")|any(param=="Parametric test")) {
         c(summary(lm.r1)$sigma, summary(lm.r1)$r.squared, summary(lm.r1)$fstatistic)->significativite_modele # fournit les residus, le R.deux et le F
         pf(summary(lm.r1)$fstatistic[1], summary(lm.r1)$fstatistic[2],summary(lm.r1)$fstatistic[3], lower.tail=F)->p.value #permet de savoir si le F est significatif
         c(significativite_modele , p.value)->modele.F # on combine les precedents 
         round(modele.F,3)->modele.F # on arrondit les nombres a la 3e decimale
-        c("Erreur residuelle", "R.deux", "F", "Ddl (num)", "Ddl (dnom)","valeur.p")->names(modele.F)# attribue le nom aux colonnes
+        c("Residual error", "R.two", "F", "Dof (num)", "Dof (dname)","p-value")->names(modele.F)# attribue le nom aux colonnes
         modele.F->Resultats$"Estimation  du modele global"
         
         
@@ -306,7 +306,7 @@ regressions <-
         
         beta<-coef(lm.r1)*sapply(data.frame(model.matrix(lm.r1)),sd) /sd(dtrgeasieR[,variables[1]])
         c("",round(beta[-1],5))->table$beta # fournit les betas qu on inclut a la table 
-        names(table)<-c("b","erreur.standard","t","valeur.p","beta")
+        names(table)<-c("b","standard.error","t","p-value","beta")
         
         r_carre<- matrix(c(0,0,0),1)
         for(i in 1:length(mod)){
@@ -320,10 +320,10 @@ regressions <-
           
         }
         
-        dimnames(r_carre)<-list(ligne=NULL, c("R.deux", "Delta R.deux", "R.deux.aj"))
+        dimnames(r_carre)<-list(ligne=NULL, c("R.two", "Delta R.two", "R.deux.aj"))
         data.frame(table,r_carre)->table
         table[is.na(table)]<-""
-        table->Resultats$"table des betas"
+        table->Resultats$"betas table"
         if(length(pred)>1){
           ols.corr<-try(ols_correlations(lm.r1), silent=T)
           if(class(ols.corr)!="try-error"){
@@ -332,7 +332,7 @@ regressions <-
         }
       }
       
-      if(any(param=="Bayes")|any(param=="Facteurs bayesiens")){
+      if(any(param=="Bayes")|any(param=="Bayesian factors")){
         
         lmBF(modele1, data=dtrgeasieR)->BF.out
         BF.table<-extractBF(BF.out)[1:2]
@@ -342,18 +342,18 @@ regressions <-
           BF.table<-rbind(BF.table, extractBF(BF.out)[1:2])
         }
         } 
-        Resultats$"Facteurs bayesiens"<-BF.table
+        Resultats$"Bayesian factors"<-BF.table
         
       }
       
-      if(any(param=="robustes"| any(param=="Robust testing - involving bootstraps"))){
+      if(any(param=="robusts"| any(param=="Robust testing - involving bootstraps"))){
         
         rlm(formula=modele, data=dtrgeasieR)->modele_robuste
         summary(modele_robuste)->res_modele_robuste
         (1-pt(abs(res_modele_robuste$coefficients[,3]), (length(dtrgeasieR[,1])-1-length(pred)), lower.tail=TRUE))*2->proba
         round(cbind(res_modele_robuste$coefficients, proba),3)->M_estimator
         data.frame(M_estimator)->M_estimator
-        noms<-c("b (M estimator)", "SE", "t", "valeur.p")
+        noms<-c("b (M estimator)", "SE", "t", "p-value")
         
         
         if(n.boot>100){ 
@@ -368,14 +368,14 @@ regressions <-
           if(is.null(intervalle)){
             for(i in 1: length(lm.r1$coefficients)){boot.ci(bootResults, type = "perc", index = i)$percent[,4:5]->resultats
               rbind(intervalle, resultats)->intervalle}
-            noms<-c(noms, "Percentile.lim.inf", "Percentile.lim.sup")
+            noms<-c(noms, "Percentile.inf.lim", "Percentile.sup.lim")
           } else{
-            noms<-c(noms, "Bca.lim.inf", "Bca.lim.sup")
+            noms<-c(noms, "Bca.lim.inf", "Bca.sup.lim")
           }
           data.frame(M_estimator, round(intervalle,4))->M_estimator
         }
         names(M_estimator)<-noms
-        Resultats$"Statistiques robustes"<-M_estimator
+        Resultats$"Robust statistics"<-M_estimator
       }  
       
       
@@ -421,8 +421,8 @@ regressions <-
     
     
     
-    if(any(outlier==  "Donnees completes")){
-      Resultats$"Donnees completes"<-regressions.out(dtrgeasieR=data, modele=modele,  VC=VC, select.m=select.m, method=method, step=step, group=group, criteria=criteria , scale=scale,
+    if(any(outlier==  "Complete data")){
+      Resultats$"Complete data"<-regressions.out(dtrgeasieR=data, modele=modele,  VC=VC, select.m=select.m, method=method, step=step, group=group, criteria=criteria , scale=scale,
                                                      sauvegarde=sauvegarde, n.boot=n.boot, param=param, rscale=rscale)
       if(!is.null(group))   {  
         R1<-list()
@@ -436,7 +436,7 @@ regressions <-
           R1[[length(R1)+1]]<-resg
           names(R1)[length(R1)]<-names(G)[i]
         }
-        Resultats$"Donnees completes"$"Analyse par groupe"<-R1
+        Resultats$"Complete data"$"Group analysis"<-R1
       } 
       
     } 
@@ -500,7 +500,7 @@ regressions <-
         
       }
       if(any(outlier== "Data without influencing value")) {
-        if(N_retire!=0 | all(outlier!="Donnees completes")){
+        if(N_retire!=0 | all(outlier!="Complete data")){
           Resultats$"Data without influencing value"<-regressions.out(dtrgeasieR=nettoyees, modele=modele,  VC=VC, select.m=select.m, method=method, step=step, group=group, criteria=criteria , scale=scale,
                                                                      sauvegarde=sauvegarde, n.boot=n.boot, param=param, rscale=rscale)
           
@@ -516,7 +516,7 @@ regressions <-
               R1[[length(R1)+1]]<-resg
               names(R1)[length(R1)]<-names(G)[i]
             }
-            Resultats$"Data without influencing value"$"Analyse par groupe"<-R1
+            Resultats$"Data without influencing value"$"Group analysis"<-R1
           } 
           
           
@@ -541,7 +541,7 @@ regressions <-
     }
     Resultats$Call<-paste0("regressions(data=", nom, ",modele=",  modele, ",outlier=c('", outlier, "'),inf=", inf, ",CV=", CV,",select.m='", select.m,"',step=", ifelse(!is.null(step), step.call,"NULL"),
                            ",group=", ifelse(is.null(group), "NULL", paste0("c('",group,"')")),
-                           ",criteria=", criteria, ",scale=", scale, ",dial=T, info=T,sauvegarde=", sauvegarde, ",n.boot=", n.boot, ",param=c('", param, "'),rscale=", round(rscale,3), ")")
+                           ",criteria=", criteria, ",scale=", scale, ", dial = T, info = T, save =", sauvegarde, ",n.boot=", n.boot, ",param=c('", param, "'),rscale=", round(rscale,3), ")")
     
     
     .add.history(data=data, command=Resultats$Call, nom=nom)
@@ -575,9 +575,9 @@ regressions <-
   step1<-attributes(step1)$term.labels
   if(dial || !is.logical(scale)){
     if(info)   writeLines("Do you want to center the numeric variables? Center is generally advised (e.g., Schielzeth, 2010).")
-    scale<-dlgList(c("Centre", "Non centre"), multiple = FALSE, title="Centrer?")$res
+    scale<-dlgList(c("Center", "No center"), multiple = FALSE, title="Center?")$res
     if(length(scale)==0) return(NULL)
-    scale<-ifelse(scale=="Centre",T,F) 
+    scale<-ifelse(scale=="Center",T,F) 
   }
   Resultats$scale<-scale
   if(dial || !is.logical(inf) || !is.logical(CV)) {
@@ -587,25 +587,25 @@ regressions <-
                Les validations croisees permettent de verifier si un modele n'est pas dependant des donnees. Cette option est a utiliser notamment 
                avec les methodes de selection. L'analyse par groupe permet de realiser la meme regression pour des sous-groupes.
                Les mesures d'influences sont les autres mesures habituellement utilisees pour identifier les valeurs influentes.")
-    autres.options<-c("Validation croisee","Influence measurement",  "aucune")
-    if(dim(model.matrix(modele, data))[2]>2) autres.options<-c("Methodes de selection", "Hierarchical models", autres.options)
-    if(length(step2)<length(data))  autres.options<-c("analyse par groupes",autres.options)
+    autres.options<-c("Cross validation","Influence measurement",  "any")
+    if(dim(model.matrix(modele, data))[2]>2) autres.options<-c("Selection methods", "Hierarchical models", autres.options)
+    if(length(step2)<length(data))  autres.options<-c("group analysis",autres.options)
     
-    autres.options<- dlgList( autres.options, preselect=c("aucune"), multiple = TRUE, title="Autres options?")$res 
+    autres.options<- dlgList( autres.options, preselect=c("any"), multiple = TRUE, title="Other options?")$res 
     if(length(autres.options)==0) return(.regressions.options(data=data, modele=modele))
-    # if(any(autres.options=="aucune")) return(Resultats)   
+    # if(any(autres.options=="any")) return(Resultats)   
     if(any(autres.options=="Influence measurement") ) Resultats$inf<-T else  Resultats$inf<-F
-    if(any(autres.options=="Validation croisee") ) Resultats$CV<-T else Resultats$CV<-F
+    if(any(autres.options=="Cross validation") ) Resultats$CV<-T else Resultats$CV<-F
   }else{Resultats$inf<-inf
   Resultats$CV<-CV 
-  autres.options<-"aucune"
+  autres.options<-"any"
   }
   
   
-  if(any(autres.options=="analyse par groupes") || !is.null(group)) {
+  if(any(autres.options=="group analysis") || !is.null(group)) {
     
     msg5<-"Please choose the categorical ranking factor."
-    group<-.var.type(X=group, info=info, data=data, type="factor", check.prod=T, message=msg5,  multiple=FALSE, title="Variable-s groupes", out=step2)
+    group<-.var.type(X=group, info=info, data=data, type="factor", check.prod=T, message=msg5,  multiple=FALSE, title="Variable-s groups", out=step2)
     if(length(group)==0) { return(.regressions.options(data=data, modele=modele))}
     data<-group$data
     group<-group$X 
@@ -616,22 +616,22 @@ regressions <-
     }
   }
   
-  if(any(autres.options=="Methodes de selection") || select.m!="none" & length(select.m)!=1 | !select.m%in%c("none","forward", "backward", "bidirectional","Forward - step by step ascending",
-                                                                                                             "Backward - step by step descending", "Bidirectionnel")){
+  if(any(autres.options=="Selection methods") || select.m!="none" & length(select.m)!=1 | !select.m%in%c("none","forward", "backward", "bidirectional","Forward - step by step ascending",
+                                                                                                             "Backward - step by step descending", "Bidirectional")){
     if(info) writeLines("Please choose the selection method you wish to use")
-    select.m<- dlgList(c("Forward - step by step ascending","Backward - step by step descending", "Bidirectionnel"), 
-                       preselect=NULL, multiple = FALSE, title="Choix de la methode")$res
+    select.m<- dlgList(c("Forward - step by step ascending","Backward - step by step descending", "Bidirectional"), 
+                       preselect=NULL, multiple = FALSE, title="Choice of method")$res
     if(length(select.m)==0) return(.regressions.options(data=data, modele=modele))
   } 
   if(!is.null(method)){
-    if(any(autres.options=="Methodes de selection")   || (select.m!="none" && !method%in%c("AIC", "p", "F", "valeur du F","valeur de la probabilite", "AIC - Akaike Information criterion")) ){
+    if(any(autres.options=="Selection methods")   || (select.m!="none" && !method%in%c("AIC", "p", "F", "F value","probability value", "AIC - Akaike Information criterion")) ){
       if(info) writeLines("What method should be applied for the selection method?")
-      method<- dlgList(c("valeur du F","valeur de la probabilite", "AIC - Akaike Information criterion"), 
-                       preselect=c("valeur du F"), multiple = FALSE, title="Choix de la methode")$res
+      method<- dlgList(c("F value","probability value", "AIC - Akaike Information criterion"), 
+                       preselect=c("F value"), multiple = FALSE, title="Choice of method")$res
       if(length(method)==0) return(.regressions.options(data=data, modele=modele)) 
     }
     
-    if(select.m!="none" & (method=="valeur du F" | method=="F")){
+    if(select.m!="none" & (method=="F value" | method=="F")){
       if(!is.null(criteria) && (!is.numeric(criteria) || criteria<1)) {msgBox("You must specify the value of F. This value must be greater than 1")
         criteria<-NULL}
       
@@ -650,7 +650,7 @@ regressions <-
       }
     }
     
-    if(select.m!="none" & (method=="valeur de la probabilite" | method=="p")){
+    if(select.m!="none" & (method=="probability value" | method=="p")){
       if(dial | !is.null(criteria) && (!is.numeric(criteria) || criteria<0 || criteria>1)) {msgBox("You must specify the value of the probability. This value must be between 0 and 1")
         criteria<-NULL}
       if(is.null(criteria)) {
@@ -671,9 +671,9 @@ regressions <-
     
     if(!is.null(step) ){
       st1<-unlist(step)
-      if(any(table(st1>1))) st1<-"erreur"
-      if(any(!st1%in%step1 ))st1<-"erreur"
-      if(st1=="erreur"){
+      if(any(table(st1>1))) st1<-"error"
+      if(any(!st1%in%step1 ))st1<-"error"
+      if(st1=="error"){
         msgBox("A problem has been identified in the stages of your hierarchical regression")
         step<-NULL
       }

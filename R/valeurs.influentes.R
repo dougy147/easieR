@@ -20,8 +20,8 @@ valeurs.influentes <-
         rbind(valeur.influentes,data[max, ])->valeur.influentes
         data<-data[ -max, ] # supprime la valeur maximmal de data
       }  
-      data.frame(G=outliers$statistic[1], U=outliers$statistic[2], valeur.p=round(outliers$p.value,4))->Resultats.valeurs.influentes$"Test de Grubbs"
-      Resultats.valeurs.influentes$"Valeur la plus elevee"<-outliers$alternative
+      data.frame(G=outliers$statistic[1], U=outliers$statistic[2], valeur.p=round(outliers$p.value,4))->Resultats.valeurs.influentes$"Grubbs test"
+      Resultats.valeurs.influentes$"Highest value"<-outliers$alternative
       
     }
     

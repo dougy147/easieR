@@ -7,10 +7,10 @@ SelectionV <-
     choix.data()->data
     if(length(data)==0) return(preprocess())
     if(info==TRUE) print("What are the variables to select?")
-    X<-dlgList(c(paste(names(data), "(format :", sapply(data, class), ")", sep=" "), "autres donnees"), multiple = TRUE, 
+    X<-dlgList(c(paste(names(data), "(format :", sapply(data, class), ")", sep=" "), "other data"), multiple = TRUE, 
                title="Variable")$res
     if(length(X)==0) return(preprocess())
-    if( X== "autres donnees") return(SelectionV())
+    if( X== "other data") return(SelectionV())
     listes<-data.frame(paste(names(data), "(format :", sapply(data, class), ")", sep=" "), 1:length(data))
     subset(listes, listes[,1] %in% X)[,2]->X
     data[,X]->data

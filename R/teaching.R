@@ -2,7 +2,7 @@ teaching <-
   function(){
     tcl<-function(){
       clt.examp(1)
-      msgBox("etes-vous pret?")
+      msgBox("are you ready?")
       for(i in 1:50){
         clt.examp(i*2)
         Sys.sleep(1)
@@ -21,7 +21,7 @@ teaching <-
                        "Understanding positive predictive power and negative predictive power",
                        "Understanding a Bayesian inference",
                        "Understanding maximum likelihood",
-                       "Understanding the effects of heterogeneous variances"), preselect=NULL, multiple = FALSE, title="Que voulez-vous ?")$res
+                       "Understanding the effects of heterogeneous variances"), preselect=NULL, multiple = FALSE, title="What do you want ?")$res
     if(length(choix)==0) return(easieR())
     
     switch(choix, 
