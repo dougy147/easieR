@@ -21,43 +21,43 @@ comp.corr <-
     }
     
     if(exists("r") && length(r$p)!=0 && !is.na(r$p)) {
-      Resultats$"comparison of the two correlations"<-r
+      Resultats$"comparaison des deux correlations"<-r
       Resultats$call<-paste("comp.corr(xy=", xy, ",xz=", xz, ",yz=",yz, ",n=", n, ",n2=", n2, ",twotailed=",twotailed, ")")
       data1<-data.frame()
-      .add.history(data=data1, command=Resultats$call, nom=paste("comparison of correlations XY =", xy, "and YZ =", yz ))
-      .add.result(Resultats=Resultats, name =paste("comparison of correlations", Sys.time() ))
+      .add.history(data=data1, command=Resultats$call, nom=paste("comparaison des correlations XY=", xy, "et YZ =", yz ))
+      .add.result(Resultats=Resultats, name =paste("comparaison de correlations", Sys.time() ))
       Resultats$"References"<-ref1(packages)
       return(Resultats)
     } else{
-      type<- dlgList(c("Matched correlations", "Independent correlations"), preselect=FALSE, multiple = TRUE, title="Comparison of two correlations")$res
+      type<- dlgList(c("Correlations appariees", "Correlations independantes"), preselect=FALSE, multiple = TRUE, title="Comparaison de deux correlations")$res
       if(length(type)==0) return(choix.corr())
       
-      if(type=="Independent correlations") {
+      if(type=="Correlations independantes") {
         Form <- list(
-          "Correlation between XY: NUM" = 0,
-          "N of the correlation XY: NUM" = 100,
-          "Correlation between XZ: NUM" = 0,
-          "N of the correlation XZ: NUM" = 100)
+          "Correlation entre XY:NUM" = 0,
+          "N de la correlation XY:NUM" = 100,
+          "Correlation entre XZ:NUM" = 0,
+          "N de la correlation XZ:NUM" = 100)
       }else{
         Form <- list(
-          "Correlation between XY: NUM" = 0,
-          "Correlation between XZ: NUM" = 0,
-          "Correlation between YZ: NUM" = 0,
-          "Sample size: NUM" = 100)
+          "Correlation entre XY:NUM" = 0,
+          "Correlation entre XZ:NUM" = 0,
+          "Correlation entre YZ:NUM" = 0,
+          "Taille de l'echantillon:NUM" = 100)
       }
       
-      value<-dlgForm(Form, "Please enter the different values")$res
+      value<-dlgForm(Form, "Veuillez entrer les differentes valeurs")$res
       if(any(is.na(value))) {
-        msgBox("Not all values entered are numeric. Please enter numeric values only")
+        msgBox("Toutes les valeurs entrees ne sont pas numerique. Veuillez entrer des valeurs numeriques uniquement")
         comp.corr(xy=NULL, xz=NULL, yz=NULL, n=NULL, n2=NULL,twotailed=TRUE)->Resultats
         return(Resultats)
       }
-      xy<-value$"Correlation between XY"
-      xz<-value$"Correlation between XZ"
-      yz<-value$"Correlation between YZ"
-      if(type==  "Matched correlations"){n<-value$"Sample size"} else {
-        n<-value$"N of the correlation XY"
-        n2<-value$"N of the correlation XZ"
+      xy<-value$"Correlation entre XY"
+      xz<-value$"Correlation entre XZ"
+      yz<-value$"Correlation entre YZ"
+      if(type==  "Correlations appariees"){n<-value$"Taille de l'echantillon"} else {
+        n<-value$"N de la correlation XY"
+        n2<-value$"N de la correlation XZ"
       }
       comp.corr(xy=xy, xz=xz, yz=yz, n=n, n2=n2,twotailed=twotailed)->Resultats
       if(html) html<-FALSE

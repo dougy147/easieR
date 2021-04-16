@@ -8,16 +8,16 @@ save <-
     if(class(test2)== "try-error") return(ez.install())
     Resultats <- list()
                                                   
-    if(is.null(Resultats) & exists("ez.results")) Resultats<-ez.results else return("no results have been saved")
+    if(is.null(Resultats) & exists("ez.results")) Resultats<-ez.results else return("aucun resultat n'a ete sauvegarde")
     ez.html <-function(ez.results=Resultats)
       
     fileHTML<-file.path("file:/", tempdir(), "easieR/Rapport.easieR.html")
-    fileNAME<-dlgInput("What name do you want to give to the file")$res 
+    fileNAME<-dlgInput("Quel nom voulez-vous attribuer au fichier")$res 
     fileNAME<-strsplit(fileNAME, ":")
     fileNAME<-tail(fileNAME[[1]],n=1)                                         
     save_html(html=fileHTML, file=fileNAME, background = "white")
     
     Resultats<-NULL
-    Resultats$SAUVEGARDE<-paste("the data is saved in", getwd())
+    Resultats$SAUVEGARDE<-paste("les donnees sont sauvegardees dans", getwd())
     
   }
