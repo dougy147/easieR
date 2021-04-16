@@ -24,9 +24,11 @@ done;
 done < a_traduire
 
 while read line;
-do line=$(echo $line | sed 's/\"//g';
+do echo "test";
 lire_ligne_fichier1 ;
+fr=$(echo $fr | sed 's/\"//g') ;
 lire_ligne_fichier2 ;
+anglais=$(echo $anglais | sed 's/\"//g') ;
 for file in /home/luc/documents/easieR/R/*;
 do sed -i "s/$fr/$anglais/g" $file;
 done;
