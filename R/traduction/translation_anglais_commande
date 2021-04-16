@@ -1,3 +1,0 @@
-Recherche dans tous les scripts ce qu'il y a entre guillemets et le stocke dans un fichier "test" :
-
-cat * | grep -Eo '"([^"]*)"'

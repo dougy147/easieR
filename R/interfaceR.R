@@ -3,48 +3,48 @@ interfaceR <-
     options (warn=-1) 
     packages <- c("svDialogs","pkgmaker")
     lapply(packages, require,character.only=T)
-    Results <- list()
+    Resultats <- list()
     write.pkgbib(packages, file='references')
     
     
-    choice <- dlgList(c("get the working directory","specify the working directory", "Deleting an object in memory", 
-                       "list of objects in memory", "search for a new function", "update packages","Check the installation of packages"), preselect=NULL, multiple = FALSE, title="What is your choice ?")$res
-    while(length(choice)==0) return(easieR())
+    choix <- dlgList(c("obtenir le repertoire de travail","specifier le repertoire de travail", "Suppression d objet en memoire", 
+                       "liste des objets en memoire", "rechercher une nouvelle fonction", "mise a jour des packages","Verifier l installation des packages"), preselect=NULL, multiple = FALSE, title="Quel est votre choix ?")$res
+    while(length(choix)==0) return(easieR())
     
-    switch(choice, 
-           "get the working directory" = Results$"Work directory" <- getwd(),
-           "list of objects in memory"= Results$"Objects in memory" <- ls(envir=.GlobalEnv),
-           "specify the working directory"={
-             repertoire <- dlgDir(title="Please choose the working directory")$res
+    switch(choix, 
+           "obtenir le repertoire de travail" = Resultats$"Repertoire de travail" <- getwd(),
+           "liste des objets en memoire"= Resultats$"Objets en memoire" <- ls(envir=.GlobalEnv),
+           "specifier le repertoire de travail"={
+             repertoire <- dlgDir(title="Veuillez choisir le repertoire de travail")$res
              if(length(repertoire)==0) repertoire <- getwd()
              setwd(repertoire)
-             Results$"new directory" <- paste("The working directory is now", repertoire)
+             Resultats$"nouveau repertoire" <- paste("Le repertoire de travail est a present", repertoire)
            },
-           "Deleting an object in memory"={
+           "Suppression d objet en memoire"={
              ls(envir=.GlobalEnv)->tout
              Filter( function(x) 'function' %in% class( get(x) ), ls(envir=.GlobalEnv) )->fonctions
              tout[!is.element(tout,fonctions)]->tout
-             X<-dlgList(tout, multiple = TRUE, title="Objects to delete")$res
+             X<-dlgList(tout, multiple = TRUE, title="Objets a supprimer")$res
              if(length(X)==0) return(easieR())
              rm(list=X, envir=.GlobalEnv)
-             Results <- list()
-             Results$"List of objects still in memory of R" <- ls(envir=.GlobalEnv)
+             Resultats <- list()
+             Resultats$"Liste des objects encore en memoire de R" <- ls(envir=.GlobalEnv)
            },
-           "search for a new function"={
+           "rechercher une nouvelle fonction"={
              require(sos)
              writeLines("Pour trouver une nouvelle analyse, il est necessaire de faire votre recherche en anglais. Vous pouvez utiliser plusieurs mots dans la recherche.
 Une page html reprenant l'ensemble des packages faisant reference a l'analyse recherchee va s'ouvrir.")
-             critere <- dlgInput("What analysis are you looking for?", "Type your search here")$res
+             critere <- dlgInput("Quelle analyse recherchez vous ?", "Tapez votre recherche ici")$res
              if(length(critere)==0) return(easieR())
              critere <- strsplit(critere, ":")
              critere <- tail(critere[[1]],n=1)
-             Results<- findFn(critere)
-             return(Results)
+             Resultats<- findFn(critere)
+             return(Resultats)
            },
-           "update packages"= {update.packages(ask=FALSE)},
-           "Check the installation of packages"=vef.pack()->Results$"Package verification")
-    bibtex::read.bib('references.bib')->Results$"References of the packages used"
+           "mise a jour des packages"= {update.packages(ask=FALSE)},
+           "Verifier l installation des packages"=vef.pack()->Resultats$"Verification des packages")
+    bibtex::read.bib('references.bib')->Resultats$"References des packages utilises"
     file.remove('references.bib')
     
-    return(Results)
+    return(Resultats)
   }

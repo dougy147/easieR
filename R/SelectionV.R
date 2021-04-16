@@ -3,23 +3,23 @@ SelectionV <-
     packages<-c("svDialogs")
     if(any(lapply(packages, require, character.only=T))==FALSE)  {install.packages(packages) 
       require(packages)}
-    list()->Results
-    choice.data()->data
+    list()->Resultats
+    choix.data()->data
     if(length(data)==0) return(preprocess())
-    if(info==TRUE) print("What are the variables to select?")
-    X<-dlgList(c(paste(names(data), "(format :", sapply(data, class), ")", sep=" "), "other data"), multiple = TRUE, 
+    if(info==TRUE) print("Quelles sont les variables a selectionner ?")
+    X<-dlgList(c(paste(names(data), "(format :", sapply(data, class), ")", sep=" "), "autres donnees"), multiple = TRUE, 
                title="Variable")$res
     if(length(X)==0) return(preprocess())
-    if( X== "other data") return(SelectionV())
+    if( X== "autres donnees") return(SelectionV())
     listes<-data.frame(paste(names(data), "(format :", sapply(data, class), ")", sep=" "), 1:length(data))
     subset(listes, listes[,1] %in% X)[,2]->X
     data[,X]->data
-    fichier<- dlgInput("What name do you want to give to the file?", "selection")$res
+    fichier<- dlgInput("Quel nom voulez-vous donner au fichier?", "selection")$res
     if(length(fichier)==0) fichier<-"selection"
     strsplit(fichier, ":")->fichier
     tail(fichier[[1]],n=1)->fichier
     assign(x=fichier, value=data, envir=.GlobalEnv)
-    View(data, "data you have just selected")
-    Results<-paste("the selected variables are in", fichier)
-    return(Results)
+    View(data, "donnees que vous venez de selectionner")
+    Resultats<-paste("les variables selectionnees sont dans", fichier)
+    return(Resultats)
   }

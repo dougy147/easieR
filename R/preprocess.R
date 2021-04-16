@@ -1,22 +1,22 @@
 preprocess <-
   function(){
-    choice<-dlgList(c("Ranks", "Imputation of missing values",
-                     "Select observations","Select variables","CBetweenr / center reduce","Sort",
-                     "Mathematical operations on variables","Pivot table",
-                    "Wide format to long format"), multiple = F, preselect="rangs", title="What do you want to do ?")$res
-    if(length(choice)==0) return(easieR())
-    switch(choice, "Ranks"= ez.rank()->Results,
-           "Imputation of missing values"=ez.imp()->Results,
-           "Select observations"=selectionO()->Results,
-           "Select variables"=SelectionV()->Results,
-           "CBetweenr / center reduce"= CBetweenr.red()->Results,"Sort"= trier()->Results,
-           "Mathematical operations on variables"= maths()->Results,
-           "Wide format to long format"=ez.reshape()->Results,
-           "Pivot table"={ 
+    choix<-dlgList(c("Rangs", "Imputation de valeurs manquantes",
+                     "Selectionner des observations","Selectionner des variables","Centrer / centrer reduire","Trier",
+                     "Operations mathematiques sur des variables","Tableau croise dynamique",
+                    "Format large au format long"), multiple = F, preselect="rangs", title="Que voulez-vous faire ?")$res
+    if(length(choix)==0) return(easieR())
+    switch(choix, "Rangs"= ez.rank()->Resultats,
+           "Imputation de valeurs manquantes"=ez.imp()->Resultats,
+           "Selectionner des observations"=selectionO()->Resultats,
+           "Selectionner des variables"=SelectionV()->Resultats,
+           "Centrer / centrer reduire"= Centrer.red()->Resultats,"Trier"= trier()->Resultats,
+           "Operations mathematiques sur des variables"= maths()->Resultats,
+           "Format large au format long"=ez.reshape()->Resultats,
+           "Tableau croise dynamique"={ 
              try(library("rpivotTable"), silent=T)->test2
              if(class(test2)== "try-error") return(ez.install())
-             return( rpivotTable(choice.data(nom=F)))
+             return( rpivotTable(choix.data(nom=F)))
            }
     )
-    return(Results)
+    return(Resultats)
   }
