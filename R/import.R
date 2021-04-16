@@ -15,7 +15,7 @@ import <-
     options (warn=-1)
     c("svDialogs",  "readxl","foreign", "textclean")->packages
     lapply(packages, require,character.only=T)
-    Resultats <- list()
+    Results <- list()
     if(info==TRUE) print("What format is your file saved in?")
     if(!is.null(type)){
       type<-switch(type,
@@ -123,7 +123,7 @@ import <-
     }
 
     if(any( grepl("[^[:alnum:][:space:]_.]", names(data1)))) {
-      writeLines("Evitez les espaces ainsi que les signes de ponctuations, a l'exception . et _ ")
+      writeLines("Avoid spaces and punctuation marks, except. and _ ")
       dlgMessage("Some variable names contain special characters that can create bugs. Do you want to rename these variables?", "yesno")$res->rn
       if(rn=="yes"){
         grep("[^[:alnum:][:space:]_.]", names(data1))->rn
@@ -144,12 +144,12 @@ import <-
     assign(x=name, value=data1, envir=.GlobalEnv)
     try(View(data1, "Your data"), silent=T)
     str(data1)
-    Resultats <- "the data has been imported correctly"
+    Results <- "the data has been imported correctly"
     call.txt<-paste0("import(file='", file, "',dir='",getwd(),"',type='",type,"',dec='",dec,
                      "',sep='",sep,"',na.strings='", na.strings,"',sheet=" ,
                      ifelse(is.null(sheet), "NULL",paste0("'", sheet,"'")),",name='",name,"')")
-    Resultats$call<-call.txt
-    .add.history(data=data1, command=Resultats$Call, nom=name)
-    return(Resultats)
+    Results$call<-call.txt
+    .add.history(data=data1, command=Results$Call, nom=name)
+    return(Results)
 
   }

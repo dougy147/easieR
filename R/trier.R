@@ -4,8 +4,8 @@ trier <-
     # faire en sorte que les donnees triees portent le nom initial des donnees
     if(any(lapply(packages, require, character.only=T))==FALSE)  {install.packages(packages) 
       require(packages)}
-    list()->Resultats
-    choix.data(info=TRUE,nom=TRUE)->data
+    list()->Results
+    choice.data(info=TRUE,nom=TRUE)->data
     if(length(data)==0) return(preprocess())
     data[[1]]->nom1
     data[[2]]->data
@@ -25,6 +25,6 @@ trier <-
     }
     data[do.call("order", data[Y2]), ]->data
     View(data)
-    Resultats<-"les donnees ont ete triees correctement "
+    Results<-"the data has been sorted correctly "
     assign(x=nom1, value=data, envir=.GlobalEnv)
-    return(Resultats)}
+    return(Results)}

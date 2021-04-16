@@ -3,8 +3,8 @@ SelectionV <-
     packages<-c("svDialogs")
     if(any(lapply(packages, require, character.only=T))==FALSE)  {install.packages(packages) 
       require(packages)}
-    list()->Resultats
-    choix.data()->data
+    list()->Results
+    choice.data()->data
     if(length(data)==0) return(preprocess())
     if(info==TRUE) print("What are the variables to select?")
     X<-dlgList(c(paste(names(data), "(format :", sapply(data, class), ")", sep=" "), "other data"), multiple = TRUE, 
@@ -20,6 +20,6 @@ SelectionV <-
     tail(fichier[[1]],n=1)->fichier
     assign(x=fichier, value=data, envir=.GlobalEnv)
     View(data, "data you have just selected")
-    Resultats<-paste("the selected variables are in", fichier)
-    return(Resultats)
+    Results<-paste("the selected variables are in", fichier)
+    return(Results)
   }

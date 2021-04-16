@@ -123,7 +123,7 @@ ez.install <-
       }
 
     flush.console()
-    vef.pack()->Resultats
-    return(Resultats)
+    vef.pack()->Results
+    return(Results)
 
   }

@@ -31,56 +31,56 @@ aov.plus <-
     }else aov.plus.list[[2]]->aov.plus.list
     
     
-    writeLines("Cette fonction permet de fournir les moyennes et erreurs-types ajustees ainsi que le graphique correspondant.
-               Avec le choix post hoc sur les interactions, vous pouvez tester les effets d'interaction 2 a 2 et les effet simples.")
-    choix<-dlgList(c("means and adjusted standard errors","contrasts"), 
+    writeLines("Cette fonction permet de fournir les means and adjusted standard errors ainsi que le graphique correspondant.
+               Avec le choice post hoc sur les interactions, vous pouvez tester les effets d'interaction 2 a 2 et les effet simples.")
+    choice<-dlgList(c("means and adjusted standard errors","contrasts"), 
                    multiple = TRUE, title="What data do you want to analyze?")$res 
-    if(length(choix)==0) return(analyse())
+    if(length(choice)==0) return(analyse())
     
-    Resultats<-list()
+    Results<-list()
     noms<-names(summary(aov.plus.list[["em.out"]]))[which(sapply(summary(aov.plus.list[["em.out"]]),class) =="factor")]
     
-    if(any(choix=="means and adjusted standard errors")){
+    if(any(choice=="means and adjusted standard errors")){
       writeLines("For what combination of factors do you want to display the adjusted means?")
-      facteurs<-dlgList(noms, multiple = TRUE, title="What do you want to display?")$res
-      if(length(facteurs)==0) return(aov.plus()) 
-      formula<-paste0("~",facteurs[[1]])
-    if(length(facteurs)>1){      
-      for(i in 2:length(facteurs)){
-        formula<-paste(formula, "+", facteurs[i])
+      factors.-dlgList(noms, multiple = TRUE, title="What do you want to display?")$res
+      if(length(factors.==0) return(aov.plus()) 
+      formula<-paste0("~",factors.[1]])
+    if(length(factors.>1){      
+      for(i in 2:length(factors.){
+        formula<-paste(formula, "+", factors.i])
       }}
       recordPlot()->graphe
-      Resultats$"Adjusted Averages-Graph"<-emmip(object= aov.plus.in$`Donnees completes`$em.out,as.formula(formula) , CIs=T)
-      em.out<-emmeans(object= aov.plus.in$`Donnees completes`$em.out,as.formula(formula), CIs=T)
-      Resultats$"Adjusted averages"<-data.frame(em.out)
+      Results$"Adjusted Averages-Graph"<-emmip(object= aov.plus.in$`Complete data`$em.out,as.formula(formula) , CIs=T)
+      em.out<-emmeans(object= aov.plus.in$`Complete data`$em.out,as.formula(formula), CIs=T)
+      Results$"Adjusted averages"<-data.frame(em.out)
  
     }
     
-    if(any(choix=="contrasts")){
+    if(any(choice=="contrasts")){
       writeLines("Please specify the contrasts.")
-      if(length(choix)==0) return(aov.plus())
+      if(length(choice)==0) return(aov.plus())
       p.adjust<-dlgList(c("holm", "hochberg", "hommel", "bonferroni", "fdr","tukey","scheffe",
                 "sidak","dunnettx","mvt" ,"none" ), preselect="holm", multiple = FALSE, title="Type of correction?")$res
       if(length(p.adjust)==0) p.adjust<-"none"
     
-        cont.data<-data.frame(aov.plus.in$`Donnees completes`$em.out)
+        cont.data<-data.frame(aov.plus.in$`Complete data`$em.out)
         cont.data<-cont.data[, noms]
         cont.data<-fix(cont.data)
         suppress<-which(colSums(is.na(cont.data)) > 0)
         if(length(suppress>0)) cont.data<-cont.data[,-suppress]
-        Resultats$Contrates$coefficients<-cont.data
-        emm.out<-contrast(aov.plus.in$`Donnees completes`$em.out, 
+        Results$Contrates$coefficients<-cont.data
+        emm.out<-contrast(aov.plus.in$`Complete data`$em.out, 
                                                 method= list(cont.data[, which(sapply(cont.data, class)=="numeric")]), adjust=p.adjust)
         emm.out<-data.frame(emm.out)
         names(emm.out)[6]<-"p-value"
        
         emm.out$contrast<-names(cont.data)[which(sapply(cont.data, class)=="numeric")]
-        Resultats$Contrates$contrastes<-emm.out
+        Results$Contrates$contrasts<-emm.out
         }
-        ref1(packages)->Resultats$"References of the packages used for this analysis"
-        .add.result(Resultats=Resultats, name =paste("Anova more", Sys.time() ))
-#    if(sauvegarde==T) save(Resultats=Resultats ,choix ="Results.aov.more", env=.e)
-     if(html) ez.html(Resultats)
-      return(Resultats)
+        ref1(packages)->Results$"References of the packages used for this analysis"
+        .add.result(Results=Results, name =paste("Anova more", Sys.time() ))
+#    if(sauvegarde==T) save(Results=Results ,choice ="Results.aov.more", env=.e)
+     if(html) ez.html(Results)
+      return(Results)
     
   }

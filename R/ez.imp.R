@@ -11,7 +11,7 @@ ez.imp <-
     if(class(test2)== "try-error") return(ez.install())
     .e <- environment()
     if(is.null(data)) { dial<-T
-    data<-choix.data(data=data, info=info, nom=T)
+    data<-choice.data(data=data, info=info, nom=T)
     if(length(data)==0) return(NULL)
     nom<-data[[1]]
     data<-data[[2]]

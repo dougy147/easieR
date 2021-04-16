@@ -23,6 +23,9 @@ do sed -i "s/$fr/$anglais/g" $file;
 done;
 done < a_traduire
 
+ligne_fichier1=1
+ligne_fichier2=1
+
 while read line;
 do echo "test";
 lire_ligne_fichier1 ;

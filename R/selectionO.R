@@ -3,8 +3,8 @@ selectionO <-
     packages<-c("svDialogs")
     if(any(lapply(packages, require, character.only=T))==FALSE)  {install.packages(packages) 
       require(packages)}
-    list()->Resultats
-    choix.data()->data
+    list()->Results
+    choice.data()->data
     if(length(data)==0) {return(preprocess())}
     if(info==TRUE) writeLines("Il est possible d'appliquer plusieurs criteres de selection simultanement, impliquant ou non plusieurs variables. 
                               Veuillez preciser le nombre de variables sur lesquelles vous desirez appliquer un ou plusieurs criteres de selection. 
@@ -28,10 +28,10 @@ selectionO <-
             writeLines(paste("What criteria do you want to use for the variable", names(data[,X])[i], "?"))}
           dlgList(c("better than","greater than or equal to", "less than", "less than or equal to", "equal to", "is different from", "Between", 
                     "beyond (with a lower and upper limit"), 
-                  preselect=NULL, multiple = FALSE, title=paste("What criteria do you want to use for the variable", names(data[,X])[i], "?"))$res->choix
-          if(length(choix)==0) return(selectionO())
-          if(choix=="better than"|choix=="less than"|choix=="equal to"|choix=="greater than or equal to"|
-             choix=="less than or equal to"|choix=="is different from"){
+                  preselect=NULL, multiple = FALSE, title=paste("What criteria do you want to use for the variable", names(data[,X])[i], "?"))$res->choice
+          if(length(choice)==0) return(selectionO())
+          if(choice=="better than"|choice=="less than"|choice=="equal to"|choice=="greater than or equal to"|
+             choice=="less than or equal to"|choice=="is different from"){
             if(info==TRUE) writeLines("Please specify the value on which the observations should be selected.")
             seuil<- dlgInput("Specify the value?", 0)$res
             if(length(seuil)==0) return(selectionO()) else {
@@ -53,14 +53,14 @@ selectionO <-
               strsplit(seuil.sup, ":")->seuil.sup
               tail(seuil.sup[[1]],n=1)->seuil.sup
               as.numeric(seuil.sup)->seuil.sup}
-          if(choix=="better than"){data[data[,X[i]]>seuil,]->data}
-          if(choix=="less than"){data[data[,X[i]]<seuil,]->data}
-          if(choix=="equal to"){data[data[,X[i]]==seuil,]->data}
-          if(choix=="is different from"){data[data[,X[i]]!=seuil,]->data}
-          if(choix=="greater than or equal to"){data[data[,X[i]]>=seuil,]->data}
-          if(choix=="less than or equal to"){data[data[,X[i]]<=seuil,]->data}
-          if(choix=="Between"){data[data[,X[i]]>=seuil.inf & data[,X[i]]<=seuil.sup,]->data}
-          if(choix=="beyond (with a lower and upper limit"){data[data[,X[i]]<seuil.inf & data[,X[i]]>seuil.sup,]->data}
+          if(choice=="better than"){data[data[,X[i]]>seuil,]->data}
+          if(choice=="less than"){data[data[,X[i]]<seuil,]->data}
+          if(choice=="equal to"){data[data[,X[i]]==seuil,]->data}
+          if(choice=="is different from"){data[data[,X[i]]!=seuil,]->data}
+          if(choice=="greater than or equal to"){data[data[,X[i]]>=seuil,]->data}
+          if(choice=="less than or equal to"){data[data[,X[i]]<=seuil,]->data}
+          if(choice=="Between"){data[data[,X[i]]>=seuil.inf & data[,X[i]]<=seuil.sup,]->data}
+          if(choice=="beyond (with a lower and upper limit"){data[data[,X[i]]<seuil.inf & data[,X[i]]>seuil.sup,]->data}
         }
     }
     
@@ -70,6 +70,6 @@ selectionO <-
     tail(fichier[[1]],n=1)->fichier
     assign(x=fichier, value=data, envir=.GlobalEnv)
     View(data, "data you have just selected")
-    Resultats<-paste("the observations you have selected are in", fichier)
-    return(Resultats)
+    Results<-paste("the observations you have selected are in", fichier)
+    return(Results)
   }
