@@ -98,14 +98,14 @@ ez.reshape<-function(data=NULL, varying = NULL, v.names = NULL,
            "you must specify the number of factors able to repeat",
            "You did not specify the number of factors able to repeat, do you want to quit?",
            "The entered value is not numeric, you must enter a numeric value",
-           "you have selected", "colonnes",
+           "vous avez selectionne", "colonnes",
            "the product of the modalities of each of the variables must correspond to the number of selected columns.",
            "Appuyez [entree] pour continuer")
     
     
     title<-c("Columns in repeated measures" ,"Number of variables measured", "Name of the variable measured", 
              "How many factors can be repeated?",
-             "Name of factor","How many terms","modality", "Names of modalities for", 
+             "Nom du facteur","Combien de modalites","modalite", "Names of modalities for", 
              "Is the long format structure of your data correct?")
     
   } else {

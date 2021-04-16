@@ -128,19 +128,19 @@ ez.mediation <-
     listes<-data.frame(paste(names(data), "(format :", sapply(data, class), ")", sep=" "), names(data))
     if(info) writeLines("please specify the predictor")
     X<-dlgList(paste(names(data), "(format :", sapply(data, class), ")", sep=" "), multiple = F, 
-               title="Predictor")$res
+               title="Predicteur")$res
     if(length(X)==0) return(ez.mediation())
     subset(listes, listes[,1] %in% X)[,2]->X
     as.character(X)->X
     if(info) writeLines("please choose the mediator")
     Mediator<-dlgList(c(paste(names(data), "(format :", sapply(data, class), ")", sep=" ")), multiple = F, 
-                      title="Mediator")$res
+                      title="Mediateur")$res
     if(length(Mediator)==0) return(ez.mediation())
     subset(listes, listes[,1] %in% Mediator)[,2]->Mediator
     as.character(Mediator)->Mediator
     if(choix=="Distant mediation effect"){
       writeLines("please specify the second mediator.")
-      Mediator2<-dlgList(c(paste(names(data), "(format :", sapply(data, class), ")", sep=" ")), multiple = F, title="Mediator 2")$res
+      Mediator2<-dlgList(c(paste(names(data), "(format :", sapply(data, class), ")", sep=" ")), multiple = F, title="Mediateur 2")$res
       if(length(Mediator2)==0) return(ez.mediation())
       subset(listes, listes[,1] %in% Mediator2)[,2]->Mediator2
       as.character(Mediator2)->Mediator2
@@ -148,7 +148,7 @@ ez.mediation <-
     
     if(info) writeLines("please choose the dependent variable")
     VD<-dlgList(c(paste(names(data), "(format :", sapply(data, class), ")", sep=" ")), multiple = F, 
-                title="Dependent variable")$res
+                title="Variable dependante")$res
     subset(listes, listes[,1] %in% VD)[,2]->VD
     as.character(VD)->VD
     writeLines("please specify the number of bootstrap. A minimum of 500 is ideally required. May take time for N> 1000")
@@ -177,14 +177,14 @@ ez.mediation <-
     round(as.numeric(as.character(results$SE)),4)->results$SE
     round(as.numeric(as.character(results[,3])),3)->results$t.ratio
     round(as.numeric(as.character(results$Med.Ratio)),4)->results$Med.Ratio 
-    names(results)<-c("Effect", "Error.st","test.t", "Ratio.med")
-    results->Resultats$"Remote mediation"
+    names(results)<-c("Effet", "Erreur.st","test.t", "Ratio.med")
+    results->Resultats$"Mediation a distance"
     Resultats$Information<-"For a detailed description of the results,? Distal.med"
     distmed.boot <- boot(data2, distInd.ef, R=n.boot)
     boot.ci(distmed.boot, conf=.95, type=c("basic","perc", "norm"))->IC.boot
     round(matrix(c(IC.boot$normal[,2:3],IC.boot$basic[,4:5],IC.boot$percent[,4:5]), ncol=2 ),4)->IC.boot
     dimnames(IC.boot)[[1]]<-c("normal","basic","percentile")
-    dimnames(IC.boot)[[2]]<-c("limit.inf","limit.sup")
+    dimnames(IC.boot)[[2]]<-c("limite.inf","limite.sup")
     IC.boot->Resultats$"Confidence interval estimated by bootstrap"}
     
     dlgList(c("TRUE","FALSE"), preselect="FALSE", multiple = FALSE, title="do you want to save?")$res->sauvegarde

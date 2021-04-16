@@ -9,7 +9,7 @@ selectionO <-
     if(info==TRUE) writeLines("Il est possible d'appliquer plusieurs criteres de selection simultanement, impliquant ou non plusieurs variables. 
                               Veuillez preciser le nombre de variables sur lesquelles vous desirez appliquer un ou plusieurs criteres de selection. 
                               Veuillez choisir les variables sur lesquelles vous deirez appliquer une selection") 
-    X<-dlgList(c(paste(names(data), "(format :", sapply(data, class), ")", sep=" "), "other data"), multiple = TRUE, 
+    X<-dlgList(c(paste(names(data), "(format :", sapply(data, class), ")", sep=" "), "autres donnees"), multiple = TRUE, 
                title="Variable")$res
     if(length(X)==0 ) return(preprocess())
     listes<-data.frame(paste(names(data), "(format :", sapply(data, class), ")", sep=" "), 1:length(data))
@@ -26,40 +26,40 @@ selectionO <-
         factor(data[,X[i]])->data[,X [i]]}else{
           if(info==TRUE) {print("Veuillez specifier les criteres des observations que vous desirez conserver/garder.")
             writeLines(paste("What criteria do you want to use for the variable", names(data[,X])[i], "?"))}
-          dlgList(c("better than","greater than or equal to", "less than", "less than or equal to", "equal to", "is different from", "Between", 
+          dlgList(c("superieur a","greater than or equal to", "inferieur a", "less than or equal to", "egal a", "est different de", "entre", 
                     "beyond (with a lower and upper limit"), 
                   preselect=NULL, multiple = FALSE, title=paste("What criteria do you want to use for the variable", names(data[,X])[i], "?"))$res->choix
           if(length(choix)==0) return(selectionO())
-          if(choix=="better than"|choix=="less than"|choix=="equal to"|choix=="greater than or equal to"|
-             choix=="less than or equal to"|choix=="is different from"){
+          if(choix=="superieur a"|choix=="inferieur a"|choix=="egal a"|choix=="greater than or equal to"|
+             choix=="less than or equal to"|choix=="est different de"){
             if(info==TRUE) writeLines("Please specify the value on which the observations should be selected.")
-            seuil<- dlgInput("Specify the value?", 0)$res
+            seuil<- dlgInput("Precisez la valeur?", 0)$res
             if(length(seuil)==0) return(selectionO()) else {
               strsplit(seuil, ":")->seuil
               tail(seuil[[1]],n=1)->seuil
-              as.numeric(seuil)->seuil}} else{seuil.inf<- dlgInput("Lower limit?", 0)$res
+              as.numeric(seuil)->seuil}} else{seuil.inf<- dlgInput("Limite inferieure?", 0)$res
               while(length(seuil.inf)==0) {writeLines("you must specify the lower limit")
                 dlgMessage("You did not specify the lower limit. Do you want to leave the selection?", "yesno")$res->quitte
                 if(quitte=="yes") return(selectionO())
-                seuil.inf<- dlgInput("Lower limit?", 0)$res}
+                seuil.inf<- dlgInput("Limite inferieure?", 0)$res}
               strsplit(seuil.inf, ":")->seuil.inf
               tail(seuil.inf[[1]],n=1)->seuil.inf
               as.numeric(seuil.inf)->seuil.inf
-              seuil.sup<- dlgInput("Upper limit?", 0)$res
+              seuil.sup<- dlgInput("Limite superieure?", 0)$res
               while(length(seuil.sup)==0) {writeLines("you must specify the upper limit")
                 dlgMessage("You did not specify the upper limit. Do you want to leave the selection?", "yesno")$res->quitte
                 if(quitte=="yes") return(selectionO())
-                seuil.sup<- dlgInput("Upper limit?", 0)$res}
+                seuil.sup<- dlgInput("Limite superieure?", 0)$res}
               strsplit(seuil.sup, ":")->seuil.sup
               tail(seuil.sup[[1]],n=1)->seuil.sup
               as.numeric(seuil.sup)->seuil.sup}
-          if(choix=="better than"){data[data[,X[i]]>seuil,]->data}
-          if(choix=="less than"){data[data[,X[i]]<seuil,]->data}
-          if(choix=="equal to"){data[data[,X[i]]==seuil,]->data}
-          if(choix=="is different from"){data[data[,X[i]]!=seuil,]->data}
+          if(choix=="superieur a"){data[data[,X[i]]>seuil,]->data}
+          if(choix=="inferieur a"){data[data[,X[i]]<seuil,]->data}
+          if(choix=="egal a"){data[data[,X[i]]==seuil,]->data}
+          if(choix=="est different de"){data[data[,X[i]]!=seuil,]->data}
           if(choix=="greater than or equal to"){data[data[,X[i]]>=seuil,]->data}
           if(choix=="less than or equal to"){data[data[,X[i]]<=seuil,]->data}
-          if(choix=="Between"){data[data[,X[i]]>=seuil.inf & data[,X[i]]<=seuil.sup,]->data}
+          if(choix=="entre"){data[data[,X[i]]>=seuil.inf & data[,X[i]]<=seuil.sup,]->data}
           if(choix=="beyond (with a lower and upper limit"){data[data[,X[i]]<seuil.inf & data[,X[i]]>seuil.sup,]->data}
         }
     }

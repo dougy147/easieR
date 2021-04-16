@@ -1,11 +1,11 @@
 chi <-
   function(X=NULL, Y=NULL, Effectifs=NULL, p=NULL, choix=NULL, data=NULL, info=TRUE, n.boot=NULL, priorConcentration =1,  
-           SampleType=NULL,fixedMargin=NULL, choix2=c("non-parametric test","Robust testing - involving bootstraps", "Bayesian factors") ,rscale=2^0.5/2, html=T){
+           SampleType=NULL,fixedMargin=NULL, choix2=c("non-parametric test","Robust testing - involving bootstraps", "Facteurs bayesiens") ,rscale=2^0.5/2, html=T){
     # X = character or vector.  First set of variables
     # Y = character or vector. Second set of variables
     # Effectifs = character. Name of weighting variable. Must be positive integer
     # p = vector of probabilities. Must be equal to 1. The lenght must be equel to number of levels of X
-    # choix = character. One among "Adjustment", "Independence", or "McNemar test"
+    # choix = character. One among "Ajustement", "Independance", or "Test de McNemar"
     # data = name of the dataframe 
     # B = number of bootstrap fro computing p.values by Monte-Carlo simulation
     # priorConcentration : prior concentration paramter, set to 1 by default (see ?contingencyTableBF)
@@ -14,9 +14,9 @@ chi <-
     # rscale : prior scale. A number of preset values can be given as strings
     chi.in<-function(X=NULL, Y=NULL, Effectifs=NULL, p=NULL, choix=NULL, data=NULL, info=T, n.boot=NULL, SampleType=NULL, FM=NULL, choix2=NULL){
       if(!is.null(choix)) dial<-F else dial<-T
-      if(is.null(choix) || (choix %in%c("Adjustment", "Independence", "McNemar test")==FALSE)){
+      if(is.null(choix) || (choix %in%c("Ajustement", "Independance", "Test de McNemar")==FALSE)){
         if(info) writeLines("Please specify the type of square footage you wish to achieve.")
-        choix<- dlgList(c("Adjustment", "Independence", "McNemar test"), preselect="Independence", multiple = FALSE, title="Chi-square type")$res
+        choix<- dlgList(c("Ajustement", "Independance", "Test de McNemar"), preselect="Independance", multiple = FALSE, title="Type de khi deux")$res
         if(length(choix)==0) return(NULL)
       }
       
@@ -25,7 +25,7 @@ chi <-
       data[[1]]->nom
       data[[2]]->data
       msg3<-"Please choose the first set of categorical factor (s)"
-      if(choix=="Independence") multiple<-T else multiple<-F
+      if(choix=="Independance") multiple<-T else multiple<-F
       X<-.var.type(X=X, info=info, data=data, type="factor", check.prod=F, message=msg3,  multiple=multiple, title="Variable-s", out=NULL)
       if(is.null(X)) {
         chi.in(X=NULL, Y=NULL, Effectifs=NULL, p=NULL, choix=NULL, data=NULL, info=T, n.boot=NULL, SampleType=NULL, FM=NULL, choix2=NULL)->Resultats
@@ -33,7 +33,7 @@ chi <-
       X$data->data
       X$X->X
       
-      if(choix!="Adjustment"){
+      if(choix!="Ajustement"){
         msg4<-"Please choose the second set of categorical factor (s)"
         Y<-.var.type(X=Y, info=info, data=data, type="factor", check.prod=F, message=msg4,  multiple=multiple, title="Variable-s", out=NULL)
         if(is.null(Y)) {
@@ -41,7 +41,7 @@ chi <-
           return(Resultats)}
         Y$data->data
         Y$X->Y
-        if(choix=="McNemar test" & any(sapply(data[,c(X,Y)],nlevels)!=2)) {
+        if(choix=="Test de McNemar" & any(sapply(data[,c(X,Y)],nlevels)!=2)) {
           msgBox("McNemar's test involves a 2x2 array. The dimensions of your table are different.")
           print(table(data[,X], data[,Y], dnn=c(X,Y)))
           chi.in(X=NULL, Y=NULL, Effectifs=NULL, p=NULL, choix=NULL, data=NULL, info=T, n.boot=NULL, SampleType=NULL, FM=NULL, choix2=NULL)->Resultats
@@ -51,7 +51,7 @@ chi <-
       
       if(dial){       
         if(info==T) writeLines("Should the analysis be weighted by an effective variable?")
-        Effectifs<-dlgList(c("Yes", "non"), multiple = F, preselect="non", title="Specify workforce?")$res
+        Effectifs<-dlgList(c("oui", "non"), multiple = F, preselect="non", title="Specifier effectifs ?")$res
         if(length(Effectifs)==0) {
           chi.in(X=NULL, Y=NULL, Effectifs=NULL, p=NULL, choix=NULL, data=NULL, info=T, n.boot=NULL, SampleType=NULL, FM=NULL, choix2=NULL)->Resultats
           return(Resultats)}
@@ -68,7 +68,7 @@ chi <-
       
       # check variable
       if(!is.null(Effectifs)) sum(data[,Effectifs])->tot else length(data[,1])->tot
-      if(choix!="Adjustment") {
+      if(choix!="Ajustement") {
         expand.grid(X, Y)->comb
         comb[which(as.vector(comb[,1])!=as.vector(comb[,2])),]->comb
         if(any(apply(comb, 1, function(x) prod(sapply(data[,x],nlevels)))>tot)){
@@ -85,7 +85,7 @@ chi <-
         }
       }
       
-      if(choix=="Adjustment") {
+      if(choix=="Ajustement") {
         if(dial==F & is.null(p)) rep(1/nlevels(data[,X]),times=nlevels(data[,X]))->p
         if(sum(p)!=1 | any(p)>1 | any(p)<0) p<-NULL
         
@@ -101,15 +101,15 @@ chi <-
         } 
         }
         }
-      if(choix=="McNemar test") robust<-F else robust<-T
-      if(choix=="Adjustment") Bayes<-F else Bayes<-T 
+      if(choix=="Test de McNemar") robust<-F else robust<-T
+      if(choix=="Ajustement") Bayes<-F else Bayes<-T 
       msg.options<-"In this case, the non-parametric test is the classic chi-square test."
-      .ez.options(options="choice", n.boot=n.boot,param=F, non.param=T, robust=robust, Bayes=Bayes, msg.options1=NULL, msg.options2=msg.options, info=T, dial=dial, choix=choix2)->Options
+      .ez.options(options="choix", n.boot=n.boot,param=F, non.param=T, robust=robust, Bayes=Bayes, msg.options1=NULL, msg.options2=msg.options, info=T, dial=dial, choix=choix2)->Options
       if(is.null(Options)){  chi.in(X=NULL, Y=NULL, Effectifs=NULL, p=NULL, choix=NULL, data=NULL, info=T, n.boot=NULL, SampleType=NULL, FM=NULL, choix2=NULL)->Resultats
         return(Resultats)}
       if(dial==T || any(SampleType %in% c("poisson", "jointMulti","hypergeom", "indepMulti"))==F || SampleType=="indepMulti" & any(fixedMargin %in% c("rows","cols"))==F){
         
-        if(any(Options$choix=="Bayesian factors") && choix== "Independence" ){
+        if(any(Options$choix=="Facteurs bayesiens") && choix== "Independance" ){
           if(info==T) {
             writeLines("Quel type d'echantillonnage  avez-vous realise pour votre analyse ?") 
             cat("Si l'effectif total est non fixe, on fait l'hypothese que les observations surviennent en respectant une loi de poisson.
@@ -160,7 +160,7 @@ chi <-
       Resultats$analyse<-choix
       Resultats$data<-data
       Resultats$nom.data<-nom
-      if(choix=="Adjustment") Resultats$Variables<-X else Resultats$Variables<-comb
+      if(choix=="Ajustement") Resultats$Variables<-X else Resultats$Variables<-comb
       Resultats$Effectifs<-Effectifs
       Resultats$p<-p
       Resultats$choix<-Options$choix
@@ -175,27 +175,27 @@ chi <-
       dims<-dim(chi.r$expected)
       V<-round((x/((min(dims)-1)*n))^0.5,3)
       V.sq<-round(V^2,3)
-      resultats<-data.frame("V"=V, "V.squared"=V.sq)
+      resultats<-data.frame("V"=V, "V.carre"=V.sq)
       return(resultats)}
     chi.out<-function(data=NULL, X=NULL, Y=NULL, p=NULL, choix=NULL, Effectifs=NULL, n.boot=NULL, SampleType=NULL,
                       fixedMargin=NULL, choix2=NULL, rscale=2^0.5/2,priorConcentration=1){
       Resultats<-list()
-      if(choix=="Adjustment"){
+      if(choix=="Ajustement"){
         if(!is.null(Effectifs)){
           tapply(data[,Effectifs], data[,X],sum,na.rm=TRUE)->tab
           rbind(tab,p, p*sum(data[,Effectifs]))->Distribution} else {
             table(data[,X])->tab
             rbind(tab, p, sum(tab)*p)->Distribution}
-        dimnames(Distribution)[[1]]<-c("Observations", "probabilities","Expected")
-        Resultats$"Summary table"<-Distribution 
+        dimnames(Distribution)[[1]]<-c("Observes", "probabilites","Attendus")
+        Resultats$"Tableau de synthese"<-Distribution 
         chi<-chisq.test(tab, p=p, B=n.boot)
-        Resultats$"chi.two adjustment"<-data.frame(chi.deux=round(chi$statistic,3), ddl=chi$parameter) 
-        if(any(choix2== "Non-parametric test")) Resultats$"chi.two adjustment"$valeur.p<-round(chi$p.value,4)
+        Resultats$"chi.deux d'ajustement"<-data.frame(chi.deux=round(chi$statistic,3), ddl=chi$parameter) 
+        if(any(choix2== "Non-parametric test")) Resultats$"chi.deux d'ajustement"$valeur.p<-round(chi$p.value,4)
         if(!is.null(n.boot) && n.boot>1){
-          Resultats$"chi.two adjustment"$"Estimated value of p by Monte Carlo simulation"<-round(chisq.test(tab, B=n.boot, simulate.p.value=T, correct=F)$p.value,4)}
+          Resultats$"chi.deux d'ajustement"$"Estimated value of p by Monte Carlo simulation"<-round(chisq.test(tab, B=n.boot, simulate.p.value=T, correct=F)$p.value,4)}
         
       }
-      if((choix!="Adjustment")){
+      if((choix!="Ajustement")){
         if (is.null(Effectifs)) tab<-table(data[,X],data[ ,Y], dnn=c(X, Y))else {
           tab<-tapply(data[,Effectifs],list(data[,X],data[,Y]),sum,na.rm=TRUE) 
           tab[is.na(tab)] <- 0
@@ -205,18 +205,18 @@ chi <-
         # graphique   
         spineplot(tab, col=topo.colors(nlevels(data[,Y])))
         table.margins(tab)->Resultats$"Workforce Observations"
-        if(choix=="Independence"){
+        if(choix=="Independance"){
           mon.chi<-chisq.test(tab, B=n.boot, correct=F)
           mon.chi$expected->Resultats$"Expected workforce"
           if(any(choix2 %in% c("Non-parametric test","Robust testing - involving bootstraps")))    {
-            SY<-data.frame( "chi.two"=round(mon.chi$statistic,4), 
-                            "dof"=mon.chi$parameter, Cramer(mon.chi))
+            SY<-data.frame( "chi.deux"=round(mon.chi$statistic,4), 
+                            "ddl"=mon.chi$parameter, Cramer(mon.chi))
             if(any(choix2=="Non-parametric test")) SY$valeur.p<-round(mon.chi$p.value,4) 
             try(fisher.test(tab),silent=T)->fisher
             if(class(fisher)!="try-error") SY$Fisher.Exact.Test=round(fisher$p.value,4)
             if(all(dim(tab)==2)){
               mon.chi<-chisq.test(tab, B=n.boot, correct=T)
-              AY<-data.frame("chi.two"=round(mon.chi$statistic,4),"dof"=mon.chi$parameter,   Cramer(mon.chi),valeur.p=round(mon.chi$p.value,4) ,Fisher.Exact.Test="" )
+              AY<-data.frame("chi.deux"=round(mon.chi$statistic,4),"ddl"=mon.chi$parameter,   Cramer(mon.chi),valeur.p=round(mon.chi$p.value,4) ,Fisher.Exact.Test="" )
               if(any(choix2=="Non-parametric test")) AY$valeur.p<-round(mon.chi$p.value,4)
               SY<-rbind(SY, AY)
               dimnames(SY)[[1]]<-c("Without Yates correction", "With Yates correction") 
@@ -224,7 +224,7 @@ chi <-
             if(!is.null(n.boot) && n.boot>1){
               SY$"P-value by Monte Carlo simulation"<-chisq.test(tab, B=n.boot, simulate.p.value=T, correct=F)$p.value
             } 
-            Resultats$"Main analysis"<-SY
+            Resultats$"Analyse principale"<-SY
             # Rapport de vraisemblance 
             RV<-2* sum(mon.chi$observed[which(mon.chi$observed!=0)] * 
                          log(mon.chi$observed[which(mon.chi$observed!=0)]/mon.chi$expected[which(mon.chi$observed!=0)],base=exp(1)))
@@ -232,17 +232,17 @@ chi <-
             p<-mon.chi$observed/sum(mon.chi$observed)
             q<-mon.chi$expected/sum(mon.chi$expected)
             RVES<-(-1/(log(min(q[which(p!=0)]), base=exp(1)))) *sum(p *log(p[which(p!=0)]/q[which(p!=0)], base=exp(1))) # ES from JOHNSTON et al. 2006
-            RV<-data.frame("chi.squared"=RV, "dof"=mon.chi$parameter, "p-value"=round(PRV,4), "Size.effect"=round(RVES,4))
+            RV<-data.frame("chi.carre"=RV, "ddl"=mon.chi$parameter, "valeur.p"=round(PRV,4), "Taille.effet"=round(RVES,4))
             Resultats$"Likelihood ratio (G test)"<-RV
           }
           # facteur bayesien
-          if(any(choix2=="Bayesian factors")) {
+          if(any(choix2=="Facteurs bayesiens")) {
             if(!is.null(fixedMargin) && fixedMargin==0) fixedMargin<-NULL
             bf<-contingencyTableBF(tab, sampleType = SampleType, fixedMargin = fixedMargin, priorConcentration=priorConcentration)
             bf<-ifelse(extractBF(bf, onlybf=T)>1000, ">1000", ifelse(extractBF(bf, onlybf=T)<.001, "<0.001",round(extractBF(bf, onlybf=T),4)))
-            bf<-data.frame("Bayesian factor"=c(bf, ifelse(class(bf)=="character", "<0.001", round(1/bf,4)),SampleType))
+            bf<-data.frame("Facteur bayesien"=c(bf, ifelse(class(bf)=="character", "<0.001", round(1/bf,4)),SampleType))
             dimnames(bf)[[1]]<-c("In favor of the alternative hypothesis", "In favor of the null hypothesis", "Type")
-            Resultats$"Bayesian factor"<-bf 
+            Resultats$"Facteur bayesien"<-bf 
           }
           
           # Odd ratio 
@@ -256,7 +256,7 @@ chi <-
           if(any(choix2 %in% c("Non-parametric test","Robust testing - involving bootstraps")))      {
             if(is.null(SY$"P-value by Monte Carlo simulation")) p<-SY$valeur.p else p<-SY$"P-value by Monte Carlo simulation"
             if(p<0.05)  {
-              round(mon.chi$residuals,3)->Resultats$"Residues"
+              round(mon.chi$residuals,3)->Resultats$"Residus"
               round((mon.chi$observed-mon.chi$expected)/(mon.chi$expected^0.5),3)->Resultats$"Standardized residues"
               round(mon.chi$stdres,3)->Resultats$"Adjusted standardized residues"
               p.adjust(2*(1-pnorm(abs(Resultats$"Adjusted standardized residues"))), method="holm")->valeur.p
@@ -265,31 +265,31 @@ chi <-
               round(valeur.p,4)->Resultats$"Significance of residues - probability corrected by applying Holm's method"
             }
           }
-          round(table.margins(prop.table(mon.chi$observed))*100,1)->Resultats$"Total percentage"
+          round(table.margins(prop.table(mon.chi$observed))*100,1)->Resultats$"Pourcentage total"
           round(sweep(addmargins(mon.chi$observed, 1, list(list(All = sum, N = function(x) sum(x)^2/100))), 2,apply(mon.chi$observed, 2, sum)/100, "/"), 1)->Resultats$"Percentage by column"
-          round(sweep(addmargins(mon.chi$observed, 2, list(list(All = sum, N = function(x) sum(x)^2/100))), 1,apply(mon.chi$observed, 1, sum)/100, "/"), 1)->Resultats$"Percentage by line"
+          round(sweep(addmargins(mon.chi$observed, 2, list(list(All = sum, N = function(x) sum(x)^2/100))), 1,apply(mon.chi$observed, 1, sum)/100, "/"), 1)->Resultats$"Pourcentage par ligne"
           
         }
-        if(choix=="McNemar test"){
+        if(choix=="Test de McNemar"){
           if(any(choix2== "Non-parametric test"))    {
             MCN<-mcnemar.test(tab, correct=F)
-            MCN<-data.frame("chi.two"=round(MCN$statistic,3), "dof"=MCN$parameter, "p-value"= round(MCN$p.value,4))
+            MCN<-data.frame("chi.deux"=round(MCN$statistic,3), "ddl"=MCN$parameter, "valeur.p"= round(MCN$p.value,4))
             MCN2<-mcnemar.test(tab, correct=T)
-            MCN2<-data.frame("chi.two"=round(MCN2$statistic,3), "dof"=MCN2$parameter, "p-value"= round(MCN2$p.value,4))
+            MCN2<-data.frame("chi.deux"=round(MCN2$statistic,3), "ddl"=MCN2$parameter, "valeur.p"= round(MCN2$p.value,4))
             MCN<-rbind(MCN, MCN2)
             dimnames(MCN)[[1]]<-c("McNemar test without continuity correction", "McNemar test with continuity correction" )
             MCN->Resultats$"McNemar test with Yates correction" # test de McNemar    
           }
-          if(any(choix2=="Bayesian factors")) {
+          if(any(choix2=="Facteurs bayesiens")) {
             bf<-proportionBF(y=tab[1,2], tab[1,2]+tab[2,1], p=0.5,rscale=rscale)
             erreur<-bf@numerator[[1]]@analysis$properror
             erreur<-ifelse(erreur<.0001, "<0.0001", erreur)
             bf<-ifelse(extractBF(bf, onlybf=T)>1000, ">1000", ifelse(extractBF(bf, onlybf=T)<.001, "<0.001",extractBF(bf, onlybf=T)))
             samples =proportionBF(y = tab[1,2], N = tab[1,2]+tab[2,1], p = .5, posterior = TRUE, iterations = 10000)
             plot(samples[,"p"])
-            bf<-data.frame("Bayesian factor"=c(bf, ifelse(class(bf)=="character", "<0.001", round(1/bf,4)), erreur, rscale))
-            dimnames(bf)[[1]]<-c("In favor of the alternative hypothesis", "In favor of the null hypothesis", "error", "rscale")
-            Resultats$"Bayesian factors"<-bf
+            bf<-data.frame("Facteur bayesien"=c(bf, ifelse(class(bf)=="character", "<0.001", round(1/bf,4)), erreur, rscale))
+            dimnames(bf)[[1]]<-c("In favor of the alternative hypothesis", "In favor of the null hypothesis", "erreur", "rscale")
+            Resultats$"Facteurs bayesiens"<-bf
           }
           
           if( all(dimnames(tab)[[1]]==dimnames(tab)[[2]])) Resultats$Avertissement<-"Les cellules utilisees pour le calcul du McNemar  sont celles de la 1e ligne 2e colonne et de la 2e ligne 1e colonne" else
@@ -310,7 +310,7 @@ chi <-
     
     chi.in(X=X, Y=Y, Effectifs=Effectifs,p=p, choix=choix, data=data, info=info, n.boot=n.boot, SampleType=SampleType, FM=fixedMargin, choix2=choix2)->chi.options
     if(is.null(chi.options)) return(analyse())
-    if(chi.options!="Adjustment"){
+    if(chi.options!="Ajustement"){
       try( windows(record=T), silent=T)->win
       if(class(win)=="try-error") quartz()
     }
@@ -322,7 +322,7 @@ chi <-
     } else {X<-chi.options$Variables
     Y<-NULL}
     
-    if(length(X)>1) Resultats$"Alpha warning"<-paste("you multiply the error of the 1st kind. The risk of making a mistake of the first kind is", 100*(1-0.95^length(X)), "%", sep=" ")  
+    if(length(X)>1) Resultats$"Avertissement alpha"<-paste("you multiply the error of the 1st kind. The risk of making a mistake of the first kind is", 100*(1-0.95^length(X)), "%", sep=" ")  
     for(i in 1:length(X)) {
       as.character(X[i])->Xi
       as.character(Y[i])->Yi
@@ -330,11 +330,11 @@ chi <-
                            Effectifs =chi.options$Effectifs, n.boot=chi.options$n.boot, choix2=chi.options$choix,
                            SampleType=chi.options$SampleType[i],  fixedMargin=chi.options$fixedMargin[i], rscale=rscale, priorConcentration =priorConcentration)
       Resultats[[i]]<-chi.results
-      if(chi.options$analyse=="Adjustment") nom<-paste("chi-square adjustment on the variable", X, sep =" ")
-      if(chi.options$analyse=="Independence") nom<-paste("Results of the match of two between the variable", Xi,
-                                                         "and the variable", Yi,sep=" ")
-      if(chi.options$analyse=="McNemar test") nom<-paste("McNemar test results between variable", Xi,
-                                                            "and the variable", Yi,sep=" ")
+      if(chi.options$analyse=="Ajustement") nom<-paste("chi-square adjustment on the variable", X, sep =" ")
+      if(chi.options$analyse=="Independance") nom<-paste("Results of the match of two between the variable", Xi,
+                                                         "et la variable", Yi,sep=" ")
+      if(chi.options$analyse=="Test de McNemar") nom<-paste("McNemar test results between variable", Xi,
+                                                            "et la variable", Yi,sep=" ")
       names(Resultats)[i]<-nom
     } 
     
@@ -345,7 +345,7 @@ chi <-
     if(!is.null(chi.options$SampleType)) paste(chi.options$SampleType, collapse="','", sep="")->SampleType
     paste(chi.options$fixedMargin, collapse="','", sep="")->FM
     paste0("chi(X=c('", X,ifelse(!is.null(Y), paste0("'),Y=c('", Y, "')"), "'), Y=NULL"), 
-           ifelse(is.null(chi.options$Effectifs),",Effectifs=NULL", paste0(", Samples = '", chi.options$Effectifs, "'")),
+           ifelse(is.null(chi.options$Effectifs),",Effectifs=NULL", paste0(",Effectifs='", chi.options$Effectifs, "'")),
            ifelse(!is.null(Y), ", p=NULL", paste0(", p=c(", p,")")), 
            ", choix='", chi.options$analyse, "',data=", chi.options$nom.data, ",info=", info, ",n.boot=", ifelse(is.null(chi.options$n.boot), "NULL",chi.options$n.boot) , 
            ",priorConcentration =" ,priorConcentration, ",SampleType=", ifelse(is.null(chi.options$SampleType), 'NULL', paste0("c('",SampleType,"')")), 

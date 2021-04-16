@@ -20,7 +20,7 @@ ez.imp <-
     nom<-paste0(nom,".complet")
     
     if(dial || imp%in% c("Do nothing - Keep all observations", "Removing cases with missing values", "Replace with the mean",
-                         "Replace with median","Multiple imputation - Amelia","nothing","rm", "mean","median", "amelia") == FALSE){
+                         "Replace with median","Multiple imputation - Amelia","rien","rm", "mean","median", "amelia") == FALSE){
       writeLines("Number of missing values per variable. How do you want to treat them?")
       print(sapply(data, function(x) sum(length(which(is.na(x))))) )
       
@@ -31,7 +31,7 @@ ez.imp <-
       }
     }
     if(length(imp)==0) return(NULL)
-    if(imp == "Do nothing - Keep all observations" || imp=="nothing") return(data)
+    if(imp == "Do nothing - Keep all observations" || imp=="rien") return(data)
     if(imp== "Removing cases with missing values"|| imp=="rm"){
       data<-data[complete.cases(data),]
       if(dial)  assign(nom, data, envir=.GlobalEnv)

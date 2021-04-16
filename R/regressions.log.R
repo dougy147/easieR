@@ -26,15 +26,15 @@ regressions.log <-
       if(dial && is.null(modele)){
         if(info) writeLines("Veuillez choisir le(s) type(s) de relations entre les variables. Les effets additifs prennent la forme de
                             y=X1+X2 tandis que les effets d'interaction prennent la forme de Y=X1+X2+X1:X2")
-        dlgList(c("Additive effects", "Interaction effects", "Specify the model"), preselect="Regressions", multiple = TRUE, title="What kind of regression?")$res->link
+        dlgList(c("Effets additifs", "Interaction effects", "Specifier le modele"), preselect="Regressions", multiple = TRUE, title="What kind of regression?")$res->link
         if(length(link)==0) return(NULL)} else link<-"none"
       
       if(length(Y)>1){
         msgBox("There can only be one dependent variable.")
         Y<-NULL }
-      if(any(link %in% c("Additive effects", "Interaction effects"))){
+      if(any(link %in% c("Effets additifs", "Interaction effects"))){
         msg3<-"Please choose the dependent variable."
-        Y<-.var.type(X=Y, info=info, data=data, type=NULL, check.prod=F, message=msg3,  multiple=FALSE, title="Dependent variable", out=NULL)
+        Y<-.var.type(X=Y, info=info, data=data, type=NULL, check.prod=F, message=msg3,  multiple=FALSE, title="Variable dependante", out=NULL)
         if(is.null(Y)) {
           reg.log.in()->Resultats
           return(Resultats)}
@@ -49,12 +49,12 @@ regressions.log <-
             
             if(conv=="no") return(reg.log.in())  else{
               if(info) writeLines("Please specify the criterion on which you want to dichotomize your variable. You can use the median or choose a specific threshold.")
-              dlgList(c("Median", "Threshold"), preselect="Median", multiple = FALSE, title="What coding criteria do you want?")$res->codage
+              dlgList(c("Mediane", "Seuil"), preselect="Mediane", multiple = FALSE, title="What coding criteria do you want?")$res->codage
               if(length(codage)==0) return(reg.log.in())
-              if(codage=="Median") data[,Y]<-ifelse(data[,Y]>median(data[,Y]),1, 0)
+              if(codage=="Mediane") data[,Y]<-ifelse(data[,Y]>median(data[,Y]),1, 0)
               View(data)
               readline()
-              if(codage=="Threshold") {
+              if(codage=="Seuil") {
                 seuil<-NA
                 while(is.na(seuil)){
                   seuil<-dlgInput("Please specify the separation value", median(data[,Y]))$res 
@@ -83,7 +83,7 @@ regressions.log <-
         }
         
         
-        if(any(link=="Additive effects") || !is.null(X_a)| any(X_a %in% names(data)==F)) {
+        if(any(link=="Effets additifs") || !is.null(X_a)| any(X_a %in% names(data)==F)) {
           msg3<-"Please choose the dependent variable."
           X_a<-.var.type(X=Y, info=info, data=data, type=NULL, check.prod=F, message=msg3,  multiple=TRUE, title="Additive model variables", out=Y)
           if(is.null(X_a)) {
@@ -128,7 +128,7 @@ regressions.log <-
       
       
       
-      if(any(link=="Specify the model")) modele<-fix(modele)
+      if(any(link=="Specifier le modele")) modele<-fix(modele)
       variables<-terms(as.formula(modele))
       variables<-as.character( attributes(variables)$variables)[-1]
       pred<-attributes(terms(as.formula(modele)))$term.labels
@@ -168,7 +168,7 @@ regressions.log <-
       
       if(dial){
         if(info) writeLines('voulez-vous integrer les probabilites a votre base de donnees ?')
-        dlgList(c(TRUE, FALSE), preselect=FALSE, multiple = FALSE, title="Probabilities?")$res->proba
+        dlgList(c(TRUE, FALSE), preselect=FALSE, multiple = FALSE, title="Probabilites ?")$res->proba
         
       }
       
@@ -190,7 +190,7 @@ regressions.log <-
       pred<-attributes(terms(as.formula(modele)))$term.labels
       Resultats$"Descriptive statistics"<-.stat.desc.out(X=variables, groupes=NULL, data=data, tr=.1, type=3, plot=T)
       
-      if(scale==T || scale=="Center") {Resultats$info<-"In accordance with the recommendations of Schielzeth 2010, the data were previously centered"
+      if(scale==T || scale=="Centre") {Resultats$info<-"In accordance with the recommendations of Schielzeth 2010, the data were previously centered"
       fun<-function(X){X-mean(X)}
       variables[-1]->pred2
       sapply(X=data[, names(which(sapply(data[,pred2],class)!="factor"))], fun)->data[,names(which(sapply(data[,pred2],class)!="factor"))]
@@ -220,7 +220,7 @@ regressions.log <-
         
         attributes(hier)$heading[1]<-"Hierarchical models deviance analysis table"
         round(1-pchisq(hier$Deviance,hier$Df,lower.tail=F),4)->hier$valeur.p
-        names(hier)<-c("dof.resid", "Deviance.resid","dof.effect", "Deviance", "p-value")
+        names(hier)<-c("ddl.resid", "Deviance.resid","ddl.effet", "Deviance", "valeur.p")
         Resultats$"Analyse hierarchique des modeles "<-hier
       }
       
@@ -242,7 +242,7 @@ regressions.log <-
       
       summary(mod[[length(mod)]])->resultats
       as(resultats$call,"character")->texte
-      paste("the model tested is" , texte[2])->Resultats$"Model tested"
+      paste("the model tested is" , texte[2])->Resultats$"Modele teste"
       
       cbind(rms::vif(mod[[length(mod)]]), 1/rms::vif(mod[[length(mod)]]))->MC
       dimnames(MC)[[2]]<-c("Variance inflation factor", "Tolerance")
@@ -253,22 +253,22 @@ regressions.log <-
       round(1-pchisq(chi.carre.modele,ddl),4)->valeur.p
       logisticPseudoR2s(mod[[length(mod)]])->Pseudo.R.carre
       data.frame(chi.carre.modele, ddl, valeur.p,Pseudo.R.carre[1],Pseudo.R.carre[2],Pseudo.R.carre[3])->mod.glob
-      names(mod.glob)<-c("chi.2.model", "dof", "p-value","Hosmer and Lemeshow R ^ 2","Cox and Snell R^2","Nagelkerke R^2")
+      names(mod.glob)<-c("chi.2.modele", "ddl", "valeur.p","Hosmer and Lemeshow R ^ 2","Cox and Snell R^2","Nagelkerke R^2")
       mod.glob->Resultats$"Significance of the global model"
       
       
       Amelioration_du_MV$chi.deux.prob<-1-pchisq(Amelioration_du_MV$Deviance, Amelioration_du_MV$Df)
       round(Amelioration_du_MV,4)->Amelioration_du_MV
-      names(Amelioration_du_MV)<-c("predictor dof", "MV","dof.residuels","Residual MV","p-value")
+      names(Amelioration_du_MV)<-c("ddl predicteur", "MV","ddl.residuels","MV residuel","valeur.p")
       Resultats$"Improved likelihood for each variable"<-data.frame(Amelioration_du_MV)
       
       data.frame(resultats$coefficients)->table
       (table$z.value)^2->table$Wald.statistic
       exp(table$Estimate)->table$Odd.Ratio
       round(table,4)->table
-      names(table)<-c("b","Standard.error","value.Z","p.Wald", "Wald","Odd.ratio")
+      names(table)<-c("b","Erreur.standard","valeur.Z","p.Wald", "Wald","Odd.ratio")
       cbind(table, round(exp(confint(mod[[length(mod)]])),4))->table
-      table$interpretation<-ifelse(table$Odd.ratio>=1,paste(table$Odd.ratio, "times more"), paste(round(1/table$Odd.ratio,4), "times less"))
+      table$interpretation<-ifelse(table$Odd.ratio>=1,paste(table$Odd.ratio, "fois plus"), paste(round(1/table$Odd.ratio,4), "fois moins"))
       table->Resultats$"Table of coefficients"
       
       R_sq<-NULL
@@ -286,7 +286,7 @@ regressions.log <-
         assign(x=nom, value=data, envir=.GlobalEnv)}
       
       if(select.m!="none"){
-        select.m<-switch(select.m,"Forward - step by step ascending"="forward", "Backward - step by step descending"="backward", "Bidirectional"="both",
+        select.m<-switch(select.m,"Forward - step by step ascending"="forward", "Backward - step by step descending"="backward", "Bidirectionnel"="both",
                          "forward"="forward", "bidirectional"="both","backward"="backward" )
         glm(modele, data=data, family="binomial")->glm.r1
         
@@ -326,8 +326,8 @@ regressions.log <-
     
     if(!is.null(reg.in.output$reg.options$CV) && reg.in.output$reg.options$CV==TRUE) print("Cross validation is not yet available.")
     
-    if(any(outlier==  "Complete data")){
-      Resultats$"Complete data"<-  reg.log.out(data=data, modele=modele,  select.m=select.m, step=step, scale=scale, proba=proba, nom=nom)
+    if(any(outlier==  "Donnees completes")){
+      Resultats$"Donnees completes"<-  reg.log.out(data=data, modele=modele,  select.m=select.m, step=step, scale=scale, proba=proba, nom=nom)
       if(!is.null(group))   {  
         R1<-list()
         G<-data[,group]
@@ -338,7 +338,7 @@ regressions.log <-
           if(class(resg)=="try-error")   R1[[length(R1)+1]]<-"The number of observations is insufficient to carry out the analyzes for this group" else R1[[length(R1)+1]]<-resg
           names(R1)[length(R1)]<-names(G)[i]
         }
-        Resultats$"Complete data"$"Group analysis"<-R1
+        Resultats$"Donnees completes"$"Analyse par groupe"<-R1
       } 
       
     } 
@@ -356,7 +356,7 @@ regressions.log <-
         data$res.student.p<-2*pt(abs(data$res.student), df=lm.r1$df.residual, lower.tail=F)
         data$res.student.p.Bonf<-p.adjust(data$res.student.p,"bonferroni")
         data$est.inf<-" "
-        data[which(apply(mesure_influence$is.inf, 1, any)),"is.inf"]<-"*"
+        data[which(apply(mesure_influence$is.inf, 1, any)),"est.inf"]<-"*"
         
         data[order(data$res.student.p.Bonf), ]->data
         writeLines("Observations marked with an asterisk are considered influential at least on one criterion.")
@@ -403,7 +403,7 @@ regressions.log <-
         
       }
       if(any(outlier== "Data without influencing value")) {
-        if(N_retire!=0 | all(outlier!="Complete data")){
+        if(N_retire!=0 | all(outlier!="Donnees completes")){
           so<- try(reg.log.out(data=nettoyees,modele=modele,  select.m=select.m, step=step, scale=scale,proba=proba, nom=paste0(nom,".nettoyees")),silent=T)
           if(class(so)=="try-error") Resultats$"Data without influencing value"<-"The removal of influential values leads to too few numbers in certain modalities to carry out the analysis." else{
             Resultats$"Data without influencing value"<-so 
@@ -419,7 +419,7 @@ regressions.log <-
                 if(class(resg)=="try-error")   R1[[length(R1)+1]]<-"The number of observations is insufficient to carry out the analyzes for this group" else R1[[length(R1)+1]]<-resg
                 names(R1)[length(R1)]<-names(G)[i]
               }
-              Resultats$"Data without influencing value"$"Group analysis"<-R1
+              Resultats$"Data without influencing value"$"Analyse par groupe"<-R1
             } 
           } 
           

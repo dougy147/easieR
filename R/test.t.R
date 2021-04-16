@@ -1,21 +1,21 @@
 test.t <-
   function(X=NULL, Y=NULL, group=NULL, choix=NULL,
-           sauvegarde=F, outlier=c("Complete data",  "Identification of influential values","Data without influencing value"),  z=NULL, data=NULL,
+           sauvegarde=F, outlier=c("Donnees completes",  "Identification of influential values","Data without influencing value"),  z=NULL, data=NULL,
            alternative="two.sided", mu=NULL, formula=NULL, n.boot=NULL,
-           param=c("parametric test", "non-parametric test","Robust testing - involving bootstraps",
-                   "Bayesian factors"), info=TRUE, rscale=0.707, html=T){
+           param=c("test parametrique", "non-parametric test","Robust testing - involving bootstraps",
+                   "Facteurs bayesiens"), info=TRUE, rscale=0.707, html=T){
     # X : Character specifying the dependant variable in dataframe.
     # Y : character specifying either a two levels factor in dataframe or a numeric variable if paired is TRUE
     # group : Factor vector allowing to decompose analysis by group in one sample t test
     # choix : Character. One among c("Comparison to a standard", "Two matched samples","Two independent samples")
     # sauvegarde : logical. Should the results be saved ?
-    # outlier : character. One or several possibilities among c("Complete data",   "Identification of influential values", "Data without influencing value")
+    # outlier : character. One or several possibilities among c("Donnees completes",   "Identification of influential values", "Data without influencing value")
     # z : if NULL and the identification/exclusion of outlier is desired, outlier are identified on Grubbs' test. If z is numeric, outliers are identified on abs(z)
     # data : data on which analysis has to be performed.
     # alternative : one among c("greater", "lower", "two.sided"). Two sided is default.
     # formula : a formula of the form dependant.variable~independant.variable
     # n.boot : number of bootstrap. Must be a positive value
-    # param : character vector with one or several choices among c("parametric test", "non-parametric test","Robust testing - involving bootstraps", "Bayesian factors")
+    # param : character vector with one or several choices among c("test parametrique", "non-parametric test","Robust testing - involving bootstraps", "Facteurs bayesiens")
     # info : logical. If dialog box are used, Should information be printed in the console
     # rscale : if "Facteurs bayesiens is choosen in "param", rscale is the prior scale. See t.testBF for more information
 
@@ -28,14 +28,14 @@ test.t <-
       if(is.null(choix) || (choix %in%c("Comparison to a standard", "Two matched samples","Two independent samples")==FALSE)){
         if(info) writeLines("Please specify the type of t test you wish to perform.")
         choix<-dlgList(c("Comparison to a standard", "Two matched samples",
-                         "Two independent samples"), preselect=NULL, multiple = FALSE, title="Choice of t-test")$res
+                         "Two independent samples"), preselect=NULL, multiple = FALSE, title="Choix du test t")$res
         if(length(choix)==0) return(NULL)
       }
       data<-choix.data(data=data, info=info, nom=T)
       if(length(data)==0) return(NULL)
       nom<-data[[1]]
       data<-data[[2]]
-      if(is.null(Y) || class(data[,Y]) == "factor") format<-"long" else format<-"wide"
+      if(is.null(Y) || class(data[,Y]) == "factor") format<-"long" else format<-"large"
 
       if(is.null(formula)){
         if(choix=="Two matched samples"){
@@ -43,29 +43,29 @@ test.t <-
             if(info==TRUE){
               temps1<-1:3
               temps2<-4:6
-              data.frame("time1"=temps1,"time2"=temps2)->large
-              data.frame(c(rep("time1",3),rep("time2", 3)), 1:6)->long
+              data.frame("temps1"=temps1,"temps2"=temps2)->large
+              data.frame(c(rep("temps1",3),rep("temps2", 3)), 1:6)->long
               names(long)<-c("moment","mesure")
               writeLines("this is the wide format")
               print(large)
               writeLines("this is the long format")
               print(long)}
-            format<-dlgList(c("wide", "long"), preselect="wide", multiple = FALSE, title="What is the format of your data?")$res
+            format<-dlgList(c("large", "long"), preselect="large", multiple = FALSE, title="What is the format of your data?")$res
             if(length(format)==0) {
               Resultats<-test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
                                    formula=NULL,n.boot=NULL, rscale=NULL)
               return(Resultats)
             }
           }}
-        if(format=="wide") {
+        if(format=="large") {
           msg3<-"Please choose time 1."
           msg4<-"Please choose time 2."
-          title1<-"time 1"
-          title2<-"time 2"
+          title1<-"temps 1"
+          title2<-"temps 2"
         } else{
           msg3<-"Please choose the dependent variable."
           msg4<-"Please choose the independent variable."
-          title1<-"Dependent variable"
+          title1<-"Variable-s dependante-s"
           title2<-"Independent variable"
 
         }
@@ -83,7 +83,7 @@ test.t <-
           X1<-X$X
 
           if(choix!="Comparison to a standard"){
-            if(choix=="Two matched samples" && format=="wide") type<-"numeric" else type<-"factor"
+            if(choix=="Two matched samples" && format=="large") type<-"numeric" else type<-"factor"
             Y<-.var.type(X=Y, info=info, data=data, type=type, check.prod=F, message=msg4,  multiple=FALSE, title=title2, out=X1)
             if(is.null(Y)) {
               test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
@@ -108,7 +108,7 @@ test.t <-
 
 
       if(choix=="Two matched samples"){
-        if(format=="wide"){
+        if(format=="large"){
           if(dial){
             if(info==TRUE)writeLines("Please give a name to the independent variable. Giving an explicit name to the independent variable will make reading the results more readable")
             nomVI <- dlgInput("What is the name of the independent variable?", "Moment")$res
@@ -120,14 +120,14 @@ test.t <-
             strsplit(nomVI, ":")->nomVI
             tail(nomVI[[1]],n=1)->nomVI
             if(info==TRUE) writeLines("Please give a name to the dependent variable. Giving an explicit name to the dependent variable will make reading the results more readable")
-            nomVD <- dlgInput("What is the name of the dependent variable?", "Result")$res
+            nomVD <- dlgInput("What is the name of the dependent variable?", "Resultat")$res
             if(length(nomVD)==0) {
               Resultats<-test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
                                    formula=NULL,n.boot=NULL, rscale=NULL)
               return(Resultats)
             }
           } else {
-            nomVD<-"Result"
+            nomVD<-"Resultat"
             nomVI<-"Moment"
           }
           strsplit(nomVD, ":")->nomVD
@@ -178,7 +178,7 @@ test.t <-
 
           if(info==TRUE) writeLines("Une analyse bilaterale teste l'existence d'une difference. Le choix superieur teste si la moyenne est strictement superieure
                                     \n Le choix inferieur teste l'existence d'une difference strictement inferieure")
-          dlgList(c("Bilateral", "Superior", "Inferior"), preselect=NULL, multiple = FALSE, title="Comparison of means")$res->alternative
+          dlgList(c("Bilateral", "Superieur", "Inferieur"), preselect=NULL, multiple = FALSE, title="Comparison of means")$res->alternative
           if(length(alternative)==0) {
             test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
                       formula=NULL,n.boot=NULL, rscale=NULL)->Resultats
@@ -189,14 +189,14 @@ test.t <-
                                     \n choisissez oui. Dans ce cas, l'analyse est realisee sur l'echantillon complet et sur les sous-echantillons.
                                     \n Si vous desirez l'analyse pour l'echantillon complet uniquement, chosissez non.
                                     \n l'analyse par groupe ne s'appliquent pas aux statistiques robustes.")
-          dlgList(c("Yes", "non"), preselect="non", multiple = FALSE, title="Group analysis?")$res->par.groupe
+          dlgList(c("oui", "non"), preselect="non", multiple = FALSE, title="Analyse par groupe?")$res->par.groupe
           if(length(par.groupe)==0) {
             test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
                       formula=NULL,n.boot=NULL, rscale=NULL)->Resultats
             return(Resultats)
           }
           msg5<-"Please choose the categorical ranking factor."
-          if(par.groupe=="Yes"){group<-.var.type(X=group, info=info, data=data, type="factor", check.prod=F, message=msg5,  multiple=FALSE, title="Variable-s", out=X1)
+          if(par.groupe=="oui"){group<-.var.type(X=group, info=info, data=data, type="factor", check.prod=F, message=msg5,  multiple=FALSE, title="Variable-s", out=X1)
           if(length(group)==0) { test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
                                            formula=NULL,n.boot=NULL, rscale=NULL)->Resultats
             return(Resultats)}
@@ -208,7 +208,7 @@ test.t <-
       msg.options1<-"The parametric test is the classic t test"
       msg.options2<- "The non-parametric test is the Wilcoxon (or Mann-Whitney) test"
 
-      options<-.ez.options(options=c("choice","outlier"), n.boot=n.boot,param=T, non.param=T, robust=T, Bayes=T, msg.options1=msg.options1, msg.options2=msg.options2, info=info, dial=dial,
+      options<-.ez.options(options=c("choix","outlier"), n.boot=n.boot,param=T, non.param=T, robust=T, Bayes=T, msg.options1=msg.options1, msg.options2=msg.options2, info=info, dial=dial,
                            choix=param,sauvegarde=sauvegarde, outlier=outlier, rscale=rscale)
       if(is.null(options)){
         test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
@@ -216,7 +216,7 @@ test.t <-
         return(Resultats)
       }
       Resultats$choix<-choix
-      Resultats$nom<-ifelse(format=="wide", paste0(nom,".format.long"), nom)
+      Resultats$nom<-ifelse(format=="large", paste0(nom,".format.long"), nom)
       Resultats$data<-data
       Resultats$X<-X1
       if(exists("Y")) Resultats$Y<-Y
@@ -227,7 +227,7 @@ test.t <-
       return(Resultats)
       }
 
-    norme<-function(X, mu, data, param=c("param", "non param", "robusts"), group=NULL, alternative="two.sided", n.boot=NULL, rscale=0.707){
+    norme<-function(X, mu, data, param=c("param", "non param", "robustes"), group=NULL, alternative="two.sided", n.boot=NULL, rscale=0.707){
       if(class(data)!="data.frame") {data<-data.frame(data)
                                      names(data)[1]<-X}
       Resultats<-list()
@@ -246,13 +246,13 @@ test.t <-
       Resultats$"descriptive statistics"$Graphique<-p2
 
       if(!is.null(group)) {Resultats$"descriptive statistics by group"<-.stat.desc.out(X=X, groupes=group, data=data, tr=.1, type=3, plot=T) }
-      if(any(param=="param") | any(param=="Parametric test")){
-        Resultats$"Normality tests"<-.normalite(data=data, X=X, Y=NULL)
+      if(any(param=="param") | any(param=="Test parametrique")){
+        Resultats$"Tests de normalite"<-.normalite(data=data, X=X, Y=NULL)
         t.test(data[,X], mu = mu, paired = FALSE, conf.level = 0.95, alternative=alternative)->ttest
         ttest$statistic^2/( ttest$statistic^2+ ttest$parameter)->R_carre
         cohensD(data[,X], mu=mu)->dc
-        data.frame("t test"=round(ttest$statistic,3), "dof"=ttest$parameter, "p-value"=round(ttest$p.value,4), "Lower CI limit"=ttest$conf.int[[1]], "Lim.up.CI"=ttest$conf.int[[2]],
-                   "R.squared"=round(R_carre,4), "Cohen's D"=round(dc,3))->ttest
+        data.frame("t test"=round(ttest$statistic,3), "ddl"=ttest$parameter, "valeur.p"=round(ttest$p.value,4), "Lim.inf.IC"=ttest$conf.int[[1]], "Lim.sup.IC"=ttest$conf.int[[2]],
+                   "R.carre"=round(R_carre,4), "D Cohen"=round(dc,3))->ttest
         dimnames(ttest)[1]<-" "
         ttest->Resultats$"Student's test - comparison to a norm"
         if(!is.null(group)){
@@ -266,30 +266,30 @@ test.t <-
                               valeur.p=round(ttest$p.value,4),
                               IC.inf=ttest$conf.int[[1]],
                               IC.sup=ttest$conf.int[[2]],
-                              "R.squared"=round(R_carre,4),
+                              "R.carre"=round(R_carre,4),
                               D.Cohen=round(dc,3)))}
           data.frame(data[,X])->Y
 
           ddply(.data=Y, .(data[,group]), func)->t.groupes
           t.groupes->Resultats$"Student's t per group"}}
 
-      if(any(param=="Bayes") | any(param=="Bayesian factors") ){
-        if(all(param!="param") & all(param!="Parametric test")) Resultats$"Normality tests"<-.normalite(data=data, X=X, Y=NULL)
+      if(any(param=="Bayes") | any(param=="Facteurs bayesiens") ){
+        if(all(param!="param") & all(param!="Test parametrique")) Resultats$"Tests de normalite"<-.normalite(data=data, X=X, Y=NULL)
 
         BF<-ttestBF(x = data[,X], mu=mu , paired=FALSE, rscale=rscale)
         BF<-extractBF(BF, onlybf=F)
-        BF<-data.frame("Bayesian factor"=c(round(BF$bf,5), round((1/BF$bf),5)), "Error"=round(c( BF$error, BF$error),5))
+        BF<-data.frame("Facteur bayesien"=c(round(BF$bf,5), round((1/BF$bf),5)), "Erreur"=round(c( BF$error, BF$error),5))
         dimnames(BF)[[1]]<-c("In favor of the alternative hypothesis", "In favor of the null hypothesis")
-        Resultats$"Bayesian factors"<-BF
+        Resultats$"Facteurs Bayesiens"<-BF
         if(!is.null(group)){
           func <- function(data, moy=mu, scale=rscale){
             ttestBF(data, mu = moy, rscale=scale)->BF
             BF<-extractBF(BF, onlybf=F)
-            return(data.frame("Bayesian factor"=round(BF$bf,5), "Error"=round(BF$error,5)))
+            return(data.frame("Facteur bayesien"=round(BF$bf,5), "Erreur"=round(BF$error,5)))
           }
           BFgroup<-tapply(X=data[,X], data[,group], func,scale=rscale, moy=mu)
           BFgroup<-matrix(unlist(BFgroup), ncol=2, byrow=T)
-          dimnames(BFgroup)<-list(levels(data[,group]), c("FB", "error"))
+          dimnames(BFgroup)<-list(levels(data[,group]), c("FB", "erreur"))
           BFgroup->Resultats$"Bayesian factor by group"
         }
         samples<-ttestBF(x = data[,X], mu=mu , paired=FALSE, rscale=rscale, posterior=T, iterations = ifelse(is.null(n.boot), 1000, n.boot))
@@ -305,9 +305,9 @@ test.t <-
         }
 
         SBF<-data.frame("n"=rep(5:length(data[,X]), each=3 ),"BF"= bfs,
-                        "rscale"=factor(rep(c("medium", "wide", "ultra wide"), length.out= 3*(length(data[,X])-4) )))
+                        "rscale"=factor(rep(c("moyen", "large", "ultra large"), length.out= 3*(length(data[,X])-4) )))
         names(SBF)<-c("n", "BF", "rscale")
-        reorder( c("medium", "wide", "ultra wide"),levels(SBF$rscale))->levels(SBF$rscale)
+        reorder( c("moyen", "large", "ultra large"),levels(SBF$rscale))->levels(SBF$rscale)
         Resultats$"Sequential Bayesian factors"<-.plotSBF(SBF)
 
         ##### Debut du graphique  Bayes Factor Robustness Check
@@ -354,8 +354,8 @@ test.t <-
         WT<-wilcox.test(data[,X],y=NULL, mu=mu, alternative, conf.int=T, conf.level=0.95)
         if(alternative!="two.sided")  abs(qnorm(WT$p.value))->z else abs(qnorm(WT$p.value/2))->z
         r<-z/(length(data[,X]))^0.5
-        Resultats$Wilcoxon<- data.frame("Wilcoxon W"=WT$statistic, "p-value"=round(WT$p.value,4), "z"=round(z,4), "r"=round(r,4),
-                                        "lower CI limit"=WT$conf.int[1],"sup.ci limit"=WT$conf.int[2])
+        Resultats$Wilcoxon<- data.frame("Wilcoxon W"=WT$statistic, "valeur.p"=round(WT$p.value,4), "z"=round(z,4), "r"=round(r,4),
+                                        "lim.inf.IC"=WT$conf.int[1],"lim.sup.IC"=WT$conf.int[2])
 
         if(!is.null(group)){
           func <- function(data,Y=X, moy=mu, alt=alternative){
@@ -366,14 +366,14 @@ test.t <-
           }
 
           ddply(.data=data, .(data[, group]), func)->Wilcox.groupes
-          Wilcox.groupes->Resultats$"Wilcoxon by group"
+          Wilcox.groupes->Resultats$"Wilcoxon par groupe"
         }
       }
 
-      if(any(param=="robusts"| any(param=="Robust testing - involving bootstraps"))){
+      if(any(param=="robustes"| any(param=="Robust testing - involving bootstraps"))){
         try( round(unlist(WRS::trimci(data[,X],tr=.2,alpha=.05, null.value=mu)),4), silent=T)->m.tr
         if(m.tr!="try-error"){
-          names(m.tr)<-c("lower CI limit","sup.ci limit", "M.tronquee","test.t", "se","p-value","n")
+          names(m.tr)<-c("lim.inf.IC","lim.sup.IC", "M.tronquee","test.t", "se","valeur.p","n")
           m.tr->Resultats$'Test sur la moyenne tronquee a 0.2'
           data[,X]->x
           try(WRS::trimcibt(x, tr=.2,alpha=.05,nboot=n.boot,plotit=T,op=3)$ci, silent=T)->trimci
@@ -386,7 +386,7 @@ test.t <-
           dimnames(IC.robustes)[[1]][length(IC.robustes[,1])]<-"M-estimator"}
           if(class(MoM)!="try-error") {IC.robustes<-rbind(IC.robustes,MoM$ci)
           dimnames(IC.robustes)[[1]][length(IC.robustes[,1])]<-"M-estimator modifies"}
-          if(all(dim(IC.robustes)!=0)) names(IC.robustes )<-c("lower CI limit", "sup.ci limit")
+          if(all(dim(IC.robustes)!=0)) names(IC.robustes )<-c("lim.inf.IC", "lim.sup.IC")
           Resultats$Robustes<-IC.robustes
           c("The bootstrap-t method is a bootstrap suitable for calculating the truncated mean",
             " Cet indice est adapte dans la plupart des situations. Le M-estimator modifie doit etre prefere pour N<20",
@@ -396,29 +396,29 @@ test.t <-
 
       return(Resultats)
     }
-    apparies<-function(X, Y, data=NULL, param=c("param", "non param", "robusts"),alternative="two.sided", n.boot=NULL, rscale=0.707){
+    apparies<-function(X, Y, data=NULL, param=c("param", "non param", "robustes"),alternative="two.sided", n.boot=NULL, rscale=0.707){
       Resultats<-list()
       .e <- environment()
       Resultats$"descriptive statistics"<-.stat.desc.out(X=X, groupes=Y, data=data, tr=.1, type=3, plot=T)
       large<-data.frame("t1"=data[which(data[,Y]==levels(data[,Y])[1]), X], "t2"=data[which(data[,Y]==levels(data[,Y])[2]), X])
-      if(any(param=="param") | any(param=="Parametric test")){
+      if(any(param=="param") | any(param=="Test parametrique")){
         large$diff<--large$t2-large$t1
-        Resultats$"Normality tests"<-.normalite(data=large, X="diff", Y=NULL)
+        Resultats$"Tests de normalite"<-.normalite(data=large, X="diff", Y=NULL)
         t.test(data[,X]~data[,Y], paired = TRUE, conf.level = 0.95, alternative=alternative)->ttest
         ttest$statistic^2/( ttest$statistic^2+ ttest$parameter)->R_carre
         cohensD(x= large[,1], y=large[,2], method="paired")->dc
-        data.frame("t test"= round(ttest$statistic,3), "dof"= ttest$parameter, "p-value"= round(ttest$p.value,4), "Lower CI limit"= ttest$conf.int[[1]],
-                   "Lim.up.CI"=ttest$conf.int[[2]], "R.squared"=round(R_carre,4), "Cohen's D"=round(dc,3))->ttest
+        data.frame("t test"= round(ttest$statistic,3), "ddl"= ttest$parameter, "valeur.p"= round(ttest$p.value,4), "Lim.inf.IC"= ttest$conf.int[[1]],
+                   "Lim.sup.IC"=ttest$conf.int[[2]], "R.carre"=round(R_carre,4), "D de Cohen"=round(dc,3))->ttest
         dimnames(ttest)[1]<-" "
         ttest->Resultats$"Student's test - comparison of two matched samples"}
-      if(any(param=="param") | any(param=="Parametric test", any(param=="Bayes") | any(param=="Bayesian factors"))) {
+      if(any(param=="param") | any(param=="Test parametrique", any(param=="Bayes") | any(param=="Facteurs bayesiens"))) {
         # realisation du graphique
         X1<-which(names(data)==X)
         nonaj<-ggplot(data)
         nonaj<- nonaj+eval(parse(text=paste0("aes(x=", Y, ", y=", X,")")))
         # aes(x=data[,Y], y=data[,X1]))+labs(x=Y, y=X)+
         nonaj<- nonaj+ stat_summary(fun.y=mean, geom="bar",fill="grey", colour="White")+stat_summary(fun.data="mean_sdl", geom="errorbar", position=position_dodge(width=0.90), width=0.2)
-        nonaj<-nonaj+theme(plot.title = element_text(size = 12))+ggtitle("Unadjusted data")
+        nonaj<-nonaj+theme(plot.title = element_text(size = 12))+ggtitle("Donnees non ajustees")
         # realisation du graphique ajuste propose par Loftus et Masson 1994 (pour plus d informations voir l article)
         Resultats$"Mean and standard deviation for unadjusted data"<-nonaj
         large$meanD2<-(large[ ,1]+large[ ,2])/2
@@ -437,13 +437,13 @@ test.t <-
         .multiplot(nonaj,aj, cols=2 )
       }
 
-      if(any(param=="Bayes") | any(param=="Bayesian factors") ){
-        if(all(param!="param") & all(param!="Parametric test")) Resultats$"Normality tests"<-.normalite(data=data, X=X, Y=Y)
+      if(any(param=="Bayes") | any(param=="Facteurs bayesiens") ){
+        if(all(param!="param") & all(param!="Test parametrique")) Resultats$"Tests de normalite"<-.normalite(data=data, X=X, Y=Y)
         BF<-ttestBF(x=data[ which(data[ ,Y]==levels(data[ ,Y])[1]) ,X], y=data[ which(data[ ,Y]==levels(data[ ,Y])[2]) ,X] , paired=TRUE, rscale=rscale)
         BF<-extractBF(BF, onlybf=F)
-        BF<-data.frame("Bayesian factor"=c(round(BF$bf,5), round((1/BF$bf),5)), "Error"=round(c( BF$error, BF$error),5))
+        BF<-data.frame("Facteur bayesien"=c(round(BF$bf,5), round((1/BF$bf),5)), "Erreur"=round(c( BF$error, BF$error),5))
         dimnames(BF)[[1]]<-c("In favor of the alternative hypothesis", "In favor of the null hypothesis")
-        Resultats$"Bayesian factors"<-BF
+        Resultats$"Facteurs Bayesiens"<-BF
 
         samples<-ttestBF(x=data[ which(data[ ,Y]==levels(data[ ,Y])[1]) ,X], y=data[ which(data[ ,Y]==levels(data[ ,Y])[2]) ,X] , paired=TRUE, rscale=rscale, posterior=T, iterations = ifelse(is.null(n.boot), 1000, n.boot))
         plot(samples[,1:4])
@@ -458,9 +458,9 @@ test.t <-
         }
 
         SBF<-data.frame("n"=rep(5:(length(data[,X])/2), each=3 ),"BF"= bfs,
-                        "rscale"=factor(rep(c("medium", "wide", "ultra wide"), length.out= 3*((length(data[,X])/2)-4) )))
+                        "rscale"=factor(rep(c("moyen", "large", "ultra large"), length.out= 3*((length(data[,X])/2)-4) )))
         names(SBF)<-c("n", "BF", "rscale")
-        reorder( c("medium", "wide", "ultra wide"),levels(SBF$rscale))->levels(SBF$rscale)
+        reorder( c("moyen", "large", "ultra large"),levels(SBF$rscale))->levels(SBF$rscale)
         Resultats$"Sequential Bayesian factors"<-.plotSBF(SBF)
 
         ##### Debut du graphique  Bayes Factor Robustness Check
@@ -503,15 +503,15 @@ test.t <-
         WT<-wilcox.test(as.formula(paste0(X, "~",Y)), paired=T,data=data, alternative=alternative, conf.int=T, conf.level=0.95)
         if(alternative!="two.sided")  abs(qnorm(WT$p.value))->z else abs(qnorm(WT$p.value/2))->z
         r<-z/(length(data[,X]))^0.5
-        Resultats$Wilcoxon<- data.frame("Wilcoxon W"=WT$statistic, "p-value"=round(WT$p.value,4), "z"=round(z,4), "r"=round(r,4),
-                                        "lower CI limit"=WT$conf.int[1],"sup.ci limit"=WT$conf.int[2])
+        Resultats$Wilcoxon<- data.frame("Wilcoxon W"=WT$statistic, "valeur.p"=round(WT$p.value,4), "z"=round(z,4), "r"=round(r,4),
+                                        "lim.inf.IC"=WT$conf.int[1],"lim.sup.IC"=WT$conf.int[2])
       }
 
-      if(any(param=="robusts"| any(param=="Robust testing - involving bootstraps")) ){
+      if(any(param=="robustes"| any(param=="Robust testing - involving bootstraps")) ){
         try(WRS::yuend(data[ which(data[ ,Y]==levels(data[ ,Y])[1]) ,X], data[ which(data[ ,Y]==levels(data[ ,Y])[2]) ,X], tr=.2),silent=T)->moy.tr
         if(class(moy.tr)!="try-error"){
           round(unlist(moy.tr),3)->moy.tr
-          names(moy.tr)<-c("CI Inf","CI Sup", "p-value", "Average1", "Average2", "Difference","se", "Stat", "n", "dof")
+          names(moy.tr)<-c("IC Inf","IC Sup", "valeur.p", "Moyenne1", "Moyenne2", "Difference","se", "Stat", "n", "ddl")
           if(n.boot>99){
             WRS::ydbt(data[ which(data[ ,Y]==levels(data[ ,Y])[1]) ,X], data[ which(data[ ,Y]==levels(data[ ,Y])[2]) ,X], tr=0.2, nboot=n.boot)->moy.tr.bt
             moy.tr->Resultats$Robustes$"Comparison based on truncated means"
@@ -519,7 +519,7 @@ test.t <-
             if(length(data[,1])>20) {
               try({WRS::bootdpci(data[ which(data[ ,Y]==levels(data[ ,Y])[1]) ,X], data[ which(data[ ,Y]==levels(data[ ,Y])[2]) ,X],
                                                    nboot=n.boot, BA=T)$output[,2:6]->Mest
-                names(Mest)<-c("statistical", "p-value", "p.crit", "CI inf", "CI sup")
+                names(Mest)<-c("statistique", "valeur.p", "p.crit", "CI inf", "CI sup")
               Mest->Resultats$Robustes$"BCa type bootstrap on the M-estimator"}
                 , silent=T)
               }}} else Resultats$Robustes<-"Robust statistics could not be realized"
@@ -531,16 +531,16 @@ test.t <-
 
       return(Resultats)
     }
-    indpdts<-function(X, Y, data, param=c("param", "non param","robusts"),alternative="two.sided", n.boot=NULL, rscale=0.707){
+    indpdts<-function(X, Y, data, param=c("param", "non param","robustes"),alternative="two.sided", n.boot=NULL, rscale=0.707){
       Resultats<-list()
       .e <- environment()
       Resultats$"descriptive statistics"<-.stat.desc.out(X=X, groupes=Y, data=data, tr=.1, type=3, plot=T)
       as.formula(paste0(X," ~ ",Y))->modele
-      if(any(param=="param") | any(param=="Parametric test")){
-        Resultats$"Normality tests"<-.normalite(data=data, X=X, Y=Y)
+      if(any(param=="param") | any(param=="Test parametrique")){
+        Resultats$"Tests de normalite"<-.normalite(data=data, X=X, Y=Y)
         car::leveneTest(data[ ,X], data[ ,Y])->Levene # test de Levene pour homogeneite des variances
         round(unlist(Levene)[c(1,2,3,5)],3)->Levene
-        names(Levene)<-c("dof1","dof2","F","p-value")
+        names(Levene)<-c("ddl1","ddl2","F","valeur.p")
         Levene->Resultats$"Levene test verifying the homogeneity of variances"
         t.test(modele, data=data, alternative=alternative,  var.equal=TRUE, conf.level=0.95)->student
         round(student$statistic^2/(student$statistic^2+student$parameter),3)->R.deux
@@ -552,8 +552,8 @@ test.t <-
         d_cohen.corr<-cohensD(modele , data=data, method = "unequal")
         data.frame(corrige[9], round(corrige$statistic,3), round(corrige$parameter,3), round(corrige$p.value,3), round(corrige$conf.int[1],4),
                    round(corrige$conf.int[2],4),  R.deux, d_cohen)->corrige
-        names(student)<-c("model", "test t", "dof", "p-value", "lower CI limit", "sup.ci limit","R.squared","d de Cohen")
-        names(corrige)<- c("model", "test t", "dof", "p-value", "lower CI limit", "sup.ci limit","R.squared","d de Cohen")
+        names(student)<-c("modele", "test t", "ddl", "valeur.p", "lim.inf.IC", "lim.sup.IC","R.carre","d de Cohen")
+        names(corrige)<- c("modele", "test t", "ddl", "valeur.p", "lim.inf.IC", "lim.sup.IC","R.carre","d de Cohen")
         student<-rbind(student, corrige)
         dimnames(student)[[1]]<-c("without Welch correction","with Welch correction")
         student->Resultats$"t of student for independent samples"
@@ -563,13 +563,13 @@ test.t <-
         Resultats$"Graphical Representation - Mean and Standard Deviation"<-p
 
       }
-      if(any(param=="Bayes") | any(param=="Bayesian factors") ){
-        if(all(param!="param") & all(param!="Parametric test")) Resultats$"Normality tests"<-.normalite(data=data, X=X, Y=Y)
+      if(any(param=="Bayes") | any(param=="Facteurs bayesiens") ){
+        if(all(param!="param") & all(param!="Test parametrique")) Resultats$"Tests de normalite"<-.normalite(data=data, X=X, Y=Y)
         BF<-ttestBF(formula=modele,data=data, paired=FALSE, rscale=rscale)
         BF<-extractBF(BF, onlybf=F)
-        BF<-data.frame("Bayesian factor"=c(round(BF$bf,5), round((1/BF$bf),5)), "Error"=round(c( BF$error, BF$error),5))
+        BF<-data.frame("Facteur bayesien"=c(round(BF$bf,5), round((1/BF$bf),5)), "Erreur"=round(c( BF$error, BF$error),5))
         dimnames(BF)[[1]]<-c("In favor of the alternative hypothesis", "In favor of the null hypothesis")
-        Resultats$"Bayesian factors"<-BF
+        Resultats$"Facteurs Bayesiens"<-BF
 
         samples<-ttestBF(formula=modele,data=data, paired=FALSE, rscale=rscale, posterior=T, iterations = ifelse(is.null(n.boot), 1000, n.boot))
         plot(samples[,1:4])
@@ -588,9 +588,9 @@ test.t <-
         }
 
         SBF<-data.frame("n"=rep(5:(length(data[,X])), each=3 ),"BF"= bfs,
-                        "rscale"=factor(rep(c("medium", "wide", "ultra wide"), length.out= 3*(length(data[,X])-4) )))
+                        "rscale"=factor(rep(c("moyen", "large", "ultra large"), length.out= 3*(length(data[,X])-4) )))
         names(SBF)<-c("n", "BF", "rscale")
-        reorder( c("medium", "wide", "ultra wide"),levels(SBF$rscale))->levels(SBF$rscale)
+        reorder( c("moyen", "large", "ultra large"),levels(SBF$rscale))->levels(SBF$rscale)
         Resultats$"Sequential Bayesian factors"<-.plotSBF(SBF)
 
         ##### Debut du graphique  Bayes Factor Robustness Check
@@ -634,11 +634,11 @@ test.t <-
         WT<-wilcox.test(modele, paired=F,data=data, alternative=alternative, conf.int=T, conf.level=0.95)
         if(alternative!="two.sided")  abs(qnorm(WT$p.value))->z else abs(qnorm(WT$p.value/2))->z
         r<-z/(length(data[,X]))^0.5
-        Resultats$"Mann-Whitney test - Wilcoxon"<- data.frame("Wilcoxon W"=WT$statistic, "p-value"=round(WT$p.value,4), "z"=round(z,4), "r"=round(r,4),
-                                                                 "lower CI limit"=WT$conf.int[1],"sup.ci limit"=WT$conf.int[2])
+        Resultats$"Mann-Whitney test - Wilcoxon"<- data.frame("Wilcoxon W"=WT$statistic, "valeur.p"=round(WT$p.value,4), "z"=round(z,4), "r"=round(r,4),
+                                                                 "lim.inf.IC"=WT$conf.int[1],"lim.sup.IC"=WT$conf.int[2])
       }
 
-      if(any(param=="robusts"| any(param=="Robust testing - involving bootstraps")) ){
+      if(any(param=="robustes"| any(param=="Robust testing - involving bootstraps")) ){
         data[which(data[,Y]==levels(data[,Y])[1]),]->g1 # on cree une base de Donnees avec le groupe 1 uniquement (sans valeur aberrantes)
         data[which(data[,Y]==levels(data[,Y])[2]),]->g2 # on cree une base de Donnees avec le groupe 2 uniquement (sans valeur aberrantes)
         try(WRS::yuen(g1[,X],g2[,X]), silent=T)->yuen.modele### fournit la probabilite associee a des moyennes tronquees.Par defaut, la troncature est de 0.20
@@ -646,21 +646,21 @@ test.t <-
           round(unlist(yuen.modele),4)->yuen.modele
           cbind(yuen.modele[1:2], yuen.modele[3:4])->yuen.desc
           dimnames(yuen.desc)[[1]]<-levels(data[,Y])
-          dimnames(yuen.desc)[[2]]<-c("n", "truncated averages")
+          dimnames(yuen.desc)[[2]]<-c("n", "moyennes tronquees")
           yuen.desc->Resultats$Robustes$"descriptive statistics"
 
           yuen.modele[c(5,6,8,9,10,11,12,7)]->yuen.modele
-          names(yuen.modele)<-c("lower CI limit", "sup.ci limit",
-                                "Difference","Err-type","Stat", "Threshold", "dof","p-value")
+          names(yuen.modele)<-c("lim.inf.IC", "lim.sup.IC",
+                                "Difference","Err-type","Stat", "Seuil", "ddl","valeur.p")
           yuen.modele->Resultats$Robustes$"Analysis on truncated means"
           if(n.boot>99){
             WRS::yuenbt(g1[,X],g2[,X], nboot=n.boot, side=T)->yuen.bt.modele ### fournit la probabilite associee a des moyennes tronquees apres un bootstrap.
             round(unlist(yuen.bt.modele)[1:4],4)->yuen.bt.modele
-            names(yuen.bt.modele)<-c("lower CI limit", "sup.ci limit", "Stat", "p-value")
+            names(yuen.bt.modele)<-c("lim.inf.IC", "lim.sup.IC", "Stat", "valeur.p")
             yuen.bt.modele->Resultats$Robustes$"Bootstrap using the t method on truncated means"
             WRS::pb2gen(g1[,X],g2[,X], nboot=n.boot)->pb2gen.modele### calcule le bootstrap sur le M-estimateur et fournit l intervalle de confiance.
             round(unlist(pb2gen.modele)[1:6],4)->pb2gen.modele
-            names(pb2gen.modele)<-c("M.estimaror.G1", "M.estimator.G2", "diff", "lower CI limit", "sup.ci limit", "p-value")
+            names(pb2gen.modele)<-c("M.estimaror.G1", "M.estimator.G2", "diff", "lim.inf.IC", "lim.sup.IC", "valeur.p")
             pb2gen.modele->Resultats$Robustes$"Bootstrap percentile on M-estimator"
             Resultats$Robustes$Informations<-c("the bootstrap percentile method should be preferred for small samples",
                                                "For larger samples, boostrap using the t method should be preferred.")
@@ -668,9 +668,9 @@ test.t <-
 
           WRS::ks(g1[,X],g2[,X],w=F,sig=T)->KS
           round(unlist(KS),4)->KS
-          names(KS)<-c("KS", "Critical threshold","p-value")
+          names(KS)<-c("KS", "Seuil.critique","valeur.p")
           KS->Resultats$Robustes$"Kolmogorov-Smirnov test comparing two distributions"
-        }else Resultats$"Robust statistics"<-"Robust statistics could not be realized. Check the installation of the WRS package"
+        }else Resultats$"Statistiques robustes"<-"Robust statistics could not be realized. Check the installation of the WRS package"
 
 
       }
@@ -728,10 +728,10 @@ test.t <-
 
       X1<-X[i]
       R1<-list()
-      if(any(outlier==  "Complete data")){
-        switch(choix,  "Comparison to a standard"=  R1$"Complete data"<-norme(X=X1, mu=mu, data=data1, param=param, group=group, alternative=alternative, n.boot=n.boot, rscale=rscale),
-               "Two matched samples"=R1$"Complete data"<-apparies(X=X1, Y=Y, data=data1, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale),
-               "Two independent samples"= R1$"Complete data"<-indpdts(X=X1, Y=Y, data=data1, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale))
+      if(any(outlier==  "Donnees completes")){
+        switch(choix,  "Comparison to a standard"=  R1$"Donnees completes"<-norme(X=X1, mu=mu, data=data1, param=param, group=group, alternative=alternative, n.boot=n.boot, rscale=rscale),
+               "Two matched samples"=R1$"Donnees completes"<-apparies(X=X1, Y=Y, data=data1, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale),
+               "Two independent samples"= R1$"Donnees completes"<-indpdts(X=X1, Y=Y, data=data1, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale))
       }
 
       if(any(outlier=="Identification of influential values")|any(outlier=="Data without influencing value")){
@@ -741,16 +741,16 @@ test.t <-
           data1$residu<-data1[,X1]
                                              }else data1$residu<-unlist(tapply(data1[,X1], data1[,Y], scale, center=T, scale=F))
         critere<-ifelse(is.null(z), "Grubbs", "z")
-        valeurs.influentes(X="residue", critere=critere,z=z, data=data1)->influentes
+        valeurs.influentes(X="residu", critere=critere,z=z, data=data1)->influentes
       }
-      if(any(outlier== "Identification of influential values")){influentes->R1$"Influential values"}
+      if(any(outlier== "Identification of influential values")){influentes->R1$"Valeurs influentes"}
       if(any(outlier== "Data without influencing value")) {
-        if(length(influentes$"influential observations")!=0 | all(outlier!="Complete data")){
+        if(length(influentes$"influential observations")!=0 | all(outlier!="Donnees completes")){
 
           if(choix=="Two matched samples"){
             setdiff(data$IDeasy,influentes$"influential observations"$IDeasy)->diffs
             data[which(data$IDeasy%in%diffs), ]->nettoyees
-          } else  get("cleaned", envir=.GlobalEnv)->nettoyees
+          } else  get("nettoyees", envir=.GlobalEnv)->nettoyees
 
           ### Regler le souci pour les echantillons apparies
           switch(choix,  "Comparison to a standard"=  R1$"Data without influencing value"<-norme(X=X1, mu=mu, data=nettoyees, param=param, group=group, alternative=alternative, n.boot=n.boot, rscale=rscale),

@@ -24,7 +24,7 @@ comp.corr <-
       Resultats$"comparison of the two correlations"<-r
       Resultats$call<-paste("comp.corr(xy=", xy, ",xz=", xz, ",yz=",yz, ",n=", n, ",n2=", n2, ",twotailed=",twotailed, ")")
       data1<-data.frame()
-      .add.history(data=data1, command=Resultats$call, nom=paste("comparison of correlations XY =", xy, "and YZ =", yz ))
+      .add.history(data=data1, command=Resultats$call, nom=paste("comparison of correlations XY =", xy, "et YZ =", yz ))
       .add.result(Resultats=Resultats, name =paste("comparison of correlations", Sys.time() ))
       Resultats$"References"<-ref1(packages)
       return(Resultats)
@@ -43,7 +43,7 @@ comp.corr <-
           "Correlation between XY: NUM" = 0,
           "Correlation between XZ: NUM" = 0,
           "Correlation between YZ: NUM" = 0,
-          "Sample size: NUM" = 100)
+          "Taille de l'echantillon:NUM" = 100)
       }
       
       value<-dlgForm(Form, "Please enter the different values")$res
@@ -55,7 +55,7 @@ comp.corr <-
       xy<-value$"Correlation between XY"
       xz<-value$"Correlation between XZ"
       yz<-value$"Correlation between YZ"
-      if(type==  "Matched correlations"){n<-value$"Sample size"} else {
+      if(type==  "Matched correlations"){n<-value$"Taille de l'echantillon"} else {
         n<-value$"N of the correlation XY"
         n2<-value$"N of the correlation XZ"
       }

@@ -51,7 +51,7 @@ VI.multiples <-
                  consideree comme influente en partant de la valeur la plus extreme. La procedure s'arrete  
                  quand plus aucune observation n'est consideree comme influente")  
       
-      suppr<- dlgList(c("Removal of all outliers", "Manual removal"), 
+      suppr<- dlgList(c("Removal of all outliers", "Suppression manuelle"), 
                       preselect=c("Removal of all outliers"), multiple = FALSE, title="How do you want to remove them?")$res
       if(length(suppr)==0) return(NULL)
       if(suppr=="Removal of all outliers") {data[which(data$D.Mahalanobis<seuil),]->data 

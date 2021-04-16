@@ -1,5 +1,5 @@
 factor.an <-
-  function(data=NULL, X=NULL, nF=NULL, rotation="none", methode="ml", sat=0.3, outlier=c("Complete data"),
+  function(data=NULL, X=NULL, nF=NULL, rotation="none", methode="ml", sat=0.3, outlier=c("Donnees completes"),
            imp=NULL, ord=NULL, sauvegarde=FALSE, scor.fac=FALSE,n.boot=1, hier=F, nfact2=1, choix="afe",info=T, html=T){
     
     # data : dataframe
@@ -9,7 +9,7 @@ factor.an <-
     # "promax",  "oblimin",  "simplimax","bentlerQ", "geominQ","biquartimin", "cluster")
     # methode : character. One among c("ml", "minres" "minchi", "wls","gls","pa")
     # sat : numeric. Level of loading below which loading is not printed. 
-    # outlier : one among "Complete data" or "Data without influencing value"
+    # outlier : one among "Donnees completes" or "Data without influencing value"
     # imp : character. How should missing values be treated ? One among "mean" (use mean), "median" (use median), "amelia", "rm" (remove)
     # ord : character vector. Which variables among X are ordinal ? (or dichotomous)
     # sauvegarde : logical. Should result be saved in rtf ? 
@@ -61,10 +61,10 @@ factor.an <-
       
       
       
-      if(dial || length(outlier)>1 || outlier %in% c("Complete data", "Data without influencing value") ==FALSE){
+      if(dial || length(outlier)>1 || outlier %in% c("Donnees completes", "Data without influencing value") ==FALSE){
         if(info) writeLines("Do you want the analysis on the complete data or on the data for which the influencing values have been removed?")
         if(info) writeLines("influencing values are identified based on the Mahalanobis distance with a chi threshold of 0.001")
-        outlier<- dlgList(c("Complete data", "Data without influencing value"), preselect="Complete data",multiple = FALSE, title="What results do you want to achieve?")$res
+        outlier<- dlgList(c("Donnees completes", "Data without influencing value"), preselect="Donnees completes",multiple = FALSE, title="What results do you want to achieve?")$res
         if(length(outlier)==0) { Resultats<-fa.in()
         return(Resultats)}
       }
@@ -96,7 +96,7 @@ factor.an <-
         methode<-c("minres")
         if(type=="mixte") {cor<-"mixed"
         if(info) writeLines("Please specify ordinal variables?") 
-        ord<-dlgList(X, multiple = TRUE, title="Ordinal variables?")$res
+        ord<-dlgList(X, multiple = TRUE, title="Variables ordinales ?")$res
         if(length(ord)==0) {Resultats<-fa.in()
         return(Resultats)}
         }else ord<-X
@@ -114,9 +114,9 @@ factor.an <-
       try(cor.plot(Matrice1, show.legend=FALSE, main="Correlation matrix used for AFE", labels=NULL, n.legend=0, MAR=TRUE, numbers=numbers,cex=1), silent=T)
       round(Matrice,3)->Resultats$"Correlation matrix"
       round(unlist(cortest.bartlett(data[,X])),4)->bartlett
-      names(bartlett)<-c("chi.squared","p-value","dof")
+      names(bartlett)<-c("chi.carre","valeur.p","ddl")
       ### doit etre significatif (attention depend de la taille de l echantillon)
-      bartlett->Resultats$"Matrix adequacy measure"$"Barlett test"
+      bartlett->Resultats$"Matrix adequacy measure"$"Test de Barlett"
       KMO1<-KMO(Matrice)
       if(is.na(KMO1)) {msgBox("The KMO on the matrix could not be obtained. We try to perform a smoothing of the correlation matrix")
         Matrice<-cor.smooth(Matrice)
@@ -137,8 +137,8 @@ factor.an <-
         print("the KMO must absolutely be greater than 0.5")
         cat ("Appuyez sur [entree] pour continuer")
         line <- readline()  
-        dlgMessage(c("Is the matrix satisfactory for an AFE?", "Carry on ?"), "okcancel")$res->res.kmo
-        if(res.kmo=="cancel") {print("you left AFE")
+        dlgMessage(c("Is the matrix satisfactory for an AFE?", "Continuer ?"), "okcancel")$res->res.kmo
+        if(res.kmo=="cancel") {print("vous avez quitte l'AFE")
           return(analyse())}
       }
       
@@ -155,10 +155,10 @@ factor.an <-
       eigen(Matrice)$values->eigen
       parallel(length(data[,1]), length(X), 100)->P1
       nScree(x =eigen, aparallel=P1$eigen$mevpea)->result
-      result->Resultats$"parallel analyzes"
+      result->Resultats$"analyses paralleles"
       plotnScree(result)
       if(dial | is.null(nF) | !is.numeric(nF)) {
-        msgBox(paste("the number of factors to be retained according to the parallel analysis is",result$Components$nparallel, "factors." ))
+        msgBox(paste("the number of factors to be retained according to the parallel analysis is",result$Components$nparallel, "facteurs." ))
         cat ("Appuyez sur [entree] pour continuer")
         line <- readline() 
         nF<-NA
@@ -187,13 +187,13 @@ factor.an <-
                       "simplimax","bentlerQ", "geominQ","biquartimin", "cluster")
         }
         writeLines("Please choose the type of rotation. Oblimin is adapted in humanities")
-        rotation<-dlgList(rotation, preselect= "oblimin", multiple = FALSE, title="What a rotation")$res
+        rotation<-dlgList(rotation, preselect= "oblimin", multiple = FALSE, title="Quelle rotation")$res
         if(length(rotation)==0) {Resultats<-fa.in()
         return(Resultats)}
       }
       if(dial | !is.logical(scor.fac)){
         writeLines("Do you want factor scores included in your data?")
-        dlgList(c("TRUE","FALSE"), preselect="FALSE", multiple = FALSE, title="Factor scores?")$res->scor.fac
+        dlgList(c("TRUE","FALSE"), preselect="FALSE", multiple = FALSE, title="Scores factoriels?")$res->scor.fac
         if(length(scor.fac)==0) {Resultats<-fa.in()
         return(Resultats)}
       }
@@ -316,9 +316,9 @@ factor.an <-
       FA.results<-fa.sort(FA.results,polar=FALSE)
       loadfa<-round(as(FA.results$loadings, "matrix"),3)
       loadfa[which(abs(loadfa)<sat)]<-" "
-      data.frame("communality"=round(FA.results$communality,3),
+      data.frame("communaute"=round(FA.results$communality,3),
                  "specifite"=round(FA.results$uniquenesses,3),
-                 "complexity"=round(FA.results$complexity,2))->communaute
+                 "complexite"=round(FA.results$complexity,2))->communaute
       Resultats$"standardized saturations based on the correlation matrix"<-data.frame(loadfa, communaute)
       
       var.ex <- round(FA.results$Vaccounted,3)
@@ -327,13 +327,13 @@ factor.an <-
                                         "Cumulative proportion of the explanation")} else {
                                           dimnames(var.ex)[[1]]<-c("Sum of saturation squares", "proportion of variance explained")
                                         }
-      Resultats$"Variance explained"<-var.ex
+      Resultats$"Variance expliquee"<-var.ex
       
       paste("ML",1:nF)->noms1
       if(nF>1 & rotation=="oblimin"){
         round(FA.results$Phi, 3)->cor.f
         Resultats$"correlations between factors"<-cor.f}
-      paste("the average complexity is", round(mean(FA.results$complexity),3), "This tests whether", nF, "factors suffice" )-> Resultats$"Medium complexity"
+      paste("the average complexity is", round(mean(FA.results$complexity),3), "This tests whether", nF, "facteurs suffise(nt)" )-> Resultats$"Complexite moyenne"
       if(length(X)>5){
         round(matrix(c(FA.results$null.chisq, FA.results$null.dof,FA.results$null.model,
                        FA.results$dof, FA.results$objective, FA.results$RMSEA,
@@ -342,10 +342,10 @@ factor.an <-
         c("chi square of the null model", "Degrees of freedom of the null model", "objective function of the null model",
           "degrees of freedom of the model", "objective function of the model", "RMSEA", "lower limit of RMSEA", "upper limit of RMSEA",
           "Confidence threshold (1- alpha)", "Tucker Lewis Reliability Factor - TLI", "BIC", "EBIC", 
-          "RMSR", "RMSR corrects", "Matching based on values outside the diagonal", "empirical chi square", "value of the proability of the empirical square footage",
+          "RMSR", "RMSR corrige", "Matching based on values outside the diagonal", "empirical chi square", "value of the proability of the empirical square footage",
           "chi-square of maximum likelihood", "value of the chi-square probability of the maximum likelihood", "total number of observations")->dimnames(stats)[[1]]
         
-        "values"->dimnames(stats)[[2]]
+        "valeurs"->dimnames(stats)[[2]]
         stats->Resultats$"Suitability and adjustment indices"
         if(all(FA.results$R2<1)){
           round(rbind((FA.results$R2)^0.5,FA.results$R2,2*FA.results$R2-1),2)->stats
@@ -361,7 +361,7 @@ factor.an <-
             cbind(round(FA.results$cis$ci[,i],3), 
                   round(as(FA.results$loadings, "matrix"),3)[,i],
                   round(FA.results$cis$ci[,i+nF],3))->IC2
-            dimnames(IC2)[[2]]<-c("inf.lim", dimnames(FA.results$loadings)[[2]][i],"sup.lim")
+            dimnames(IC2)[[2]]<-c("lim.inf", dimnames(FA.results$loadings)[[2]][i],"lim.sup")
             cbind(IC, IC2)->IC
           }
           IC->Resultats$"Confidence interval of saturations based on bootstrap - may be biased in the presence of Heyhood case"
@@ -378,7 +378,7 @@ factor.an <-
       }
       
       data<-data.frame(data,Scores.fac)
-      names(data)[(length(data)+1-nF):length(data)]<-paste0("factor.", 1:nF)
+      names(data)[(length(data)+1-nF):length(data)]<-paste0("facteur.", 1:nF)
       assign(nom, data,envir=.GlobalEnv)
       
       }
@@ -392,9 +392,9 @@ factor.an <-
         FA.results<-fa.sort(FA.results,polar=FALSE)
         loadfa<-round(as(FA.results$loadings, "matrix"),3)
         loadfa[which(abs(loadfa)<sat)]<-" "
-        data.frame("communality"=round(FA.results$communality,3),
+        data.frame("communaute"=round(FA.results$communality,3),
                    "specifite"=round(FA.results$uniquenesses,3),
-                   "complexity"=round(FA.results$complexity,2))->communaute
+                   "complexite"=round(FA.results$complexity,2))->communaute
         Resultats$"Hierarchical factor analysis"$"standardized saturations based on the correlation matrix"<-data.frame(loadfa, communaute)
         
         var.ex <- round(FA.results$Vaccounted,3)
@@ -403,11 +403,11 @@ factor.an <-
                                               "Cumulative proportion of the explanation")} else {
                                                 dimnames(var.ex)[[1]]<-c("Sum of saturation squares", "proportion of variance explained")
                                               }
-        Resultats$"Hierarchical factor analysis"$"Variance explained"<-var.ex
+        Resultats$"Hierarchical factor analysis"$"Variance expliquee"<-var.ex
         
         paste("ML",1:nfact2)->noms1
         
-        paste("the average complexity is", round(mean(FA.results$complexity),3), "This tests whether", nF, "factors suffice" )-> Resultats$"Medium complexity"
+        paste("the average complexity is", round(mean(FA.results$complexity),3), "This tests whether", nF, "facteurs suffise(nt)" )-> Resultats$"Complexite moyenne"
         
         round(matrix(c( FA.results$null.dof,FA.results$null.model,
                         FA.results$dof, FA.results$objective, 
@@ -416,7 +416,7 @@ factor.an <-
            "degrees of freedom of the model", "objective function of the model",    "RMSR", 
            "Matching based on values outside the diagonal")->dimnames(stats)[[1]]
         
-        "values"->dimnames(stats)[[2]]
+        "valeurs"->dimnames(stats)[[2]]
         stats->Resultats$"Hierarchical factor analysis"$"Suitability and adjustment indices"
         if(all(FA.results$R2<1)){
           round(rbind((FA.results$R2)^0.5,FA.results$R2,2*FA.results$R2-1),2)->stats
@@ -439,9 +439,9 @@ factor.an <-
       PCA<-fa.sort(PCA,polar=FALSE)
       loadfa<-round(as(PCA$loadings, "matrix"),3)
       loadfa[which(abs(loadfa)<sat)]<-" " 
-      data.frame("communality"=round(PCA$communality,3),
+      data.frame("communaute"=round(PCA$communality,3),
                  "specifite"=round(PCA$uniquenesses,3),
-                 "complexity"=round(PCA$complexity,2))->communaute
+                 "complexite"=round(PCA$complexity,2))->communaute
       Resultats$"standardized saturations based on the correlation matrix"<-data.frame(loadfa, communaute)
       var.ex<-round(PCA$Vaccounted,3)
       
@@ -450,12 +450,12 @@ factor.an <-
                                         "Cumulative proportion of the explanation")} else {
                                           dimnames(var.ex)[[1]]<-c("Sum of saturation squares", "proportion of variance explained")
                                         }
-      Resultats$"Variance explained"<-var.ex
+      Resultats$"Variance expliquee"<-var.ex
       
       paste("TC",1:nF)->noms1
       if(nF>1 & rotation=="oblimin"){  round(PCA$r.scores,3)->cor.f
         Resultats$"correlations between factors"<-cor.f}
-      paste("the average complexity is", mean(PCA$complexity), "This tests whether", nF, "factors suffice" )-> Resultats$"Medium complexity"
+      paste("the average complexity is", mean(PCA$complexity), "This tests whether", nF, "facteurs suffise(nt)" )-> Resultats$"Complexite moyenne"
       round(matrix(c(PCA$null.dof,PCA$null.model,
                      PCA$dof, PCA$objective, 
                      PCA$rms, PCA$fit.off, 
@@ -466,7 +466,7 @@ factor.an <-
         "RMSR",  "Matching based on values outside the diagonal", "empirical chi square", "value of the probability of the empirical chi-square",
         "chi-square of maximum likelihood", "value of the chi-square probability of the maximum likelihood", "total number of observations")->dimnames(stats)[[1]]
       
-      "values"->dimnames(stats)[[2]]
+      "valeurs"->dimnames(stats)[[2]]
       stats->Resultats$"Suitability and adjustment indices"
       if(scor.fac){
         Scores.fac<-c()
@@ -478,7 +478,7 @@ factor.an <-
           cbind(Scores.fac,centrees2)->Scores.fac
         }
         data<-data.frame(data,Scores.fac)
-        names(data)[(length(data)+1-nF):length(data)]<-paste0("factor.", 1:nF)
+        names(data)[(length(data)+1-nF):length(data)]<-paste0("facteur.", 1:nF)
         assign(nom, data,envir=.GlobalEnv)
         
       }
@@ -513,12 +513,12 @@ factor.an <-
     nfact2<-fa.options$nfact2
     Resultats$"Correlation matrix"<-fa.options$"Correlation matrix"
     Resultats$"Matrix adequacy measure"<-fa.options$"Matrix adequacy measure"
-    Resultats$"parallel analyzes"<-fa.options$"parallel analyzes"
+    Resultats$"analyses paralleles"<-fa.options$"analyses paralleles"
     
     
     
     if(fa.options$choix==  "Exploratory factor analysis" |choix=="afe"){
-      Resultats$"Factor analysis"<-fa.out(Matrice=Matrice, data=data, X=X, nF=nF, methode=methode, rotation=rotation, sat=sat, 
+      Resultats$"Analyse factorielle"<-fa.out(Matrice=Matrice, data=data, X=X, nF=nF, methode=methode, rotation=rotation, sat=sat, 
                                               scor.fac=scor.fac, n.boot=n.boot, nom=nom, hier=hier, cor=cor, nfact2=nfact2)  }
     
     if(fa.options$choix==  "Principal component analysis" |choix=="acp"){

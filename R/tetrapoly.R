@@ -19,7 +19,7 @@ tetrapoly <-
     
     if(is.null(data) | is.null(X))  {dial<-TRUE
     if(info) writeLines("Please choose the type of correlations you want to achieve. For dichotomous variables, the correlations will be tetrachoric correlations")
-    dlgList(c("polychoric correlations", "mixed correlations"), preselect=NULL, multiple = FALSE, title="Type of correlations?")$res->method
+    dlgList(c("polychoric correlations", "correlations mixtes"), preselect=NULL, multiple = FALSE, title="Type of correlations?")$res->method
     if(length(method)==0) return(choix.corr())
     } else dial<-F
     
@@ -42,9 +42,9 @@ tetrapoly <-
     data<-X$data
     X<-X$X
     
-    if(!is.null(ord) & any(ord %in%X==F)||(dial && method=="mixed correlations" ) ){
+    if(!is.null(ord) & any(ord %in%X==F)||(dial && method=="correlations mixtes" ) ){
       if(info) writeLines("Please choose ordinal variables.")
-      ord<-dlgList(X, preselect=X, multiple = TRUE, title="Ordinal variables?")$res
+      ord<-dlgList(X, preselect=X, multiple = TRUE, title="Variables ordinales ?")$res
       if(length(ord)==0){
         Resultats<-tetrapoly(data=NULL,X=NULL, sauvegarde=F, ord=NULL ,info=T, group=NULL, estimator=estimator, output=output)
         return(Resultats)
@@ -75,10 +75,10 @@ tetrapoly <-
                            ",info=T, group=", ifelse(!is.null(group),paste0("'",group,"'"), "NULL"), ",estimator='", estimator, "',output='", output, "')")
     
     .add.history(data=data, command=Resultats$Call, nom=nom)
-    .add.result(Resultats=Resultats, name =paste("psychoanalyst", Sys.time() ))  
+    .add.result(Resultats=Resultats, name =paste("cor.polychorique", Sys.time() ))  
     
     
-    if(sauvegarde) save(Resultats=Resultats, choix="psychoanalyst", env=.e)
+    if(sauvegarde) save(Resultats=Resultats, choix="cor.polychorique", env=.e)
     
     ref1(packages)->Resultats$"References"
     if(html) ez.html(Resultats)

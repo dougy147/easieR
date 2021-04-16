@@ -1,5 +1,5 @@
 corr.matrice <-
-  function(X=NULL, Y=NULL, Z=NULL,data=NULL, group=NULL,method="pearson",param=c("H0","FB"), sauvegarde=F, outlier=c("Complete data"),n.boot=1,  rscale=0.354, info=T,
+  function(X=NULL, Y=NULL, Z=NULL,data=NULL, group=NULL,method="pearson",param=c("H0","FB"), sauvegarde=F, outlier=c("Donnees completes"),n.boot=1,  rscale=0.354, info=T,
            p.adjust="holm",out.m=2, na.rm=NULL, html=T) { 
     # X : character or vector. First set of variables
     # Y : character or vector. Second set of variables Must be NULL if Z is not
@@ -9,19 +9,19 @@ corr.matrice <-
     # method : one among c("pearson", "spearman", "kendall") 
     # param :  one or both among "H0" (null hypoethesis testing) et "FB"(bayesian factors)
     # sauvegarde : logical. Must the analyses be saved ? 
-    # outlier : One among   c("Complete data", "Data without influencing value")
-    # rscale : numeric. If not null, bayesian factors are computed. Can also be "medium", "wide", "ultralarge"
+    # outlier : One among   c("Donnees completes", "Data without influencing value")
+    # rscale : numeric. If not null, bayesian factors are computed. Can also be "moyen", "large", "ultralarge"
     # info : logical. Must information be displayed in dialog box interface. 
     # correction : character. Probability adjustement. See p.adjust for list of possibilities
     # out.m : 1 for deleting one observation at the time in outlier detection. 2 for all at the same time. 
     # na.rm : character. How to deal with missing values ? 
     # html : Logical. Should output be a HTML page ? 
     
-    corr.matrice.in<-function(X=NULL, Y=NULL, Z=NULL, group=NULL, data=NULL, p.adjust="holm", rscale=0.354,sauvegarde=F,outlier="Complete data", info=T, method="pearson", param=c("H0","FB"), n.boot=NULL){
+    corr.matrice.in<-function(X=NULL, Y=NULL, Z=NULL, group=NULL, data=NULL, p.adjust="holm", rscale=0.354,sauvegarde=F,outlier="Donnees completes", info=T, method="pearson", param=c("H0","FB"), n.boot=NULL){
       Resultats<-list()
       if(!is.null(X) & !is.null(data) & (is.null(Y) | is.null(Z))) {dial<-F 
       if(is.null(Z)) choix<-"Correlations" else choix<-"Partial and semi-partial correlations"
-      if(!is.null(Y)) carre<-"rectangular" else carre<-"carree"
+      if(!is.null(Y)) carre<-"rectangulaire" else carre<-"carree"
       }  else {dial<-T
       choix<-NULL}
       
@@ -39,7 +39,7 @@ corr.matrice <-
       if(choix=="Correlations" & dial==T){
         writeLines("Une matrice carree est une matrice avec toutes les Correlations 2 a 2. 
                    Une matrice rectangulaire est une matrice dans laquelle un premier ensemble de variables est mis en correlations avec un second jeu de variables")
-        carre<-dlgList(c("carree", "rectangular"), multiple = FALSE, title="die type")$res
+        carre<-dlgList(c("carree", "rectangulaire"), multiple = FALSE, title="type de matrice")$res
         if(length(carre)==0){Resultats<-corr.matrice.in()
         return(Resultats)}
       } else carre<-"carree"
@@ -54,7 +54,7 @@ corr.matrice <-
         return(Resultats)}
       data<-X$data
       X1<-X$X
-      if(carre=="rectangular"){
+      if(carre=="rectangulaire"){
         msg4<-"Please choose the second set of variables"
         Y<-.var.type(X=Y, info=info, data=data, type="numeric", check.prod=F, message=msg4,  multiple=T, title="Second set of variables", out=X1)
         if(is.null(Y)) {
@@ -82,14 +82,14 @@ corr.matrice <-
         if(info==TRUE) writeLines("Si vous souhaitez realiser l'analyse pour differents sous-echantillons en fonction d'un critere categoriel (i.e., realiser une analyse par groupe)
                                   \n choisissez oui. Dans ce cas, l'analyse est realisee sur l'echantillon complet et sur les sous-echantillons.
                                   \n Si vous desirez l'analyse pour l'echantillon complet uniquement, chosissez non.")
-        dlgList(c("Yes", "non"), preselect="non", multiple = FALSE, title="Group analysis?")$res->par.groupe
+        dlgList(c("oui", "non"), preselect="non", multiple = FALSE, title="Analyse par groupe?")$res->par.groupe
         if(length(par.groupe)==0) {
           corr.matrice.in(X=NULL, Y=NULL, data=NULL,method=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,
                           n.boot=NULL, rscale=0.353)->Resultats
           return(Resultats)
         } } else par.groupe<-"non"
       msg5<-"Please choose the categorical ranking factor."
-      if(par.groupe=="Yes" || !is.null(group)){group<-.var.type(X=group, info=info, data=data, type="factor", check.prod=F, message=msg5,  multiple=TRUE, title="Variable-s", out=c(X1,Y,Z)) 
+      if(par.groupe=="oui" || !is.null(group)){group<-.var.type(X=group, info=info, data=data, type="factor", check.prod=F, message=msg5,  multiple=TRUE, title="Variable-s", out=c(X1,Y,Z)) 
       if(length(group)==0) {   corr.matrice.in(X=NULL, Y=NULL, data=NULL, method=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,
                                                n.boot=NULL, rscale=0.353)->Resultats
         return(Resultats)}
@@ -103,9 +103,9 @@ corr.matrice <-
       }
       }
       
-      if(dial || length(outlier)>1 || outlier %in% c("Complete data", "Data without influencing value") ==FALSE){
+      if(dial || length(outlier)>1 || outlier %in% c("Donnees completes", "Data without influencing value") ==FALSE){
         if(info) writeLines("Do you want the analysis on the complete data or on the data for which the influencing values have been removed?")
-        outlier<- dlgList(c("Complete data", "Data without influencing value"), preselect=c("Complete data"),
+        outlier<- dlgList(c("Donnees completes", "Data without influencing value"), preselect=c("Donnees completes"),
                           multiple = FALSE, title="What results do you want to achieve?")$res
         if(length(outlier)==0) { Resultats<-corr.matrice.in(X=NULL, Y=NULL, data=NULL, method=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,
                                                             n.boot=NULL, rscale=0.353)
@@ -144,26 +144,26 @@ corr.matrice <-
       } 
       
       
-      if((dial)|| !is.null(rscale) & ((is.numeric(rscale) & (rscale<0.1 | rscale>2)) || (!is.numeric(rscale) & rscale%in% c("medium", "wide", "ultralarge")==F))) {
+      if((dial)|| !is.null(rscale) & ((is.numeric(rscale) & (rscale<0.1 | rscale>2)) || (!is.numeric(rscale) & rscale%in% c("moyen", "large", "ultralarge")==F))) {
         if(info) writeLines("Voulez-vous les tests d'hypothees nuls ou/et les facteurs bayesiens ?")   
-        param<-dlgList(c("Bayesian factors","H0 tests"), preselect=c("Bayesian factors","H0 tests"), multiple = T, title="Statistical approach?")$res
+        param<-dlgList(c("Facteurs bayesiens","Tests de H0"), preselect=c("Facteurs bayesiens","Tests de H0"), multiple = T, title="Statistical approach?")$res
         if(length(param)==0) { Resultats<-corr.matrice.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,
                                                           n.boot=NULL, rscale=0.353)
         return(Resultats)}
         
-        if(any(param=="Bayesian factors") | any(param=="FB")){
+        if(any(param=="Facteurs bayesiens") | any(param=="FB")){
           if(info) writeLines("Please specify the a priori distribution of Cauchy")
           
-          rscale<-dlgList(c("medium", "wide", "ultralarge"), preselect="medium", multiple = F, title="Quelle distribution voulez-vous  ?")$res 
+          rscale<-dlgList(c("moyen", "large", "ultralarge"), preselect="moyen", multiple = F, title="Quelle distribution voulez-vous  ?")$res 
           if(length(rscale)==0) {
             Resultats<-corr.matrice.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,
                                        n.boot=NULL, rscale=0.353)
             return(Resultats)
           }
-          ifelse(rscale=="medium", rscale<-2^0.5/4, ifelse(rscale=="wide", rscale<-0.5, ifelse(rscale=="ultralarge", rscale<-2^0.5/2, rscale<-rscale)))} else rscale<-NULL
+          ifelse(rscale=="moyen", rscale<-2^0.5/4, ifelse(rscale=="large", rscale<-0.5, ifelse(rscale=="ultralarge", rscale<-2^0.5/2, rscale<-rscale)))} else rscale<-NULL
       } 
       
-      if(any(param=="H0 tests") |any(param=="H0")){
+      if(any(param=="Tests de H0") |any(param=="H0")){
         if(dial | length(p.adjust)!=1 || p.adjust %in% c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY","fdr", "none")==FALSE){
           writeLines("Please specify the type of probability correction you want to perform")
           dlgList(c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY","fdr", "none"), preselect=NULL, multiple = FALSE, title="Type of correction?")$res->p.adjust
@@ -174,7 +174,7 @@ corr.matrice <-
       } else p.adjust<-"none"
       if(dial | length(sauvegarde)!=1 || !is.logical(sauvegarde )){
         writeLines("do you want to save the results")
-        sauvegarde<- dlgList(c(TRUE, FALSE), preselect=FALSE, multiple = TRUE, title="Save the results?")$res
+        sauvegarde<- dlgList(c(TRUE, FALSE), preselect=FALSE, multiple = TRUE, title="Enregistrer les resultats ?")$res
         if(length(sauvegarde)==0) {Resultats<-corr.matrice.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,
                                                               n.boot=NULL, rscale=0.353)->Resultats
         return(Resultats)}
@@ -244,13 +244,13 @@ corr.matrice <-
       
       class(r1)<-"matrix"
       dimnames(r1)[[1]]<-paste(dimnames(r1)[[1]], "r")
-      matrice$n->Resultats$"sample size"
+      matrice$n->Resultats$"taille de l'echantillon"
       
-      if(any(param=="H0")|any(param=="H0 tests")) {paste("the correction applied is the correction of",p.adjust)->Resultats$Correction[1]
+      if(any(param=="H0")|any(param=="Tests de H0")) {paste("the correction applied is the correction of",p.adjust)->Resultats$Correction[1]
         if(is.null(Y)) Resultats$Correction[2]<-"Only values above the diagonals are adjusted for multiple comparisons"
         round(matrice$p,3)->r2
         class(r2)<-c("matrix", "p.value")
-        Resultats$"probability matrix"<-r2
+        Resultats$"matrice des probabilites"<-r2
         dimnames(r2)[[1]]<-paste0(dimnames(r2)[[1]], ".p")
         if(is.null(Y)) r2[which(lower.tri(r2, diag = T))]<-NA
         r1<-rbind(r1,r2)
@@ -270,13 +270,13 @@ corr.matrice <-
         r3<-format(r3, scientific=T)
         if(is.null(Y)) r3[which(lower.tri(r3, diag = T))]<-"-"
         dimnames(r3)[[1]]<-paste0(dimnames(r3)[[1]], ".FB")
-        Resultats$"Bayesian factors"<-as.data.frame(r3)
+        Resultats$"Facteurs bayesiens"<-as.data.frame(r3)
         r1<-rbind(r1, r3)
       }
       class(r2)<-"matrix"
       if(is.null(Y)) r2[which(lower.tri(r2, diag = T))]<-"-"
-      Resultats$"r.two matrix" <-as.data.frame(r2)
-      dimnames(r2)[[1]]<-paste(dimnames(r2)[[1]], "r ^ 2")
+      Resultats$"matrice des r.deux" <-as.data.frame(r2)
+      dimnames(r2)[[1]]<-paste(dimnames(r2)[[1]], "r^2")
       r1<-rbind(r1, r2)
       r1<-data.frame(r1)
 	    if(is.null(Y)){
@@ -291,7 +291,7 @@ corr.matrice <-
 
       
       if(is.null(Y) & is.null(Z) & (!is.null(n.boot) && n.boot > 100)) round(cor.ci(data[,X], n.iter=n.boot, plot=FALSE)$ci,4)->Resultats$"Confidence interval estimated by bootstrap" else  round(matrice$ci,4)->Resultats$"Confidence interval" 
-      names(Resultats[[length(Resultats)]])<-c("inf.lim","r","sup.lim","p-value")
+      names(Resultats[[length(Resultats)]])<-c("lim.inf","r","lim.sup","valeur.p")
       
       return(Resultats)  
       
@@ -366,7 +366,7 @@ corr.matrice <-
     
     
     
-    if(sauvegarde) save(Resultats=Resultats, choix=paste("correlation of", method), env=.e)
+    if(sauvegarde) save(Resultats=Resultats, choix=paste("correlation de", method), env=.e)
     ref1(packages)->Resultats$"References"
     if(html) try(ez.html(Resultats), silent=T)
     return(Resultats)
