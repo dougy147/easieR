@@ -11,7 +11,7 @@ ez.imp <-
     if(class(test2)== "try-error") return(ez.install())
     .e <- environment()
     if(is.null(data)) { dial<-T
-    data<-choice.data(data=data, info=info, nom=T)
+    data<-choix.data(data=data, info=info, nom=T)
     if(length(data)==0) return(NULL)
     nom<-data[[1]]
     data<-data[[2]]
@@ -19,28 +19,28 @@ ez.imp <-
     deparse(substitute(data))->nom  }
     nom<-paste0(nom,".complet")
     
-    if(dial || imp%in% c("Do nothing - Keep all observations", "Removing cases with missing values", "Replace with the mean",
-                         "Replace with median","Multiple imputation - Amelia","nothing","rm", "mean","median", "amelia") == FALSE){
+    if(dial || imp%in% c("Do nothing - Keep all observations", "Removing cases with missing values", "Remplacer par la moyenne",
+                         "Remplacer par la mediane","Multiple imputation - Amelia","rien","rm", "mean","median", "amelia") == FALSE){
       writeLines("Number of missing values per variable. How do you want to treat them?")
       print(sapply(data, function(x) sum(length(which(is.na(x))))) )
       
-      imp<- dlgList(c("Do nothing - Keep all observations", "Removing cases with missing values", "Replace with the mean",
-                      "Replace with median","Multiple imputation - Amelia"), preselect=FALSE, multiple = TRUE, title="Treatment of missing values")$res
+      imp<- dlgList(c("Do nothing - Keep all observations", "Removing cases with missing values", "Remplacer par la moyenne",
+                      "Remplacer par la mediane","Multiple imputation - Amelia"), preselect=FALSE, multiple = TRUE, title="Traitement des valeurs manquantes")$res
       if(length(imp)==0){
         return(NULL)
       }
     }
     if(length(imp)==0) return(NULL)
-    if(imp == "Do nothing - Keep all observations" || imp=="nothing") return(data)
+    if(imp == "Do nothing - Keep all observations" || imp=="rien") return(data)
     if(imp== "Removing cases with missing values"|| imp=="rm"){
       data<-data[complete.cases(data),]
       if(dial)  assign(nom, data, envir=.GlobalEnv)
     }
-    if(imp=="Replace with the mean"|| imp=="mean"){
+    if(imp=="Remplacer par la moyenne"|| imp=="mean"){
       for(i in 1 : length(data)) {data[which(is.na(data[,i])),i]<-mean(data[,i], na.rm=T)}
       if(dial)  assign(nom, data, envir=.GlobalEnv)
     }
-    if(imp== "Replace with median"|| imp=="median"){
+    if(imp== "Remplacer par la mediane"|| imp=="median"){
       for(i in 1 : length(data)) {data[which(is.na(data[,i])),i]<-median(data[,i], na.rm=T)}
       if(dial)  assign(nom, data, envir=.GlobalEnv)
     }

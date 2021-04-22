@@ -19,19 +19,19 @@ easieR <-
         return(easieR.msg(msg=1))
       }
 
-    choice <- dlgList(easieR.msg("2"), preselect=NULL, multiple = FALSE, title=easieR.msg("3"))$res
-    if(length(choice)==0) return(writeLines(easieR.msg("4"))) else {
-      if(choice %in%c("Data - (Import, export, backup)",
-                     "Data - (Import, export, save")) Results <- donnees()
-      if(choice %in% c("Analyzes - Hypothesis tests",
-                      "Analyzes - Hypothesis tests")) Results <-analyse(html=html)
-      if(choice%in%c("Interface - objects in memory, clean memory, working directory",
-                  "Interface - objects in memory, clean memory, wordking directory")) Results <- interfaceR()
-      if(choice%in% c("Preprocessing (sorting, selection, mathematical operations, Treatment of missing values)",
-                     "Preprocess (sort, select, mathematical operations, missing values)")) Results<-preprocess()
-      if(choice%in% c("Teaching materials","Teaching material")) return(teaching())
-      if(choice%in%c("Graphics","Graphics")) return(graphiques())
-      return(Results)
+    choix <- dlgList(easieR.msg("2"), preselect=NULL, multiple = FALSE, title=easieR.msg("3"))$res
+    if(length(choix)==0) return(writeLines(easieR.msg("4"))) else {
+      if(choix %in%c("Data - (Import, export, backup)",
+                     "Data - (Import, export, save")) Resultats <- donnees()
+      if(choix %in% c("Analyses - Tests d'hypothese",
+                      "Analyses - Hypothesis tests")) Resultats <-analyse(html=html)
+      if(choix%in%c("Interface - objects in memory, clean memory, working directory",
+                  "Interface - objects in memory, clean memory, wordking directory")) Resultats <- interfaceR()
+      if(choix%in% c("Preprocessing (sorting, selection, mathematical operations, Treatment of missing values)",
+                     "Preprocess (sort, select, mathematical operations, missing values)")) Resultats<-preprocess()
+      if(choix%in% c("Materiel pedagogique","Teaching material")) return(teaching())
+      if(choix%in%c("Graphiques","Graphics")) return(graphiques())
+      return(Resultats)
 
     }
   }
@@ -42,16 +42,16 @@ easieR.msg<-function(msg="1"){
                  "1"=c("Pour que easieR fonctionne correctement, il faut installer Pandoc disponible à l'url suivant : https://github.com/jgm/pandoc/releases") ,
                  "2"=c("Data - (Import, export, backup)",
                        "Preprocessing (sorting, selection, mathematical operations, Treatment of missing values)",
-                       "Analyzes - Hypothesis tests", "Graphics",
+                       "Analyses - Tests d'hypothese", "Graphiques",
                      "Interface - objects in memory, clean memory, working directory",
-                     "Teaching materials"),
-                 "3"="What do you want ?",
-                 "4"="You have left easieR")
+                     "Materiel pedagogique"),
+                 "3"="Que voulez-vous ?",
+                 "4"="Vous avez quitte easieR")
      }else {
        msg<-switch(msg, "1"="In order to ensure that easieR is properly installed, please install Pandoc at the following url :
       https://github.com/jgm/pandoc/releases",
                    "2"=c("Data - (Import, export, save)", "Preprocess (sort, select, mathematical operations, missing values)",
-                         "Analyzes - Hypothesis tests", "Graphics",
+                         "Analyses - Hypothesis tests", "Graphics",
                        "Interface - objects in memory, clean memory, working directory",
                        "Teaching material"),
                    "3"="What do you want to do?",
@@ -75,10 +75,10 @@ easieR.msg<-function(msg="1"){
 
 
 
-#### descriptive statistics ####
+#### statistiques descriptives ####
 
 
-#### permet d'identifier et enlever les values influentes ####
+#### permet d'identifier et enlever les valeurs influentes ####
 # pas encore intÃÂ©grÃÂ© ÃÂ  l'interface graphique mais dans les fonctions. Il faut rajouter l'interace graphique pour la faire fonctionnerdirectement de easier
 
 
@@ -87,7 +87,7 @@ VI.multiples<-function(data, X){
   # data =data.frame
   # X = variable names to include in the analysis
   require("pych")
-  Results<-list()
+  Resultats<-list()
   data$ideasy<- 1:NROW(data)
   nvar<-length(X)
   try(psych::outlier(data[,X], bad=T, na.rm=T,plot=T),silent=T)->essai
@@ -136,21 +136,21 @@ VI.multiples<-function(data, X){
 
 
   if(pourcent!=0){
-    writeLines("Supprimer l'ensemble des outliers supprime l'ensemble des values au-delà p(chi.deux)< 0.001.
+    writeLines("Supprimer l'ensemble des outliers supprime l'ensemble des valeurs au-delà p(chi.deux)< 0.001.
                Supprimer une observation à la fois permet de faire une analyse detaillee de chaque observation
-               consideree comme influente en partant de la value la plus extreme. La procedure s'arrete
-               quand plus any observation n'est consideree comme influente")
+               consideree comme influente en partant de la valeur la plus extreme. La procedure s'arrete
+               quand plus aucune observation n'est consideree comme influente")
 
-    suppr<- dlgList(c("Removal of all outliers", "Manual removal"),
-                    preselect=c("Removal of all outliers"), multiple = FALSE, title="How do you want to remove them?")$res
+    suppr<- dlgList(c("Suppression de l'ensemble des outliers", "Suppression manuelle"),
+                    preselect=c("Suppression de l'ensemble des outliers"), multiple = FALSE, title="How do you want to remove them?")$res
     if(length(suppr)==0) return(NULL)
-    if(suppr=="Removal of all outliers") {data[which(data$D.Mahalanobis<seuil),]->data
-      outliers->Results$"Values considered influential"}else{
+    if(suppr=="Suppression de l'ensemble des outliers") {data[which(data$D.Mahalanobis<seuil),]->data
+      outliers->Resultats$"Values considered influential"}else{
         suppression<-"yes"
         outliers<-data.frame()
         while(suppression=="yes"){
           print(data[which.max(data$D.Mahalanobis),])
-          cat ("Appuyez [Betweene] pour continuer")
+          cat ("Appuyez [entree] pour continuer")
           line <- readline()
           dlgMessage("Do you want to delete this observation?", "yesno")$res->suppression
           if(suppression=="yes") {rbind(outliers, data[which.max(data$D.Mahalanobis),])->outliers
@@ -158,11 +158,11 @@ VI.multiples<-function(data, X){
 
           }
         }
-        Results$"Values considered influential"<-outliers
+        Resultats$"Values considered influential"<-outliers
       }
   }
-  Results$data<-data
-  return(Results)
+  Resultats$data<-data
+  return(Resultats)
 }
 
 
@@ -224,9 +224,9 @@ VI.multiples<-function(data, X){
   etend.y<-max.y-min.y
   y_breaks<-c(min.y, min.y+1/4*etend.y ,min.y+1/2*etend.y ,min.y+3/4*etend.y , max.y )
   y_labs<-as.character(round(exp(y_breaks),2))
-  reorder( c("medium", "wide", "ultra wide"),levels(SBF$rscale))->levels(SBF$rscale)
-  p1 <- ggplot(SBF, aes(x = n, y = log(BF), group=rscale)) + ylab("Bayesian factor 10") +
-    # p1 <- ggplot(SBF, aes(x = as.factor(n), y = log(BF), group=rscale)) + ylab("Bayesian factor 10") +
+  reorder( c("moyen", "large", "ultra large"),levels(SBF$rscale))->levels(SBF$rscale)
+  p1 <- ggplot(SBF, aes(x = n, y = log(BF), group=rscale)) + ylab("Facteur bayesiens 10") +
+    # p1 <- ggplot(SBF, aes(x = as.factor(n), y = log(BF), group=rscale)) + ylab("Facteur bayesiens 10") +
     xlab("n")+ geom_line(aes(linetype=rscale))+ geom_point()
   p1<-p1+theme(plot.title = element_text(size = 12))+ggtitle("Sequential Bayesian factors - Robustness analysis")
   p1<-p1+scale_y_continuous(breaks = y_breaks, labels =y_labs )
@@ -288,20 +288,20 @@ VI.multiples<-function(data, X){
     if(all(sapply(data[,X], class)%in% c("factor", "character"))!=T ) {
       res<-okCancelBox("You must use categorical variables. Do you want to transform numeric variables into categorical variables?")
       if(res==F) {X<-NULL
-      .var.type(X=NULL, info=info, data=data, type=type,message=message, multiple=multiple, title=title, out=out)->Results
-      return(Results)}
+      .var.type(X=NULL, info=info, data=data, type=type,message=message, multiple=multiple, title=title, out=out)->Resultats
+      return(Resultats)}
     }
     if(length(X)==1) factor(data[,X])->data[,X] else lapply(data[, X], factor)->data[, X]
     if((length(X)==1 && nlevels(data[,X])<2) | (length(X)>1 && any(sapply(data[, X], nlevels)<2))) {
       okCancelBox("A categorical variable must have at least 2 different modalities. Please choose a variable with at least two modalities")
-      .var.type(X=NULL, info=info, data=data, type=type,message=message, multiple=multiple, title=title,out=out)->Results
-      return(Results)
+      .var.type(X=NULL, info=info, data=data, type=type,message=message, multiple=multiple, title=title,out=out)->Resultats
+      return(Resultats)
     }
     if(check.prod){
       if(length(X)>1 && sapply(data[,X],nlevels)>length(data[,1])) {
         msgBox("The product of the modalities of the variables defining the groups is greater than the number of your observations. You need at least one observation per combination of modalities of your variables. Please redefine your analysis")
-        .var.type(X=NULL, info=info, data=data, type=type,message=message, multiple=multiple, title=title,out=out)->Results
-        return(Results)
+        .var.type(X=NULL, info=info, data=data, type=type,message=message, multiple=multiple, title=title,out=out)->Resultats
+        return(Resultats)
       }
 
     }
@@ -310,10 +310,10 @@ VI.multiples<-function(data, X){
   }
   if(!is.null(type) && type=="integer"){
     if((any(data[,X]%%1==0) %in% c(FALSE, NA)) || min(data[,X])<0) {
-      okCancelBox("the variable doit etre un entier *integer* positif")
+      okCancelBox("la variable doit etre un entier *integer* positif")
       X<-NULL
-      .var.type(X=NULL, info=info, data=data, type=type,message=message, multiple=multiple, title=title, out=out)->Results
-      return(Results)
+      .var.type(X=NULL, info=info, data=data, type=type,message=message, multiple=multiple, title=title, out=out)->Resultats
+      return(Resultats)
     }
   }
   if(!is.null(type) && type=="numeric"){
@@ -321,22 +321,22 @@ VI.multiples<-function(data, X){
     if(moy || var(data[,X],na.rm=T)==0){
       okCancelBox("the variable must be numeric and have a non-zero variance.")
       X<-NULL
-      .var.type(X=NULL, info=info, data=data, type=type,message=message, multiple=multiple, title=title, out=out)->Results
-      return(Results)
+      .var.type(X=NULL, info=info, data=data, type=type,message=message, multiple=multiple, title=title, out=out)->Resultats
+      return(Resultats)
     }
   }
-  Results<-list()
-  Results$X<-X
-  Results$data<-data
+  Resultats<-list()
+  Resultats$X<-X
+  Resultats$data<-data
 
 
-  return(Results)
+  return(Resultats)
 }
 
 # save : logical. Should the output be saved in rtf and R file ?
-.ez.options<-function(options="choice", n.boot=NULL,param=T, non.param=T, robust=T, Bayes=T, msg.options1=NULL, msg.options2=NULL, info=T, dial=T,
-                      choice=NULL, backup =F, outlier=NULL, rscale=NULL){
-  # options : character or vector. List of options that must be used ("choice", "outlier")
+.ez.options<-function(options="choix", n.boot=NULL,param=T, non.param=T, robust=T, Bayes=T, msg.options1=NULL, msg.options2=NULL, info=T, dial=T,
+                      choix=NULL,sauvegarde=F, outlier=NULL, rscale=NULL){
+  # options : character or vector. List of options that must be used ("choix", "outlier")
   # n.boot : Positive integer. Number of bootstrap that must be performed. 1 for no bootstrap
   # param : Logical. Is the parametric analysis  an option ?
   # non.param : Logical. Is the non.parametric analysis  an option ?
@@ -346,35 +346,35 @@ VI.multiples<-function(data, X){
   # msg.options2 : message that must be printed for the non-parametric analysis if info is true
   # info : logical. Must information be printed in the console ?
   # dial = logical. Should dialog box be used ?
-  # choice = character or list of analyses that must be done c("parametric", "non parametric", "robust" or/and "bayesian")
+  # choix = character or list of analyses that must be done c("parametric", "non parametric", "robust" or/and "bayesian")
   # sauvegarde = Logical. Must the results be saved ?
-  Results<-list()
-  if(any(options=="choice") & dial==T){
-    choice<-c()
+  Resultats<-list()
+  if(any(options=="choix") & dial==T){
+    choix<-c()
     if(param==T){
       if(info) writeLines(msg.options1)
-      choice<-c(choice, "Parametric test")
+      choix<-c(choix, "Test parametrique")
     }
     if(non.param==T) {
       if(info) writeLines(msg.options2)
-      choice<-c(choice, "Non-parametric test")
+      choix<-c(choix, "Test non parametrique")
     }
     if(robust==T) {
       if(info) writeLines("Robust statistics are alternative analyzes to the main analysis, most often involving bootstraps. These scans are often slower")
-      choice<-c(choice, "Robust testing - involving bootstraps")
+      choix<-c(choix, "Robust testing - involving bootstraps")
     }
     if(Bayes==T) {
       if(info) writeLines("Bayesian factors: calculates the equivalent of the null hypothesis test by adopting a Bayesian approach.")
-      choice<-c(choice, "Bayesian factors")
+      choix<-c(choix, "Facteurs bayesiens")
     }
 
-    choice<- dlgList(choice, preselect=choice, multiple = TRUE, title="Quelle(s) analyses voulez-vous  ?")$res
-    if(length(choice)==0) return(NULL)
+    choix<- dlgList(choix, preselect=choix, multiple = TRUE, title="Quelle(s) analyses voulez-vous  ?")$res
+    if(length(choix)==0) return(NULL)
   }
-  Results$choice<-choice
+  Resultats$choix<-choix
 
 
-  if(exists("choice") && any(choice== "Robust testing - involving bootstraps") || !is.null(n.boot)){{
+  if(exists("choix") && any(choix== "Robust testing - involving bootstraps") || !is.null(n.boot)){{
     if(!is.null(n.boot) && ((class(n.boot)!="numeric" & class(n.boot)!="integer") ||  n.boot%%1!=0 || n.boot<1)){
       msgBox("The number of bootstrap must be a positive integer")
       n.boot<-NULL
@@ -382,11 +382,11 @@ VI.multiples<-function(data, X){
     while(is.null(n.boot)){
       writeLines("Please specify the number of bootstrap. To not have a bootstrap, choose 1")
 
-      n.boot<-dlgInput("Number of bootstrap?", 1000)$res
+      n.boot<-dlgInput("Nombre de bootstrap ?", 1000)$res
       if(length(n.boot)==0) {.ez.options(options=options, n.boot=NULL,param=param, non.param=non.param, robust=robust,
                                          Bayes=Bayes, msg.options1=msg.options1, msg.options2=msg.options2, info=T, dial=T,
-                                         choice=choice, backup =F, outlier=NULL,rscale=rscale)->Results
-        return(Results)}
+                                         choix=choix,sauvegarde=F, outlier=NULL,rscale=rscale)->Resultats
+        return(Resultats)}
       strsplit(n.boot, ":")->n.boot
       tail(n.boot[[1]],n=1)->n.boot
       as.numeric(n.boot)->n.boot
@@ -396,53 +396,53 @@ VI.multiples<-function(data, X){
       }
     }
   }
-    Results$n.boot<-n.boot
+    Resultats$n.boot<-n.boot
   }
   if(!is.null(rscale)){
-    if(dial & any(choice=="Bayesian factors")|| (is.numeric(rscale) & (rscale<0.1 | rscale>2)) || (!is.numeric(rscale) & rscale%in% c("medium", "wide", "ultrawide")==F)) {
+    if(dial & any(choix=="Facteurs bayesiens")|| (is.numeric(rscale) & (rscale<0.1 | rscale>2)) || (!is.numeric(rscale) & rscale%in% c("moyen", "large", "ultralarge")==F)) {
       if(info) writeLines("Please specify the a priori distribution of Cauchy")
-      rscale<-dlgList(c("medium", "wide", "ultrawide"), preselect="medium", multiple = F, title="Quelle distribution voulez-vous  ?")$res
+      rscale<-dlgList(c("moyen", "large", "ultralarge"), preselect="moyen", multiple = F, title="Quelle distribution voulez-vous  ?")$res
       if(length(rscale)==0) {
         .ez.options(options=options, n.boot=NULL,param=param, non.param=non.param, robust=robust,
                     Bayes=Bayes, msg.options1=msg.options1, msg.options2=msg.options2, info=T, dial=T,
-                    choice=choice, backup =F, outlier=NULL, rscale=rscale)->Results
+                    choix=choix,sauvegarde=F, outlier=NULL, rscale=rscale)->Resultats
       }
     }
     if(is.character(rscale)) {
-      ifelse(rscale=="medium", rscale<-2^0.5/2, ifelse(rscale=="wide", rscale<-1, ifelse(rscale=="ultrawide", rscale<-2^0.5, rscale<-rscale)))
-      Results$rscalei<-T
-    } else Results$rscalei<-F
+      ifelse(rscale=="moyen", rscale<-2^0.5/2, ifelse(rscale=="large", rscale<-1, ifelse(rscale=="ultralarge", rscale<-2^0.5, rscale<-rscale)))
+      Resultats$rscalei<-T
+    } else Resultats$rscalei<-F
 
-    Results$rscale<-rscale
+    Resultats$rscale<-rscale
   }
 
 
   if(any(options=="outlier")){
     if(dial || is.null(outlier)||
-       (dial==F & any(outlier %in%c("Complete data", "Identification of influential values","Data without influencing value",
+       (dial==F & any(outlier %in%c("Donnees completes", "Identification of influential values","Data without influencing value",
                                    "complete", "id", "removed"))==F)) {
-      if(info==TRUE) writeLines("les donnees completes representent l'analyse classique sur toutes les donnees utilisables, l'identification des values influentes
-                                permet d'identifier les observations qui sont considerees statisticalment comme influencant les resultats.
-                                les analyses sur les donnees sans les values influentes realise l'analyse apres suppression des values influentes.
-                                Cette option stocke dans la memoire de R une nouvelle base de donnees sans value influente dans un objet portant le nom *cleaned*")
-      Results$desires<- dlgList(c("Complete data", "Identification of influential values","Data without influencing value"),
-                                  preselect=c("Complete data","Identification of influential values", "Data without influencing value"),
-                                  multiple = TRUE, title="What analysis do you want?")$res
-      if(length(Results$desires)==0) {.ez.options(options=options, n.boot=NULL,param=param, non.param=non.param, robust=robust,
+      if(info==TRUE) writeLines("les donnees completes representent l'analyse classique sur toutes les donnees utilisables, l'identification des valeurs influentes
+                                permet d'identifier les observations qui sont considerees statistiquement comme influencant les resultats.
+                                les analyses sur les donnees sans les valeurs influentes realise l'analyse apres suppression des valeurs influentes.
+                                Cette option stocke dans la memoire de R une nouvelle base de donnees sans valeur influente dans un objet portant le nom *nettoyees*")
+      Resultats$desires<- dlgList(c("Donnees completes", "Identification of influential values","Data without influencing value"),
+                                  preselect=c("Donnees completes","Identification of influential values", "Data without influencing value"),
+                                  multiple = TRUE, title="Quelles analyse voulez-vous ?")$res
+      if(length(Resultats$desires)==0) {.ez.options(options=options, n.boot=NULL,param=param, non.param=non.param, robust=robust,
                                                     Bayes=Bayes, msg.options1=msg.options1, msg.options2=msg.options2, info=T, dial=T,
-                                                    choice=choice, backup =F, outlier=NULL,rscale=rscale)->Results
-        return(Results)}
-    } else Results$desires<-outlier
+                                                    choix=choix,sauvegarde=F, outlier=NULL,rscale=rscale)->Resultats
+        return(Resultats)}
+    } else Resultats$desires<-outlier
   }
 
-  if( dial==T) {Results$sauvegarde<- dlgList(c(TRUE, FALSE), preselect=FALSE, multiple = FALSE, title="Save the results?")$res
-  if(length(Results$sauvegarde)==0) {.ez.options(options=options, n.boot=NULL,param=param, non.param=non.param, robust=robust,
+  if( dial==T) {Resultats$sauvegarde<- dlgList(c(TRUE, FALSE), preselect=FALSE, multiple = FALSE, title="Enregistrer les resultats ?")$res
+  if(length(Resultats$sauvegarde)==0) {.ez.options(options=options, n.boot=NULL,param=param, non.param=non.param, robust=robust,
                                                    Bayes=Bayes, msg.options1=msg.options1, msg.options2=msg.options2, info=T, dial=T,
-                                                   choice=choice, backup =F, outlier=NULL,rscale=rscale)->Results
-    return(Results)}
-  }else Results$sauvegarde<-sauvegarde
+                                                   choix=choix,sauvegarde=F, outlier=NULL,rscale=rscale)->Resultats
+    return(Resultats)}
+  }else Resultats$sauvegarde<-sauvegarde
 
-  return(Results)
+  return(Resultats)
 
 }
 
@@ -452,7 +452,7 @@ VI.multiples<-function(data, X){
   try(get("ez.history", envir=.GlobalEnv),silent=T)->ez.history
   if(class(ez.history)=="try-error") {ez.history<-list()
   ez.history$Analyse[[1]]<-data
-  names(ez.history)[length(ez.history)]<-paste("analysis on",nom)
+  names(ez.history)[length(ez.history)]<-paste("analyse sur",nom)
   names(ez.history[[length(ez.history)]])[1]<-nom
   ez.history[[length(ez.history)]]$historique<-command
   }else{
@@ -460,7 +460,7 @@ VI.multiples<-function(data, X){
       ez.history[[length(ez.history)]]$historique<-rbind(ez.history[[length(ez.history)]]$historique,command)
     }else {
       ez.history$Analyse[[1]]<-data
-      names(ez.history)[length(ez.history)]<-paste("analysis on",nom)
+      names(ez.history)[length(ez.history)]<-paste("analyse sur",nom)
       names(ez.history[[length(ez.history)]])[1]<-nom
       ez.history[[length(ez.history)]]$historique<-command
     }
@@ -475,13 +475,13 @@ VI.multiples<-function(data, X){
 
 
 # cree la liste avec tous les resultats
-.add.result<-function(Results, name){
+.add.result<-function(Resultats, name){
 
   try(get("ez.results", envir=.GlobalEnv),silent=T)->ez.results
   if(class(ez.results)=="try-error") {ez.results<-list()
-  ez.results[[1]]<-Results
+  ez.results[[1]]<-Resultats
   }else{
-    ez.results[[length(ez.results)+1]]<-Results
+    ez.results[[length(ez.results)+1]]<-Resultats
   }
   names(ez.results)[length(ez.results)]<-name
   assign("ez.results",ez.results, envir=.GlobalEnv)
@@ -508,19 +508,19 @@ VI.multiples<-function(data, X){
       shapiro.test(data[,"res"])->Shapiro_Wilk # realise le Shapiro-Wilk
       lillie.test(data[,"res"])->Lilliefors  # realise le Lilliefors
       round(data.frame(Shapiro_Wilk$statistic,Shapiro_Wilk$p.value, Lilliefors$statistic, Lilliefors$p.value),4)->normalite
-      names(normalite)<-c("W by Shapiro-Wilk", "p-value SW", "D from Lilliefors", "p-value Llfrs")
+      names(normalite)<-c("W de Shapiro-Wilk", "valeur.p SW", "D de Lilliefors", "valeur.p Llfrs")
       dimnames(normalite)[1]<-" "
-#      format(normalite, width = max(sapply(names(normalite), nchar)), justify = "center")->normalite
-      n2$"Normality test"<-normalite}
+#      format(normalite, width = max(sapply(names(normalite), nchar)), justify = "centre")->normalite
+      n2$"Test de normalite"<-normalite}
 
 
     p1<-ggplot(data, aes(x=res))+geom_histogram(aes(y=..density..))
     p1<-p1+ stat_function(fun = dnorm, colour = "red",
                           args = list(mean = mean(data[,"res"], na.rm = TRUE),
                                       sd = sd(data[,"res"], na.rm = TRUE)))
-    p1<-p1+theme(plot.title = element_text(size = 12))+labs(x = "Residue distribution")
+    p1<-p1+theme(plot.title = element_text(size = 12))+labs(x = "Distribution du residu")
     #print(p1)
-    n2$"Distribution of residuees"<-p1
+    n2$"Distribution des residus"<-p1
     p2<-ggplot(data, aes(sample=res))+stat_qq()
     p2<-p2+theme(plot.title = element_text(size = 12))+ggtitle("QQplot")
     n2$"QQplot"<-p2
@@ -535,7 +535,7 @@ VI.multiples<-function(data, X){
                  "kurtosis"=mardia.results$kurtosis,"p.kurtosis"=mardia.results$p.kurt )->n2
     } else {
       msgBox("The matrix is singular and the Mardia test cannot be performed. Only univariate analyzes can be performed")
-       n2<-data.frame("W by Shapiro-Wilk"=NULL, "p-value SW"=NULL, "D from Lilliefors"=NULL, "p-value Llfrs"=NULL)
+       n2<-data.frame("W de Shapiro-Wilk"=NULL, "valeur.p SW"=NULL, "D de Lilliefors"=NULL, "valeur.p Llfrs"=NULL)
       for(i in 1:length(X)){
         X[i]->Z
         .normalite(data=data, X=Z,Y=Y)->nor1
@@ -557,7 +557,7 @@ VI.multiples<-function(data, X){
     ymax <- m+sd(x)
     return(c(y=m,ymin=ymin,ymax=ymax))
   }
-  Results<-list()
+  Resultats<-list()
   if(length(X)==1 && class(data[, X])=="factor"){X->categ
     X<-NULL} else if(any(sapply(data[,X], class)=="factor")) {
       X[which(sapply(data[,X], class)=="factor")]->categ
@@ -571,11 +571,11 @@ VI.multiples<-function(data, X){
     if(class(psych.desc)=="try-error") {
       psych::describeBy(data[,X], group=groupes2,mat=F,type=type,digits=15, check=FALSE,skew = TRUE,
                         ranges = TRUE,trim=tr)->psych.desc
-      expand.grid(sapply(groupes2, levels))->modalitys
-      for(i in 1:length(modalitys[,1])) {
-        if(is.null(psych.desc[[i]])) paste("no observations for the combination", paste(unlist(modalitys[i,]), collapse=" & "))->Results[[i]] else   psych.desc[[i]]->Results[[i]]
-        paste(unlist(modalitys[i,]), collapse=" & ")->names(Results)[i]}
-    } else psych.desc-> Results$'Variables numeriques'
+      expand.grid(sapply(groupes2, levels))->modalites
+      for(i in 1:length(modalites[,1])) {
+        if(is.null(psych.desc[[i]])) paste("no observations for the combination", paste(unlist(modalites[i,]), collapse=" & "))->Resultats[[i]] else   psych.desc[[i]]->Resultats[[i]]
+        paste(unlist(modalites[i,]), collapse=" & ")->names(Resultats)[i]}
+    } else psych.desc-> Resultats$'Variables numeriques'
 
 
 
@@ -620,20 +620,20 @@ VI.multiples<-function(data, X){
           graphiques[[j]]<<-p
         })
 
-        Results$Graphics<-graphiques
-        Results$"Graphics Information"[[1]]<-"The thickness of the graph gives the density, allowing a better understanding of the distribution."
-        Results$"Graphics Information"[[2]]<-"The red dot is the average. The error bar is the standard deviation"
+        Resultats$Graphiques<-graphiques
+        Resultats$"Informations sur les graphiques"[[1]]<-"The thickness of the graph gives the density, allowing a better understanding of the distribution."
+        Resultats$"Informations sur les graphiques"[[2]]<-"The red dot is the average. The error bar is the standard deviation"
       }
     }
 
   }
   if(!is.null(categ)) {
     for(i in 1:length(categ)) {
-      Results$'Variables categorielles'[[categ[i]]] <-ftable(data[, c(categ[i], groupes)])
+      Resultats$'Variables categorielles'[[categ[i]]] <-ftable(data[, c(categ[i], groupes)])
     }
   }
 
-  return(Results)
+  return(Resultats)
 }
 
 
@@ -649,9 +649,9 @@ ref1 <-
       }
 
     write.bib(packages, file=file.nametxt)
-    bibtex::read.bib(file.nametxt)->Results
+    bibtex::read.bib(file.nametxt)->Resultats
     file.remove(file.nametxt)
-    return(Results)
+    return(Resultats)
   }
 
 
