@@ -43,8 +43,8 @@ ez.anova<-function(data=NULL, DV=NULL, between=NULL, within=NULL,id=NULL, cov=NU
   SumS<-ez.aov.out$SumS
   nom<-ez.aov.out$nom
   save<-ez.aov.out$save
-  contrasts<-ez.aov.out$contrastes$contrastes
-  p.adjust<-ez.aov.out$contrastes$p.adjust
+  contrasts<-ez.aov.out$contrasts$contrasts
+  p.adjust<-ez.aov.out$contrasts$p.adjust
   reshape.data<-ez.aov.out$reshape.data
   list(ez.aov.out)->aov.plus.list
   
@@ -156,7 +156,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
            "Il existe plusieurs maniere de calculer la somme des carres. Le choix par defaut des logiciels commerciaux est une somme des carres\nde type 3, mettant la priorite sur les interactions plutot que sur les effets principaux.",
            "Do you want to save the results of the analysis?",
            "The dependent variable has less than three different values. Check your data or the analysis you are trying to perform is irrelevant.",
-           "Les contrastes a priori correspondent aux contrastes qui permettent de tester des hypotheses a priori.\nLes contrastes 2 a 2 permettent de faire toutes les comparaisons 2 a 2 en appliquant ou non une correction a la probabilite",
+           "Les contrasts a priori correspondent aux contrasts qui permettent de tester des hypotheses a priori.\nLes contrasts 2 a 2 permettent de faire toutes les comparaisons 2 a 2 en appliquant ou non une correction a la probabilite",
            "You can choose predefined contrasts or specify them manually. In the latter case, please choose to specify the contrasts",
            "The contrasts must respect the orthogonality. Do you want to continue ?",
            "The contracts must be matrices of coefficients placed in a list whose name of each level corresponds to a factor",
@@ -255,17 +255,17 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
   r<-r[number]   
   return(r)}
 
-.contrastes.ez<-function(data, between=NULL, within=NULL, contrasts="none", p.adjust="none", dial=T){
+.contrasts.ez<-function(data, between=NULL, within=NULL, contrasts="none", p.adjust="none", dial=T){
   options (warn=1)
   c(between, unlist(within))->betweenwithin
   if(contrasts!="none" & contrasts!="pairwise" & class(contrasts)!="list") {
     okCancelBox( .ez.anova.msg("msg", 27))
-    return(.contrastes.ez(data=data, between=between, within=within, contrasts="none", p.adjust="none", dial=T))
+    return(.contrasts.ez(data=data, between=between, within=within, contrasts="none", p.adjust="none", dial=T))
   }
   if(class(contrasts)=="list"){
     if(length(betweenwithin) != length(contrasts) | !any(betweenwithin %in% names(contrasts)) ){
       okCancelBox( .ez.anova.msg("msg", 25))
-      return(.contrastes.ez(data=data, between=between, within=within, contrasts="none", p.adjust="none", dial=T))
+      return(.contrasts.ez(data=data, between=between, within=within, contrasts="none", p.adjust="none", dial=T))
     }
     
     for(i in 1:length(betweenwithin)){
@@ -273,19 +273,19 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
       j<-which(betweenwithin[[i]]==names(contrasts))
       if(!all(class(contrasts[[j]]) %in% c("matrix", "data.frame")) || !is.numeric(as.matrix(contrasts[[j]]))){
         okCancelBox( .ez.anova.msg("msg", 24))
-        return(.contrastes.ez(data=data, between=between, within=within, contrasts="none", p.adjust="none", dial=T)) 
+        return(.contrasts.ez(data=data, between=between, within=within, contrasts="none", p.adjust="none", dial=T)) 
       }
       
       if(nrow(contrasts[[j]])!=nlevels(data[, betweenwithin[i]])| any(is.na(contrasts[[j]]))){
         okCancelBox( .ez.anova.msg("msg", 28))
-        return(.contrastes.ez(data=data, between=between, within=within, contrasts="none", p.adjust="none", dial=T)) 
+        return(.contrasts.ez(data=data, between=between, within=within, contrasts="none", p.adjust="none", dial=T)) 
       }   
     }
   }
   
   
   
-  contrastes<-list()
+  contrasts<-list()
   Resultats<-list() 
   
   if(dial){
@@ -315,8 +315,8 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
         type.cont2<- dlgList(c("Helmert", "Helmert reversed", "poly","Trait.vs.contr","Sample", "consec", "mean.change", .ez.anova.msg("title", 24)),
                              preselect=c("Helmert"), multiple = FALSE, title=paste(.ez.anova.msg("title", 23), betweenwithin[i],"?"))$res
         
-        if(length(type.cont2)==0) return(contrastes.ez())
-        contrastes[[i]]<-switch(EXPR =type.cont2,
+        if(length(type.cont2)==0) return(contrasts.ez())
+        contrasts[[i]]<-switch(EXPR =type.cont2,
                                 "Helmert"= contr.helmert(nlevels(data[,betweenwithin[i]])), 
                                 "Helmert reversed"= apply(contr.helmert(nlevels(data[,betweenwithin[i]])), 2, rev), 
                                 "poly"= emmeans:::poly.emmc(1:nlevels(data[,betweenwithin[i]])),
@@ -348,26 +348,26 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
                                            }
             if(ortho==FALSE) {
               cont<-dlgMessage(.ez.anova.msg("msg", 23), "yesno")$res
-              if(cont=="no") return(.contrastes.ez(data=data, between=between, within=within ))  }
-            contrastes[[i]]<-own.cont
+              if(cont=="no") return(.contrasts.ez(data=data, between=between, within=within ))  }
+            contrasts[[i]]<-own.cont
             
           }
           
         }
         
-        dimnames(contrastes[[i]])[[2]]<-paste("contrast", 1:(ncol(contrastes[[i]])), sep=".")
-        dimnames(contrastes[[i]])[[1]]<-levels(data[,betweenwithin[i]])
+        dimnames(contrasts[[i]])[[2]]<-paste("contrast", 1:(ncol(contrasts[[i]])), sep=".")
+        dimnames(contrasts[[i]])[[1]]<-levels(data[,betweenwithin[i]])
       }
-      names(contrastes)<-betweenwithin
-      Resultats$contrastes<-contrastes     
+      names(contrasts)<-betweenwithin
+      Resultats$contrasts<-contrasts     
       
     }else{
-      if(type.cont %in% c("Comparison 2 to 2","Pairwise", "pairwise", "none", "no"))  { Resultats$contrastes<-type.cont
-      contrastes<-type.cont}
+      if(type.cont %in% c("Comparison 2 to 2","Pairwise", "pairwise", "none", "no"))  { Resultats$contrasts<-type.cont
+      contrasts<-type.cont}
       
     }
   }else{
-    contrastes<-list()
+    contrasts<-list()
     for(i in 1:length(contrasts)){
       cont2<-contrasts[[i]]
       cont2<-as.matrix(cont2)
@@ -376,13 +376,13 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
       noms[[1]]<-levels(data[,j])
       noms[[2]]<-paste("contrast", 1:(ncol(cont2)), sep=".")
       dimnames(cont2)<-noms
-      contrastes[[i]]<-cont2 
+      contrasts[[i]]<-cont2 
     }
-    names(contrastes)<-names(contrasts)
-    Resultats$contrastes<-contrastes
+    names(contrasts)<-names(contrasts)
+    Resultats$contrasts<-contrasts
     
   }
-  if((dial & contrastes %in% c("Comparison 2 to 2","Pairwise", "pairwise")) || 
+  if((dial & contrasts %in% c("Comparison 2 to 2","Pairwise", "pairwise")) || 
      (!p.adjust %in% c("holm", "hochberg", "hommel", "bonferroni", "fdr","tukey","scheffe",
                        "sidak","dunnettx","mvt" ,"none" ))){
     list()->p.adjust
@@ -390,7 +390,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
     dlgList(c("holm", "hochberg", "hommel", "bonferroni", "fdr","tukey","scheffe",
               "sidak","dunnettx","mvt" ,"none"), preselect="holm", multiple = FALSE, title="Correction ?")$res->p.adjust
     
-    if(length(p.adjust)==0) return(contrastes.ez())
+    if(length(p.adjust)==0) return(contrasts.ez())
     
   } 
   Resultats$p.adjust<-p.adjust
@@ -630,7 +630,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
   }
 #if(any(param %in% c("Parametric model", "Parametric", "param")))  
   if(any(options.out$param %in% c("param", "Parametric model", "Parametric", "param"))){
-    contrasts<-.contrastes.ez(data=data, between=between, within=within, contrasts=contrasts, dial=dial, p.adjust=p.adjust)
+    contrasts<-.contrasts.ez(data=data, between=between, within=within, contrasts=contrasts, dial=dial, p.adjust=p.adjust)
     if(is.null(contrasts)) return(.ez.anova.in()) 
   } else contrasts<-NULL
   
@@ -648,7 +648,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
   Resultats$SumS<-options.out$SumS
   Resultats$save<-options.out$save
   Resultats$p.adjust<-p.adjust
-  Resultats$contrastes<-contrasts
+  Resultats$contrasts<-contrasts
   Resultats$reshape.data<-reshape.data
   return(Resultats)
 }

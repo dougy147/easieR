@@ -75,7 +75,7 @@ aov.plus <-
         names(emm.out)[6]<-"p-value"
        
         emm.out$contrast<-names(cont.data)[which(sapply(cont.data, class)=="numeric")]
-        Resultats$Contrates$contrastes<-emm.out
+        Resultats$Contrates$contrasts<-emm.out
         }
         ref1(packages)->Resultats$"References of the packages used for this analysis"
         .add.result(Resultats=Resultats, name =paste("Anova more", Sys.time() ))

@@ -17,24 +17,24 @@ contrasts.ez <-
       contr.poly(3)->cont.exemple$Polynomiaux
       contr.treatment(3, contrasts = TRUE, sparse = FALSE)->cont.exemple$comparaison.ligne.de.base
       print(cont.exemple)
-
+      
       for (i in 1:length(interintra)){
         if(i>1) {
-          type.cont2<- dlgList(c("orthogonal", "inverse orthogonal", "polynomials","comparison to a baseline", "specify the contrasts"),
+          type.cont2<- dlgList(c("orthogonal", "inverse orthogonal", "polynomials","comparison to a baseline", "specify the contrasts"), 
                                preselect=c("orthogonal"), multiple = FALSE, title=paste("What contrasts for the variable",names(longdata[interintra])[i],"?"))$res} else {
-                                 type.cont2<- dlgList(c("orthogonal", "inverse orthogonal", "polynomials","comparison to a baseline",
-                                                        "specify the contrasts"),preselect=c("orthogonal"), multiple = FALSE, title=paste("What contrasts for the variable",names(longdata[interintra])[i],"?"))$res
+                                 type.cont2<- dlgList(c("orthogonal", "inverse orthogonal", "polynomials","comparison to a baseline", 
+                                                        "specify the contrasts"),preselect=c("orthogonal"), multiple = FALSE, title=paste("What contrasts for the variable",names(longdata[interintra])[i],"?"))$res                      
                                }
-        if(length(type.cont2)==0) return(contrasts.ez())
+        if(length(type.cont2)==0) return(contrasts.ez()) 
         if(type.cont2=="orthogonal") contr.helmert(nlevels(longdata[,interintra[i]]))->contrasts[[i]]
         if(type.cont2=="inverse orthogonal") apply(contr.helmert(nlevels(longdata[,interintra[i]])), 2, rev)->contrasts[[i]]
         if(type.cont2=="polynomials")  contr.poly(nlevels(longdata[,interintra[i]]))->contrasts[[i]]
-        if(type.cont2=="comparison to a baseline") {
+        if(type.cont2=="comparison to a baseline") { 
           base<- dlgList(levels(longdata[, interintra[i]]), preselect=levels(longdata[,interintra[i]])[1],
                          multiple = FALSE, title="What is the baseline?")$res
           which(levels(longdata[, interintra[i]])==base)->base
           contr.treatment(levels(longdata[, interintra[i]]), base = base, contrasts = TRUE, sparse = FALSE)->contrasts[[i]]
-        }
+        } 
         if(type.cont2=="specify the contrasts"){
           ortho<-FALSE
           while(ortho!=TRUE){
@@ -49,16 +49,16 @@ contrasts.ez <-
             if(ortho==FALSE) {dlgMessage("The contrasts must respect the orthogonality. Do you want to continue ?", "yesno")$res->cont
               if(cont=="no") return(contrasts.ez(longdata=longdata, inter=inter, intra=intra ))  }
             contrasts[[i]]<-contrasts3
-
+            
           }
-
+          
         }
-
+        
         dimnames(contrasts[[i]])[[2]]<-paste("contrast", 1:(nlevels(longdata[,interintra[i]])-1), sep=".")
       }
       names(contrasts)<-interintra
       Resultats$contrasts<-contrasts
-
+      
     }
     if(type.cont== "Comparison 2 to 2"){
       list()->p.adjust

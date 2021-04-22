@@ -23,17 +23,25 @@ do sed -i "s/$fr/$anglais/g" $file;
 done;
 done < a_traduire
 
-# Faire la recherche avec les guillemets ' ' :
+# Faire la recherche en remplaçant "contraste" par "contrast" sans les guillemets :
 while read line;
 do echo "test";
-lire_ligne_fichier1 ;
-fr=$(echo $fr | sed `s/\"/\'/g`) ;
-lire_ligne_fichier2 ;
-anglais=$(echo $anglais | sed `s/\"/\'/g`) ;
 for file in /home/luc/documents/easieR/R/*;
-do sed -i "s/$fr/$anglais/g" $file;
+do sed -i "s/contraste/contrast/g" $file;
 done;
 done < a_traduire
+
+# Faire la recherche avec les guillemets ' ' :
+#while read line;
+#do echo "test";
+#lire_ligne_fichier1 ;
+#fr=$(echo $fr | sed `s/\"/\'/g`) ;
+#lire_ligne_fichier2 ;
+#anglais=$(echo $anglais | sed `s/\"/\'/g`) ;
+#for file in /home/luc/documents/easieR/R/*;
+#do sed -i "s/$fr/$anglais/g" $file;
+#done;
+#done < a_traduire
 
 
 
