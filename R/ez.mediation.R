@@ -1,7 +1,7 @@
 ez.mediation <-
   function(info=T, html=T){
     options (warn=-1) 
-    mediation.effect.bar.plot2 <-function (x, mediator, dv, main = "Mediation Sampleect Bar Plot", 
+    mediation.effect.bar.plot2 <-function (x, mediator, dv, main = "Mediation Effect Bar Plot", 
                                            width = 1, left.text.adj = 0, right.text.adj = 0, rounding = 3, 
                                            file = "", save.pdf = FALSE, save.eps = FALSE, save.jpg = FALSE){
       Mediation.Results <- MBESS::mediation(x = x, mediator = mediator, 
@@ -117,11 +117,11 @@ ez.mediation <-
     c("boot", "MBESS","QuantPsyc", "svDialogs")->packages
     try(lapply(packages, library, character.only=T), silent=T)->test2
     if(class(test2)== "try-error") return(ez.install())
-    Results<-list()
+    Resultats<-list()
     dlgList(c("Simple mediation effects", 
-              "Distant mediation effect"), preselect=NULL, multiple = FALSE, title="What type of mediation?")$res->choice
-    if(length(choice)==0) return(analyse())
-    choice.data(nom=T)->data
+              "Distant mediation effect"), preselect=NULL, multiple = FALSE, title="What type of mediation?")$res->choix
+    if(length(choix)==0) return(analyse())
+    choix.data(nom=T)->data
     if(is.null(data)) return(ez.mediation())
     data[[1]]->nom
     data[[2]]->data
@@ -138,7 +138,7 @@ ez.mediation <-
     if(length(Mediator)==0) return(ez.mediation())
     subset(listes, listes[,1] %in% Mediator)[,2]->Mediator
     as.character(Mediator)->Mediator
-    if(choice=="Distant mediation effect"){
+    if(choix=="Distant mediation effect"){
       writeLines("please specify the second mediator.")
       Mediator2<-dlgList(c(paste(names(data), "(format :", sapply(data, class), ")", sep=" ")), multiple = F, title="Mediator 2")$res
       if(length(Mediator2)==0) return(ez.mediation())
@@ -159,39 +159,39 @@ ez.mediation <-
     as.numeric(n.boot)->n.boot
     if(!is.na(n.boot) && any(n.boot>50)) bootstrap<-TRUE else bootstrap<-FALSE
     
-    if(choice=="Simple mediation effects"){
+    if(choix=="Simple mediation effects"){
       MBESS::mediation(data[,X], data[,Mediator], data[,VD], conf.level = 0.95, bootstrap = bootstrap, B = n.boot, which.boot="both", save.bs.replicates=TRUE, complete.set=TRUE)->mediation.out
       for(i in 1:length(mediation.out)){
         if(class(mediation.out[[i]])== "list") for(j in 1 : length(mediation.out[[i]])){
           round(mediation.out[[i]][[j]], 4)->mediation.out[[i]][[j]]} else {
             round(mediation.out[[i]], 4)->mediation.out[[i]]}
       }  
-      Results$Analyse.mediation<-mediation.out
-      Results$Information<-"For a detailed description of the results,? Mediation"
-      mediation.effect.bar.plot2(data[,X], data[,Mediator], data[,VD],main = "Mediation Sampleect Bar Plot", width = 1, left.text.adj = 0,right.text.adj = 0, rounding = 3, file = "", save.pdf = FALSE,save.eps = FALSE, save.jpg = FALSE)
+      Resultats$Analyse.mediation<-mediation.out
+      Resultats$Information<-"For a detailed description of the results,? Mediation"
+      mediation.effect.bar.plot2(data[,X], data[,Mediator], data[,VD],main = "Mediation Effect Bar Plot", width = 1, left.text.adj = 0,right.text.adj = 0, rounding = 3, file = "", save.pdf = FALSE,save.eps = FALSE, save.jpg = FALSE)
     }else { data2<-data[,c(X, Mediator, Mediator2, VD)]
     names(data2)<-c("x", "m1","m2","y")
     distal.med(data2)->results
     data.frame(results)->results
-    round(as.numeric(as.character(results$Sampleect)),4)->results$Sampleect
+    round(as.numeric(as.character(results$Effect)),4)->results$Effect
     round(as.numeric(as.character(results$SE)),4)->results$SE
     round(as.numeric(as.character(results[,3])),3)->results$t.ratio
     round(as.numeric(as.character(results$Med.Ratio)),4)->results$Med.Ratio 
-    names(results)<-c("Sampleect", "Error.st","test.t", "Ratio.med")
-    results->Results$"Remote mediation"
-    Results$Information<-"For a detailed description of the results,? Distal.med"
+    names(results)<-c("Effect", "Error.st","test.t", "Ratio.med")
+    results->Resultats$"Remote mediation"
+    Resultats$Information<-"For a detailed description of the results,? Distal.med"
     distmed.boot <- boot(data2, distInd.ef, R=n.boot)
     boot.ci(distmed.boot, conf=.95, type=c("basic","perc", "norm"))->IC.boot
     round(matrix(c(IC.boot$normal[,2:3],IC.boot$basic[,4:5],IC.boot$percent[,4:5]), ncol=2 ),4)->IC.boot
     dimnames(IC.boot)[[1]]<-c("normal","basic","percentile")
     dimnames(IC.boot)[[2]]<-c("limit.inf","limit.sup")
-    IC.boot->Results$"Confidence interval estimated by bootstrap"}
+    IC.boot->Resultats$"Confidence interval estimated by bootstrap"}
     
     dlgList(c("TRUE","FALSE"), preselect="FALSE", multiple = FALSE, title="do you want to save?")$res->sauvegarde
     if(length(sauvegarde)==0) sauvegarde<-FALSE  
-    if(sauvegarde) save(Results=Results, choice=choice, env=.e)
-    ref1(packages)->Results$"References" 
-    if(html) ez.html(Results)
-    return(Results)  
+    if(sauvegarde) save(Resultats=Resultats, choix=choix, env=.e)
+    ref1(packages)->Resultats$"References" 
+    if(html) ez.html(Resultats)
+    return(Resultats)  
     
   }

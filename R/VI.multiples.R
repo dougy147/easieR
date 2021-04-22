@@ -1,6 +1,6 @@
 VI.multiples <-
   function(data){ require("pych") 
-    Results<-list()
+    Resultats<-list()
     nvar<-length(data)
     try(psych::outlier(data, bad=T, na.rm=T,plot=T),silent=T)->essai
     if(class(essai)=="try-error"){
@@ -46,21 +46,21 @@ VI.multiples <-
     
     
     if(pourcent!=0){
-      writeLines("Supprimer l'ensemble des outliers supprime l'ensemble des values au-dela p(chi.deux)< 0.001.   
+      writeLines("Supprimer l'ensemble des outliers supprime l'ensemble des valeurs au-dela p(chi.deux)< 0.001.   
                  Supprimer une observation a la fois permet de faire une analyse detaillee de chaque observation  
-                 consideree comme influente en partant de la value la plus extreme. La procedure s'arrete  
-                 quand plus any observation n'est consideree comme influente")  
+                 consideree comme influente en partant de la valeur la plus extreme. La procedure s'arrete  
+                 quand plus aucune observation n'est consideree comme influente")  
       
       suppr<- dlgList(c("Removal of all outliers", "Manual removal"), 
                       preselect=c("Removal of all outliers"), multiple = FALSE, title="How do you want to remove them?")$res
       if(length(suppr)==0) return(NULL)
       if(suppr=="Removal of all outliers") {data[which(data$D.Mahalanobis<seuil),]->data 
-        outliers->Results$"Values considered influential"}else{
+        outliers->Resultats$"Values considered influential"}else{
           suppression<-"yes"
           outliers<-data.frame()
           while(suppression=="yes"){
             print(data[which.max(data$D.Mahalanobis),])
-            cat ("Appuyez [Betweene] pour continuer")
+            cat ("Appuyez [entree] pour continuer")
             line <- readline()
             dlgMessage("Do you want to delete this observation?", "yesno")$res->suppression
             if(suppression=="yes") {rbind(outliers, data[which.max(data$D.Mahalanobis),])->outliers
@@ -68,9 +68,9 @@ VI.multiples <-
               
             }
           }
-          Results$"Values considered influential"<-outliers
+          Resultats$"Values considered influential"<-outliers
         }
     }
-    Results$data<-data
-    return(Results)
+    Resultats$data<-data
+    return(Resultats)
   }

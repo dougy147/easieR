@@ -13,7 +13,7 @@ teaching <-
     try(lapply(packages, library, character.only=T), silent=T)->test2
     if(class(test2)== "try-error") return(ez.install())
     
-    choice <- dlgList(c("Understanding a confidence interval", "Understanding alpha and potency",
+    choix <- dlgList(c("Understanding a confidence interval", "Understanding alpha and potency",
                        "Understanding the correlation",
                        "Understanding the central limit theorem","Understanding a correlation 2",
                        "Understand prevalence, susceptibility and specificity",
@@ -22,9 +22,9 @@ teaching <-
                        "Understanding a Bayesian inference",
                        "Understanding maximum likelihood",
                        "Understanding the effects of heterogeneous variances"), preselect=NULL, multiple = FALSE, title="What do you want ?")$res
-    if(length(choice)==0) return(easieR())
+    if(length(choix)==0) return(easieR())
     
-    switch(choice, 
+    switch(choix, 
            "Understanding a confidence interval"=ci.examp(), # peut etre completer par des arguments
            "Understanding the central limit theorem"=tcl(),
            "Understand prevalence, susceptibility and specificity"= plotFagan2(),
@@ -33,8 +33,8 @@ teaching <-
            "Understanding alpha and potency"=run.power.examp(hscale=1.5, vscale=1.5, wait=FALSE), 
            "Understanding the correlation" = put.points.demo(),
            "Understanding the effects of heterogeneous variances"={
-             writeLines("Avec deux mediumnes egales, ou pratiquement egales, le taux d'errors doit etre de 5%.
-                        Modifiez progressivement l'ecart Between les ecart-types et voyez comment le taux d'error alpha va etre modifie")
+             writeLines("Avec deux moyennes egales, ou pratiquement egales, le taux d'erreurs doit etre de 5%.
+                        Modifiez progressivement l'ecart entre les ecart-types et voyez comment le taux d'erreur alpha va etre modifie")
              run.Pvalue.norm.sim()
            },
            "Understand prevalence, susceptibility and specificity 2"= roc.demo(),
@@ -52,7 +52,7 @@ teaching <-
            
            
     )
-    ref1(packages)->Results
-    return(Results)
+    ref1(packages)->Resultats
+    return(Resultats)
     
            }

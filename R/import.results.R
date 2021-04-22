@@ -9,6 +9,6 @@ function(){
     }
   if(class(fichier)=="try-error") return(donnees())
   openFileInOS(fichier)
-    Results<-paste("The results were correctly imported into", fichier)
-  return(Results)
+    Resultats<-paste("The results were correctly imported into", fichier)
+  return(Resultats)
 }

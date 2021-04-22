@@ -1,16 +1,16 @@
-choice.reg <-
+choix.reg <-
   function(html=T){
     try(library(svDialogs), silent=T)->test2
     if(class(test2)== "try-error") return(ez.install())
     
     dlgList(c("Regressions", 
               "Mediation effects", 
-              "Logistics regressions"), preselect="Regressions", multiple = FALSE, title="What kind of regression?")$res->choice
-    if(length(choice)==0) return(analyse())
-    if(choice=="Regressions") regressions(html=html)->Results
-    if(choice=="Mediation effects") ez.mediation(html=html)->Results
-    if(choice=="Logistics regressions") regressions.log(html=html)->Results
-    return(Results)
+              "Logistics regressions"), preselect="Regressions", multiple = FALSE, title="What kind of regression?")$res->choix
+    if(length(choix)==0) return(analyse())
+    if(choix=="Regressions") regressions(html=html)->Resultats
+    if(choix=="Mediation effects") ez.mediation(html=html)->Resultats
+    if(choix=="Logistics regressions") regressions.log(html=html)->Resultats
+    return(Resultats)
     
   }
 

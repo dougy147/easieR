@@ -29,22 +29,22 @@ ez.html <-
     
     outputb<-c(outputb,a, im,round)
     
-    to.html<-function(Results, X=1){
+    to.html<-function(Resultats, X=1){
       listes<-list()
       output<-c()
-      for(i in 1:length(Results)){
+      for(i in 1:length(Resultats)){
         
-        if(length(Results[[i]])!=0){
-          names(Results)[[i]]->titres
+        if(length(Resultats[[i]])!=0){
+          names(Resultats)[[i]]->titres
           level<-paste0(rep("#", times=X+1), collapse="")
           output<-c(output, " ",paste(level, titres) , " ") 
           
-          if(any(class(Results[[i]])=="chr")|any(class(Results[[i]])=="character")) {
-            output<-c(output, Results[[i]])
+          if(any(class(Resultats[[i]])=="chr")|any(class(Resultats[[i]])=="character")) {
+            output<-c(output, Resultats[[i]])
           }
           
-          if(any(class(Results[[i]])=="bibentry")) {
-            listes[[length(listes)+1]]<-Results[[i]]
+          if(any(class(Resultats[[i]])=="bibentry")) {
+            listes[[length(listes)+1]]<-Resultats[[i]]
             essai<-c("```{r, echo=F, results='asis'}","i<-i+1",
                      "invisible(write.bib(data.results[[i]], file='references'))",
                      "bibtex::read.bib('references.bib')",
@@ -52,8 +52,8 @@ ez.html <-
             
             output<-c(output, essai)
           }        
-          if(any(class(Results[[i]])%in%c("ggplot","arrangelist"))) {
-            essai<-Results[[i]]
+          if(any(class(Resultats[[i]])%in%c("ggplot","arrangelist"))) {
+            essai<-Resultats[[i]]
             if(Sys.info()[[1]]=="Windows"){
               dire<-dir(paste0(tempdir(), "\\easieR\\"))
               if(any(str_detect(dire, "ezplot"))) {
@@ -78,15 +78,15 @@ ez.html <-
             }
             
           }
-          if(any(class(Results[[i]])=="numeric") ) {
-            if(length(Results[[i]])==1) {
-              output<-c(output, Results[[i]])
+          if(any(class(Resultats[[i]])=="numeric") ) {
+            if(length(Resultats[[i]])==1) {
+              output<-c(output, Resultats[[i]])
             }else{
               
-              round(matrix(Results[[i]],nrow=1),4)->essai
+              round(matrix(Resultats[[i]],nrow=1),4)->essai
               essai<-data.frame(essai)
 
-              names(essai)<-names(Results[[i]])
+              names(essai)<-names(Resultats[[i]])
               listes[[length(listes)+1]]<-essai
               
               essai<-c("```{r, echo=F, results='asis'}", 
@@ -98,8 +98,8 @@ ez.html <-
                        "col <-which (grepl ('value.p', names (array)) | grepl ('p.value', names (array)))",
                        "if(length(col)>1) {is<-unique(unlist(apply(tableau[,col], 2,myf )))+1",
                        "tableau[,col]<-apply(tableau[,col], 2, round.ps) }else{",
-                       "is<-which(tableau[, which(grepl('p-value', names(tableau)))]<0.05)", "is<-is+1",
-                       "tableau[, which(grepl('p-value', names(tableau))|grepl('p.value', names(tableau)))]<-round.ps(tableau[,  which(grepl('p-value', names(tableau))|grepl('p.value', names(tableau)))])}}",
+                       "is<-which(tableau[, which(grepl('valeur.p', names(tableau)))]<0.05)", "is<-is+1",
+                       "tableau[, which(grepl('valeur.p', names(tableau))|grepl('p.value', names(tableau)))]<-round.ps(tableau[,  which(grepl('valeur.p', names(tableau))|grepl('p.value', names(tableau)))])}}",
                        " ht <- as_hux(tableau,  add_colnames = TRUE)",
                        "number_format(ht) <- list(function(x) prettyNum(x, big.mark = ' ', scientific = FALSE) )",
                        "bottom_border(ht)[1,]<-1",
@@ -118,9 +118,9 @@ ez.html <-
             }
           }
           
-          if(any(class(Results[[i]])=="matrix") | any(class(Results[[i]])=="table") |  any(class(Results[[i]])=="data.frame")|  any(class(Results[[i]])=="ftable")) {
+          if(any(class(Resultats[[i]])=="matrix") | any(class(Resultats[[i]])=="table") |  any(class(Resultats[[i]])=="data.frame")|  any(class(Resultats[[i]])=="ftable")) {
             
-            essai<-Results[[i]]
+            essai<-Resultats[[i]]
             if(any(class(essai)=="ftable")) {
               if(length(attributes(essai[[1]])$row.vars)!=0 & length(attributes(essai[[1]])$col.vars)!=0) {
                 essai<-dcast(as.data.frame(essai), as.formula(paste(paste(names(attr(essai, 'row.vars')), collapse='+'), '~', paste(names(attr(essai, 'col.vars'))))))
@@ -139,8 +139,8 @@ ez.html <-
                      "col <-which (grepl ('value.p', names (array)) | grepl ('p.value', names (array)))",
                      "if(length(col)>1) {is<-unique(unlist(apply(tableau[,col], 2,myf )))+1",
                      "tableau[,col]<-apply(tableau[,col], 2, round.ps) }else{",
-                     "is<-which(tableau[, which(grepl('p-value', names(tableau)))]<0.05)", "is<-is+1",
-                     "tableau[, which(grepl('p-value', names(tableau))|grepl('p.value', names(tableau)))]<-round.ps(tableau[,  which(grepl('p-value', names(tableau))|grepl('p.value', names(tableau)))])}}",
+                     "is<-which(tableau[, which(grepl('valeur.p', names(tableau)))]<0.05)", "is<-is+1",
+                     "tableau[, which(grepl('valeur.p', names(tableau))|grepl('p.value', names(tableau)))]<-round.ps(tableau[,  which(grepl('valeur.p', names(tableau))|grepl('p.value', names(tableau)))])}}",
                      " ht <- as_hux(tableau,  add_colnames = TRUE)",
                      "number_format(ht) <- list(function(x) prettyNum(x, big.mark = ' ', scientific = FALSE) )",
                      "bottom_border(ht)[1,]<-1",
@@ -159,8 +159,8 @@ ez.html <-
           
          
           
-          if(any(class(Results[[i]])=="list") ){
-            Results[[i]]->Y
+          if(any(class(Resultats[[i]])=="list") ){
+            Resultats[[i]]->Y
             output2<-to.html(Y, X=X+1)
             listes<-c(listes, output2$listes)
             output<-c(output, output2$output)
@@ -172,7 +172,7 @@ ez.html <-
       tot$listes<-listes
       return(tot)
     }
-    output2<-to.html(Results=ez.results)
+    output2<-to.html(Resultats=ez.results)
     listes<-c(output2$listes)
     
     

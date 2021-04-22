@@ -23,16 +23,16 @@ do sed -i "s/$fr/$anglais/g" $file;
 done;
 done < a_traduire
 
-ligne_fichier1=1
-ligne_fichier2=1
+#ligne_fichier1=1
+#ligne_fichier2=1
 
-while read line;
-do echo "test";
-lire_ligne_fichier1 ;
-fr=$(echo $fr | sed 's/\"//g') ;
-lire_ligne_fichier2 ;
-anglais=$(echo $anglais | sed 's/\"//g') ;
-for file in /home/luc/documents/easieR/R/*;
-do sed -i "s/$fr/$anglais/g" $file;
-done;
-done < a_traduire
+#while read line;
+#do echo "test";
+#lire_ligne_fichier1 ;
+#fr=$(echo $fr | sed 's/\"//g') ;
+#lire_ligne_fichier2 ;
+#anglais=$(echo $anglais | sed 's/\"//g') ;
+#for file in /home/luc/documents/easieR/R/*;
+#do sed -i "s/$fr/$anglais/g" $file;
+#done;
+#done < a_traduire
