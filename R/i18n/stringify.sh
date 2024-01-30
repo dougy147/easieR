@@ -7,4 +7,4 @@ DEST="${base}_i18n.R"
 #echo $DEST
 
 grep -Eo '\"[^"]*\"' $SOURCE | sort | uniq > "$(pwd)/$DEST"
-#echo $(pwd)
+#grep -Eo '\"[^"]*\"' $SOURCE | uniq > "$(pwd)/$DEST"
