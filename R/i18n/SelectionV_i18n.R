@@ -1,0 +1,6 @@
+"autres donnees"
+"donnees que vous venez de selectionner"
+"les variables selectionnees sont dans"
+"Quelles sont les variables a selectionner ?"
+"Quel nom voulez-vous donner au fichier?"
+"Variable"

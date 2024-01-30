@@ -1,0 +1,7 @@
+"autres donnees"
+"de tri"
+"les donnees ont ete triees correctement "
+"order"
+"Variable(s)"
+"Veuillez choisir le niveau"
+"Veuillez selectionner la (les) variable(s) a trier"
