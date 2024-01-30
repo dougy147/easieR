@@ -2,7 +2,7 @@
 
 # ./translatify.sh transation_file
 
-for file in ../*; do
+for file in *; do
 	SOURCE=$file;
 	base=$(echo "${SOURCE%.*}" | sed "s/.*\///");
 	DEST="../$(echo ${base} | sed "s/_i18n//").R";
