@@ -40,7 +40,6 @@ txt_bayesian_factors_for_BP <- "Facteurs Bayesiens pour la correlation de Bravai
 txt_bayesian_factors_for_spearman <- "Facteurs Bayesiens pour la correlation de Spearman"
 txt_bayesian_factors_sequential <- "Facteurs bayesiens sequentiels"
 txt_identifying_outliers <- "Identification des valeurs influentes"
-txt_cleaned <- "nettoyees"
 txt_no <- "non"
 txt_outliers <- "observations influentes"
 txt_yes <- "oui"
