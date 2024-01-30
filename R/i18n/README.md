@@ -4,7 +4,7 @@ Internationalization is the process of facilitating the use of another language 
 
 To facilitate the translation of `easieR`, files in this folder are related to scripts in the parent folder (same name, appended with `_i18n`).
 
-To avoid collision with current or future variables in the scripts, language variables have unique name identifiers.
+To avoid collision with current or future variables in the scripts, language variables have unique name identifiers. They act like placeholders in easieR code, and point to a string to be displayed in the corresponding dictionnary.
 
 # Interactive : Addressed to user (asking, pointing, etc.)
 # Descriptive : Descriptive text (title, window name, etc.)
