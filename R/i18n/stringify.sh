@@ -1,8 +1,10 @@
 #!/bin/sh
 
-SOURCE=$(readlink -f "$1")
-base="${SOURCE%.*}"
-ext="${SOURCE##*.}"
-DEST="${ext}_i18n.R"
+SOURCE=$1
+base=$(echo "${SOURCE%.*}" | sed "s/.*\///")
+#ext="${SOURCE##*.}"
+DEST="${base}_i18n.R"
+#echo $DEST
 
-grep -Eo '\"[^"]*\"' $SOURCE | sort | uniq > "./$DEST"
+grep -Eo '\"[^"]*\"' $SOURCE | sort | uniq > "$(pwd)/$DEST"
+#echo $(pwd)
