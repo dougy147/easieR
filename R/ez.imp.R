@@ -1,11 +1,11 @@
 ez.imp <-
   function(data=NULL, imp="median", ord=NULL, id=NULL, noms=NULL, info=T){
-    # data : data.frame 
+    # data : data.frame
     # imp : one among "rm", "mean", "median", "amelia"
     # ord : if imp is amelia, names of ordinal variables
     # id : if imp is amelia, names of id variables
     # noms : if imp is amelia, names of nominal variables
-    
+
     packages<-c("Amelia",  "svDialogs")
     try(lapply(packages, library, character.only=T), silent=T)->test2
     if(class(test2)== "try-error") return(ez.install())
@@ -18,14 +18,14 @@ ez.imp <-
     } else {dial<-F
     deparse(substitute(data))->nom  }
     nom<-paste0(nom,".complet")
-    
+
     if(dial || imp%in% c("Ne rien faire - Garder l'ensemble des observations", "Suppression des observations avec valeurs manquantes", "Remplacer par la moyenne",
                          "Remplacer par la mediane","Multiple imputation - Amelia","rien","rm", "mean","median", "amelia") == FALSE){
       writeLines("Nombre de valeurs manquantes par variable. Comment voulez-vous les traiter ?")
       print(sapply(data, function(x) sum(length(which(is.na(x))))) )
-      
+
       imp<- dlgList(c("Ne rien faire - Garder l'ensemble des observations", "Suppression des observations avec valeurs manquantes", "Remplacer par la moyenne",
-                      "Remplacer par la mediane","Multiple imputation - Amelia"), preselect=FALSE, multiple = TRUE, title="Traitement des valeurs manquantes")$res
+                      "Remplacer par la mediane","Multiple imputation - Amelia"), preselect=FALSE, multiple = FALSE, title="Traitement des valeurs manquantes")$res
       if(length(imp)==0){
         return(NULL)
       }
@@ -55,7 +55,7 @@ ez.imp <-
              parallel = c("no", "multicore", "snow"),
              ncpus = getOption("amelia.ncpus", 1L), cl = NULL)->data.am
       data.am$imputations$imp1->data
-      
+
       if(dial)  assign(nom, data, envir=.GlobalEnv)
     }
     return(data)
