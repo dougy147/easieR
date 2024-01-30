@@ -1,7 +1,7 @@
 analyse <-
   function(html=T){options (warn=-1)
     require(svDialogs)
-    dlgList(c("Statistiques descriptives","chi deux","correlations", 
+    dlgList(c("Statistiques descriptives","chi deux","correlations",
               "t de Student", "analyse de variance et covariance",
               "regressions",
               "analyses de facteurs et de composantes",
@@ -12,13 +12,13 @@ analyse <-
     if(choix=="analyse de variance et covariance") {
       Filter( function(x) 'aovplus' %in% class( get(x) ), ls(envir=.GlobalEnv))->nom1
       if(length(nom1)==0) ez.anova(html=html)->Resultats else {html=html
-        dlgList(c("Analyse principale", 
-                  "Resultats complementaires (e.g. contrastes d'interaction et moyennes ajustees)"), 
+        dlgList(c("Analyse principale",
+                  "Resultats complementaires (e.g. contrastes d'interaction et moyennes ajustees)"),
                 preselect=NULL, multiple = FALSE, title="Quelle analyse voulez-vous realiser?")$res->choix
         if(choix== "Analyse principale") ez.anova(html=html)->Resultats else aov.plus(html=html)->Resultats
-        
+
       }
-      
+
     }
     if(choix=="correlations") choix.corr(html=html)->Resultats
     if(choix=="regressions") choix.reg(html=html)->Resultats
