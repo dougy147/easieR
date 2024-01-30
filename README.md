@@ -20,22 +20,34 @@ Most functions works quite well, and many new functions will be developed soon b
 
 easieR can be used either by the GUI and in command lines. For now, easieR is not a package available on CRAN. Thus, it requires  to follow several steps for the installation. 
 
+**Step 0** : (Linux only) install easieR and *devtools* prerequisites
 
-**Step 1** : open R and install *devtools* d. 
+For Linux users, ensure to have `tcl`, `tk` and `glpk` installed on your system. Refer to your distribution packages repositories to install them.
+
+**Step 1** : open R and install *devtools*. 
 
 ```{r eval=FALSE}
 install.packages("devtools",dependencies = TRUE, repos = "https://mirror.ibcp.fr/pub/CRAN")
 ```
 
+For Linux users, `stringi` must be installed to ensure proper `devtools` install.
 
-Now, the package « devtools » is installad. You must load it with the function  <code>library</code>. Once the package loaded, you can use it during all the session without have to load it anew. To load "devtools", you must use the command:
+```{r eval=FALSE}
+install.packages("stringi", repos = "https://mirror.ibcp.fr/pub/CRAN")
+```
+
+Now, the package « devtools » is installed. You must load it with the function  <code>library</code>. Once the package loaded, you can use it during all the session without have to load it anew. To load "devtools", you must use the command:
 
 ```{r}
 library(devtools)
 ```
 
 If an error message occurs in the console, the package is not correctly installed. Try to close R, open R, and the following command line:
+
+```{r echo=F}
+# If loading devtools failed:
 install.packages("devtools",dependencies = TRUE, type="binary", repos = "https://mirror.ibcp.fr/pub/CRAN")
+```
 
 If the package is correctly installed, a message should be printed in the console:
 
@@ -44,6 +56,14 @@ print("##Le chargement a nécessité le package : devtools")
 ```
 
 It is also possible that nothing is printed. Do not worry.
+
+For Linux users, if the `stringi` package causes trouble during `devtools` installation, then install it first before trying installing `devtools` again as follows:
+
+```{r eval=FALSE}
+install.packages("stringi", repos = "https://mirror.ibcp.fr/pub/CRAN")
+install.packages("devtools",dependencies = TRUE, repos = "https://mirror.ibcp.fr/pub/CRAN")
+```
+
 
 **Step 2**: the installation of easieR
 
@@ -93,10 +113,14 @@ I try to correct bug as quickly as possible. Moreover, I wan to add some new fun
 devtools::install_github("nicolasstefaniak/easier", type="binary", dependencies=F)
 ```
 
-# Version français 
+# Version français
 
 
 easieR est un package qui peut être utilisé en boîte de dialogue (GUI) ou en ligne de commande. Ce document expliquera comment l'utiliser d'une manière ou d'une autre. Cependant, pour le moment, easieR n'est pas un package disponible sur le CRAN. Il est donc nécessaire de passer par quelques étapes intermédiaires. Pour s'assurer d'une installation correcte de easieR, il faut suivre **les étapes suivantes**.  
+
+**Étape 0** : (Linux uniquement) installer les pré-requis à easieR et *devtools*
+
+Pour les utilisateurs Linux, assurez-vous que les paquets suivants soient installés sur votre système : `tcl`, `tk` et `glpk`. Référez-vous au gestionnaire de paquets de votre distribution.
 
 **Etape 1** : tout d'abord, il faut  ouvrir R et installer le package *devtools* de la manière suivante. 
 
@@ -104,6 +128,11 @@ easieR est un package qui peut être utilisé en boîte de dialogue (GUI) ou en 
 install.packages("devtools",dependencies = TRUE, repos = "https://mirror.ibcp.fr/pub/CRAN")
 ```
 
+Pour les utilisateurs Linux, si le paquet `stringi` pose problème lors de l'installation de `devtools`, installez-le indépendemment puis relancer l'installation de `devtools` comme suit:
+```{r eval=FALSE}
+install.packages("stringi", repos = "https://mirror.ibcp.fr/pub/CRAN")
+install.packages("devtools",dependencies = TRUE, repos = "https://mirror.ibcp.fr/pub/CRAN")
+```
 
 Normalement, le package « devtools » est à présent installé. Il faut le charger. Pour charger un package, on utilise la fonction <code>library</code>. Une fois que le package est chargé, vous pouvez l’utiliser pendant toute la durée de la session sans devoir le charger à nouveau. Donc, pour charger le package *devtools*, il faut taper :
 
