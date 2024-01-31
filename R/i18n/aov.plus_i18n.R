@@ -8,9 +8,9 @@ ask_correction_type <- "Type de correction ?"
 ask_specify_contrasts <- "Veuillez spécifier les contrastes."
 
 desc_user_exited_aov_plus <- "vous avez quitte aov.plus"
-desc_used_packages_refs <- "References des packages utilises pour cette analyse"
+desc_references <- "References des packages utilises pour cette analyse"
 
-txt_complete_data <- "Donnees completes"
+txt_complete_dataset <- "Donnees completes"
 txt_means_adjusted_standard_errors <- "moyennes et erreurs-types ajustees"
 txt_contrasts <- "contrastes"
 txt_adjusted_means_graph <- "Moyennes ajustee-Graphique"

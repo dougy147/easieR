@@ -6,7 +6,7 @@ desc_unavailable_distal_mediations <- "Les mediations distales ne sont pas dispo
 txt_mediator <- "Mediateur"
 txt_mediator2 <- "Mediateur 2"
 txt_distance_mediator <- "Mediation a distance"
-ask_bootstrap_number <- "Nombre de bootstrap ?"
+ask_bootstraps_number <- "Nombre de bootstrap ?"
 desc_only_one_file_format_at_time_EPS_JPG <- "Only one file format for saving figure may be used at a time (you have both EPS and JPG specified)."
 desc_only_one_file_format_at_time_EPS_PDF <- "Only one file format for saving figure may be used at a time (you have both PDF and EPS specified)."
 desc_only_one_file_format_at_time_PDF_JPG <- "Only one file format for saving figure may be used at a time (you have both PDF and JPG specified)."

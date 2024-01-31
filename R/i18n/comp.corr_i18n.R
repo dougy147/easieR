@@ -1,5 +1,5 @@
 txt_correlations_comparison <- "comparaison de correlations"
-txt_two_correlations_comparison <- "Comparaison de deux correlations"
+txt_compare_two_correlations <- "Comparaison de deux correlations"
 txt_comparisons_XY <- "comparaison des correlations XY="
 txt_comparison_of_two_correlations <- "comparaison des deux correlations"
 txt_XY_correlation <- "Correlation entre XY"

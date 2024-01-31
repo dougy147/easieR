@@ -10,4 +10,4 @@ txt_student_t <- "t de Student"
 txt_logistic_regressions <- "regressions logistiques"
 txt_complementary_results <- "Resultats complementaires (e.g. contrastes d'interaction et moyennes ajustees)"
 
-interact_analysis_type <- "Quelle analyse voulez-vous realiser?"
+ask_analysis_type <- "Quelle analyse voulez-vous realiser?"
