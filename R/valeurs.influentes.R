@@ -6,8 +6,8 @@ valeurs.influentes <-
     if(any(lapply(packages, require, character.only=T))==FALSE)  {install.packages(packages) 
       require(packages)} 
     if(class(data[,X])=="integer") as.numeric(data[,X])->data[,X]
-    if(class(data[,X])!="numeric") return("la variable n est pas numerique")
-    if(critere=="z" && class(z)!="numeric") return("z doit etre un nombre")
+    if(class(data[,X])!="numeric") return(INFO_non_numeric_variable)
+    if(critere=="z" && class(z)!="numeric") return(INFO_z_must_be_a_number)
     if(any(match(c("Grubbs","z"), critere))==FALSE) return("Les valeurs admises pour critere sont  z  et  Grubbs ")
     length(data[,1])->i
     if(critere=="Grubbs"){
@@ -20,8 +20,8 @@ valeurs.influentes <-
         rbind(valeur.influentes,data[max, ])->valeur.influentes
         data<-data[ -max, ] # supprime la valeur maximmal de data
       }  
-      data.frame(G=outliers$statistic[1], U=outliers$statistic[2], valeur.p=round(outliers$p.value,4))->Resultats.valeurs.influentes$"Test de Grubbs"
-      Resultats.valeurs.influentes$"Valeur la plus elevee"<-outliers$alternative
+      data.frame(G=outliers$statistic[1], U=outliers$statistic[2], valeur.p=round(outliers$p.value,4))->Resultats.valeurs.influentes$TXT_grubbs_test
+      Resultats.valeurs.influentes$INFO_highest_value<-outliers$alternative
       
     }
     
@@ -36,9 +36,9 @@ valeurs.influentes <-
     i-iso->n # nombre d observations supprimees
     round((n/i)*100,2)-> pourcentage_N # proportions d observations supprimees (nombre / taille de l echantillon)
     rbind(n, paste(pourcentage_N, "%"))->synthese_aberrant # on combine le nombre et le pourcentage. 
-    data.frame(information=c("Nombre d'observations retirees", "% d'observations considerees comme influentes"), Synthese=synthese_aberrant)->synthese_aberrant # on cree un data.frame 
-    if(all(dim( valeur.influentes)!=0))    Resultats.valeurs.influentes$"observations influentes"<-valeur.influentes
-    Resultats.valeurs.influentes$"Synthese des observations influentes" <-synthese_aberrant
+    data.frame(information=c(INFO_number_outliers_removed, INFO_percentage_outliers), Synthese=synthese_aberrant)->synthese_aberrant # on cree un data.frame 
+    if(all(dim( valeur.influentes)!=0))    Resultats.valeurs.influentes$TXT_outliers<-valeur.influentes
+    Resultats.valeurs.influentes$TXT_outliers_synthesis <-synthese_aberrant
     data->>nettoyees
     return(Resultats.valeurs.influentes) 
   }

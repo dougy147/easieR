@@ -23,13 +23,13 @@ VI.multiples <-
       if(class(essai)=="try-error") {
         corr.test(data2)$r->matrice
         if(any(abs(matrice)==1)) {
-          msgBox("vous tenter de faire une matrice de correlations avec des variables parfaitement correlees. Cela pose souci pour le calcul de la distance de Mahalanobis. Nous tentons de resoudre le souci")
+          msgBox(INFO_perfectly_correlated_variables_in_matrix_trying_to_solve)
           which(abs(matrice)==1, arr.ind=TRUE)->un
           un<-un[-which(un[,1]==un[,2]),]
           data2[,-un[,2]]->data2
           try(psych::outlier(data2), silent=T)->essai
           if(class(essai)=="try-error") {
-            writeLines("Desole, nous ne pouvons pas calculer la distance de Mahalanobis sur vos donnees. Les analyses seront resalisees sur les donnees completes")
+            writeLines(INFO_cannot_compute_mahalanobis)
             0->data$D.Mahalanobis  }
         }else{essai-> data$D.Mahalanobis}
       } else{ essai-> data$D.Mahalanobis
@@ -42,7 +42,7 @@ VI.multiples <-
     data[which(data$D.Mahalanobis>seuil),]->outliers
     length(outliers[,1])/length(data[,1])*100->pourcent
     
-    msgBox(paste(round(pourcent,2), "% des observations sont considerees comme outliers."))
+    msgBox(paste(round(pourcent,2), INFO_percentage_outliers))
     
     
     if(pourcent!=0){
@@ -51,24 +51,24 @@ VI.multiples <-
                  consideree comme influente en partant de la valeur la plus extreme. La procedure s'arrete  
                  quand plus aucune observation n'est consideree comme influente")  
       
-      suppr<- dlgList(c("Suppression de l'ensemble des outliers", "Suppression manuelle"), 
-                      preselect=c("Suppression de l'ensemble des outliers"), multiple = FALSE, title="Comment voulez-vous les supprimer?")$res
+      suppr<- dlgList(c(TXT_suppress_all_outliers, TXT_suppress_outliers_manually), 
+                      preselect=c(TXT_suppress_all_outliers), multiple = FALSE, title=ASK_how_to_remove)$res
       if(length(suppr)==0) return(NULL)
-      if(suppr=="Suppression de l'ensemble des outliers") {data[which(data$D.Mahalanobis<seuil),]->data 
-        outliers->Resultats$"Valeurs considerees comme influentes"}else{
+      if(suppr==TXT_suppress_all_outliers) {data[which(data$D.Mahalanobis<seuil),]->data 
+        outliers->Resultats$TXT_labeled_outliers}else{
           suppression<-"yes"
           outliers<-data.frame()
           while(suppression=="yes"){
             print(data[which.max(data$D.Mahalanobis),])
             cat ("Appuyez [entree] pour continuer")
             line <- readline()
-            dlgMessage("Voulez-vous supprimer cette observation ?", "yesno")$res->suppression
+            dlgMessage(ASK_suppress_this_obs, "yesno")$res->suppression
             if(suppression=="yes") {rbind(outliers, data[which.max(data$D.Mahalanobis),])->outliers
               data[-which.max(data$D.Mahalanobis),]->data
               
             }
           }
-          Resultats$"Valeurs considerees comme influentes"<-outliers
+          Resultats$TXT_labeled_outliers<-outliers
         }
     }
     Resultats$data<-data

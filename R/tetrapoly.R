@@ -18,8 +18,8 @@ tetrapoly <-
     Resultats<-list()
     
     if(is.null(data) | is.null(X))  {dial<-TRUE
-    if(info) writeLines("Veuillez choisir le type de correlations que vous desirez realiser. Pour les variables dichotomiques, les correlations seront des correlations tetrachoriques")
-    dlgList(c("correlations polychoriques", "correlations mixtes"), preselect=NULL, multiple = FALSE, title="Type de correlations ?")$res->method
+    if(info) writeLines(ASK_correlation_type)
+    dlgList(c(TXT_polyc_correlations, TXT_mixt_correlations), preselect=NULL, multiple = FALSE, title=ASK_correlations_type)$res->method
     if(length(method)==0) return(choix.corr())
     } else dial<-F
     
@@ -34,26 +34,26 @@ tetrapoly <-
     }
     
     
-    msg3<-"Veuillez choisir les variables dont il faut realiser les correlations polychorique/tetrachorique/mixte."
-    X<-.var.type(X=X, info=info, data=data, type="numeric", check.prod=F, message=msg3,  multiple=T, title="Variable-s ", out=NULL)
+    msg3<-ASK_variabels_for_polyc_tetra_mixt_corr
+    X<-.var.type(X=X, info=info, data=data, type="numeric", check.prod=F, message=msg3,  multiple=T, title=ASK_variables, out=NULL)
     if(is.null(X)) {
       Resultats<-tetrapoly(data=NULL,X=NULL, sauvegarde=F, ord=NULL ,info=T, group=NULL, estimator=estimator, output=output)
       return(Resultats)}
     data<-X$data
     X<-X$X
     
-    if(!is.null(ord) & any(ord %in%X==F)||(dial && method=="correlations mixtes" ) ){
-      if(info) writeLines("Veuillez choisir les variables ordinales.")
-      ord<-dlgList(X, preselect=X, multiple = TRUE, title="Variables ordinales ?")$res
+    if(!is.null(ord) & any(ord %in%X==F)||(dial && method==TXT_mixt_correlations ) ){
+      if(info) writeLines(ASK_ordinal_variables)
+      ord<-dlgList(X, preselect=X, multiple = TRUE, title=ASK_ordinal_variables)$res
       if(length(ord)==0){
         Resultats<-tetrapoly(data=NULL,X=NULL, sauvegarde=F, ord=NULL ,info=T, group=NULL, estimator=estimator, output=output)
         return(Resultats)
       }
     } else ord<-X
     if(any(is.na(data[,X]))) {
-      if(is.null(imp))  {msgBox("Des valeurs manquantes ont ete detectees. Comment voulez-vous les traiter ? Garder l'ensemble des observations peut biaiser les resultats.")
-        imp<- dlgList(c("Ne rien faire - Garder l'ensemble des observations", "Suppression des observations avec valeurs manquantes","Remplacer par la mediane","Multiple imputation - Amelia"), 
-                      preselect=FALSE, multiple = TRUE, title="Traitement des valeurs manquantes ?")$res}
+      if(is.null(imp))  {msgBox(ASK_how_to_treat_missing_values)
+        imp<- dlgList(c(TXT_do_nothing_keep_all_obs, TXT_delete_observations_with_missing_values,TXT_replace_by_median,TXT_multiple_imputation_amelia), 
+                      preselect=FALSE, multiple = TRUE, title=ASK_missing_values_treatment)$res}
       if(length(imp)==0){
         Resultats<-tetrapoly(data=NULL,X=NULL, sauvegarde=F, ord=NULL ,info=T, group=NULL, estimator=estimator, output=output)
         return(Resultats)
@@ -62,13 +62,13 @@ tetrapoly <-
       data<-data.frame(data1, data[which(dimnames(data)[[1]] %in% dimnames(data1)[[1]]),group])
     }  
     if(dial || !is.logical(sauvegarde)){
-      sauvegarde<- dlgList(c(TRUE, FALSE), preselect=FALSE, multiple = FALSE, title="Voulez-vous sauver les resultats ?")$res
+      sauvegarde<- dlgList(c(TRUE, FALSE), preselect=FALSE, multiple = FALSE, title=ASK_save_results)$res
       if(length(sauvegarde)==0) {
         Resultats<-tetrapoly(data=NULL,X=NULL, sauvegarde=F, ord=NULL ,info=T, group=NULL, estimator=estimator, output=output)
         return(Resultats)
       }
     }
-    Resultats$"Matrice de correlation tetrachorique/polychorique ou mixte"<-lavCor(data[,c(X,group)], ordered=ord,estimator=estimator, group=group,  missing="default", output=output)
+    Resultats$TXT_tetra_polyc_corr_matrix_or_mixt<-lavCor(data[,c(X,group)], ordered=ord,estimator=estimator, group=group,  missing="default", output=output)
     paste(X, collapse="','", sep="")->X
     if(!is.null(ord)) paste(ord, collapse="','", sep="")->ord
     Resultats$Call<-paste0("tetrapoly(data=", nom,",X=c('", X,"'),sauvegarde=", sauvegarde, ",ord=", ifelse(!is.null(ord),paste0("c('",ord,"')"), "NULL"),
@@ -80,6 +80,6 @@ tetrapoly <-
     
     if(sauvegarde) save(Resultats=Resultats, choix="cor.polychorique", env=.e)
     
-    ref1(packages)->Resultats$"References"
+    ref1(packages)->Resultats$TXT_references
     if(html) ez.html(Resultats)
     return(Resultats) }

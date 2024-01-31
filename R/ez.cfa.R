@@ -1,14 +1,14 @@
 ez.cfa <-
-  function(modele=NULL, X=NULL, data=NULL,ord=NULL, outlier="Donnees completes",imp="rm", output="default", info=T, sauvegarde=F, mimic=NULL, fixed.x="default", missing="default",information="default", zero.keep.margins="default",zero.add=c(0.5,0),
+  function(modele=NULL, X=NULL, data=NULL,ord=NULL, outlier=TXT_complete_dataset,imp="rm", output="default", info=T, sauvegarde=F, mimic=NULL, fixed.x="default", missing="default",information="default", zero.keep.margins="default",zero.add=c(0.5,0),
            estimator="ML",group=NULL, test="standard",se="standard",std.ov=T, orthogonal=F, likelihood="default",
            link="probit",int.ov.free=FALSE, int.lv.free=FALSE, std.lv=FALSE, n.boot=1000, group.w.free=F,
-           group.equal=c("loadings", "intercepts", "means", "thresholds", "regressions", "residuals", "residual.covariances", "lv.variances" , "lv.covariances")){
+           group.equal=c("loadings", "intercepts", "means", "thresholds", TXT_regressions, "residuals", "residual.covariances", "lv.variances" , "lv.covariances")){
     # modele : lavaan modele if X is null
     # data : dataframe
     # X : character. names of the variables if modele is null
     # LV : Vector. names of LV=atent Variables
     # ord: Character. Vector of ordered variables among X
-    # outlier : should outliers be detected and removed on Mahalanobis distance ? ("Donnees sans valeur influente") or not ("Donnees completes")
+    # outlier : should outliers be detected and removed on Mahalanobis distance ? (TXT_without_outliers) or not (TXT_complete_dataset)
     # imp : How must missing data be dealt :"rm"= remove, "mean" = impute mean, "median"=impute median, "amelia"=use amelia algorithm for imputation. 
     # output : character vector. List of output that has to be shown. 
     # info : logical. Should information be printed in the console ? 
@@ -24,29 +24,29 @@ ez.cfa <-
       if(!is.null(modele)){
         semPlot.modele<-try(semPlotModel_lavaanModel(modele))
         if(class(semPlot.modele)=="try-error"){
-          msgBox("Le modele semble incorrect et n'a pas pu etre cree.")
+          msgBox(INFO_model_seems_incorrect_could_not_be_created)
           return(NULL)
         }
         semPaths(semPlot.modele, edge.label.cex = 0.65,edge.color="black", exoVar = FALSE,exoCov =T, cex=0.5)
         cat ("Appuyez [entree] pour continuer")
         line <- readline()
-        dlgMessage("Est-ce que votre modele est correct ?", "yesno")$res->suppression
+        dlgMessage(ASK_is_model_correct, "yesno")$res->suppression
         if(suppression=="no") return( Lav.modele(X=X, modele=NULL, LV=NULL, info=T)) 
         return(modele)
       }
       
       if(is.null(LV) && length(X)>3) {
-        if(info)   writeLines("Veuillez preciser le nombre de variables latentes")
+        if(info)   writeLines(ASK_latent_variables_number)
         nF<-NA
         while(!is.numeric(nF)) {
-          if(info) writeLines("Veuillez preciser le nombre de variables latentes") 
-          nF <- dlgInput("Nombre de facteurs ?", 2)$res
+          if(info) writeLines(ASK_latent_variables_number) 
+          nF <- dlgInput(ASK_factors_number, 2)$res
           if(length(nF)==0) return(NULL)
           strsplit(nF, ":")->nF
           tail(nF[[1]],n=1)->nF
           as.numeric(nF)->nF
           if(any((nF%%1==0)%in% c(FALSE, NA))|| nF<0 || nF>length(X) ){
-            msgBox("Le nombre de facteur doit etre un entier positif inferieur au nombre de variables")
+            msgBox(INFO_facotrs_must_be_positive_int_inferior_to_variables_num)
             nF<-NA }
         }} else if(!is.null(LV)) nF<-length(LV) else nF<-1
         
@@ -54,11 +54,11 @@ ez.cfa <-
         X->reste
         list()->modele2
         for(i in 1:nF){
-          if(is.null(LV[i]))  {dlgInput(paste("Nom de la variable latente",i,  "?"), paste("Facteur",i, sep="."))$res->noms
+          if(is.null(LV[i]))  {dlgInput(paste(TXT_latent_variable_name,i,  "?"), paste(TXT_factor,i, sep="."))$res->noms
             if(length(noms)==0) return(Lav.modele(X=X, LV=NULL))
             strsplit(noms, ":")->noms
             tail(noms[[1]],n=1)->noms} else noms<-LV[i]
-            title<-paste("Variables manifestes de", noms)
+            title<-paste(INFO_manifest_variables_of, noms)
             if(i==nF) O1<-reste else O1<- dlgList(reste, preselect=NULL, multiple = TRUE, title=title)$res
             O2<-c(O2,O1)	
             setdiff(reste,O2)->reste
@@ -75,14 +75,14 @@ ez.cfa <-
         
         cat ("Appuyez [entree] pour continuer")
         line <- readline()
-        dlgMessage("Est-ce que votre modele est correct ?", "yesno")$res->suppression
+        dlgMessage(ASK_is_model_correct, "yesno")$res->suppression
         if(suppression=="no") return( Lav.modele(X=X, modele=NULL, LV=NULL, info=T)) 
         return(modele)
     }
     .ez.lavaan.options<-function(modele=NULL, data=NULL, X=NULL, info=TRUE, opt.list=NULL, dial=T, imp=NULL, outlier=NULL,output=NULL){
       if(dial || is.null(opt.list$mimic) || !opt.list$mimic%in% c("default", "Mplus", "EQS")){dial<-T
       if(info) writeLines("Voulez-vous specifier tous les parametres [default] ou imiter un logiciel particulier ?")
-      opt.list$mimic<-dlgList(c("default", "Mplus", "EQS"), preselect="default", multiple = FALSE, title="Imiter ?")$res
+      opt.list$mimic<-dlgList(c("default", "Mplus", "EQS"), preselect="default", multiple = FALSE, title=ASK_imitate)$res
       if(length(opt.list$mimic)==0) return(NULL)
       }
       
@@ -96,13 +96,13 @@ ez.cfa <-
                    "Intercept des variables observees [int.ov.free=FALSE]", "Intercept des variables latentes [int.lv.free=FALSE]", "Variables exogenes fixees [fixed.x=default]",
                    "Estimation des indicateurs des variables latentes [std.lv=FALSE]", options2)
         
-        if(info) writeLines("Quelles options voulez-vous specifier ?")
-        options<-dlgList(c("Garder les valeurs par defaut", options), preselect=c("estimateur [estimator=ml])","test [test=standard]", "erreur standard [se=standard]"), multiple = TRUE, title="Quelles options ?")$res
+        if(info) writeLines(ASK_which_options_to_specify)
+        options<-dlgList(c(TXT_keep_default_values, options), preselect=c("estimateur [estimator=ml])","test [test=standard]", "erreur standard [se=standard]"), multiple = TRUE, title=ASK_which_options)$res
         if(length(options)==0) return(NULL)
-        if(options=="Garder les valeurs par defaut") return(list(mimic="default", fixed.x="default", missing="default",information="default", zero.keep.margins="default",zero.add=c(0.5,0),
+        if(options==TXT_keep_default_values) return(list(mimic="default", fixed.x="default", missing="default",information="default", zero.keep.margins="default",zero.add=c(0.5,0),
                                                                  estimator="ml",group=NULL, test="standard",se="standard",std.ov=T, orthogonal=F, likelihood="default",
                                                                  link="probit",int.ov.free=FALSE, int.lv.free=FALSE,fixed.x="default", std.lv=FALSE, n.boot=1000, group.w.free=F,
-                                                                 group.equal=c("loadings", "intercepts", "means", "thresholds", "regressions", "residuals", "residual.covariances", 
+                                                                 group.equal=c("loadings", "intercepts", "means", "thresholds", TXT_regressions, "residuals", "residual.covariances", 
                                                                                "lv.variances" , "lv.covariances")))
       } else options<-NULL
       
@@ -112,9 +112,9 @@ ez.cfa <-
          try(opt.list$estimator %in%c("ML","GLS", "WLS", "ULS", "DWLS", "MLM","MLMV","MLMVS","MLF", "MLR", "WLSM","WLSMV", "ULSM", "ULSMV" ),silent=T)!=T){
         if(info){  writeLines("[WLS] correspond a [ADF]. Les estimateurs avec les extensions [M],[MV],[MVSF],[R] 
                               sont des versions robustes des estimateurs classiques [MV],[WLS], [DWLS], [ULS]")
-          abb<-data.frame(abb=c("ML","GLS", "WLS", "ULS", "DWLS"), nom=c("maximum de vraisemblance","moindre carre generalises","moindre carre pondere","moindre carre non pondere","moindre carre  pondere diagonalement"))
+          abb<-data.frame(abb=c("ML","GLS", "WLS", "ULS", "DWLS"), nom=c(TXT_max_likelihood,TXT_less_square_generalized,TXT_less_square_pondered,TXT_less_square_not_pondered,"moindre carre  pondere diagonalement"))
           print(abb)    }
-        opt.list$estimator<-dlgList(c("ML","GLS", "WLS", "ULS", "DWLS", "MLM","MLMV","MLMVS","MLF", "MLR", "WLSM","WLSMV", "ULSM", "ULSMV" ), multiple = FALSE, title="Quelles estimateur ?")$res
+        opt.list$estimator<-dlgList(c("ML","GLS", "WLS", "ULS", "DWLS", "MLM","MLMV","MLMVS","MLF", "MLR", "WLSM","WLSMV", "ULSM", "ULSMV" ), multiple = FALSE, title=ASK_which_estimator)$res
         if(length(opt.list$estimator)==0) {Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
         return(Resultats)}
       } 
@@ -122,28 +122,28 @@ ez.cfa <-
       
       if(any(options=="test [test=standard]") || length(opt.list$test)!=1 || !opt.list$test%in% c("standard", "Satorra.Bentler", "Yuan.Bentler", "mean.var.adjusted",
                                                                                                   "scaled.shifted", "bootstrap","Bollen.Stine")){
-        if(info) writeLines("Quel test voulez-vous utiliser ?")
-        opt.list$test<-dlgList(c("standard", "Satorra.Bentler", "Yuan.Bentler", "mean.var.adjusted","scaled.shifted", "bootstrap","Bollen.Stine"), multiple = FALSE, title="Quelles estimateur ?")$res
+        if(info) writeLines(ASK_which_test)
+        opt.list$test<-dlgList(c("standard", "Satorra.Bentler", "Yuan.Bentler", "mean.var.adjusted","scaled.shifted", "bootstrap","Bollen.Stine"), multiple = FALSE, title=ASK_which_estimator)$res
         if(length(opt.list$test)==0) {Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
         return(Resultats)}
       } 
       
       
       if(opt.list$test%in%c("boot","bootstrap","Bollen.Stine") &&!is.null(opt.list$n.boot) && ((class(opt.list$n.boot)!="numeric" & class(opt.list$n.boot)!="integer") ||  opt.list$n.boot%%1!=0 || opt.list$n.boot<1)){
-        msgBox("Le nombre de bootstrap doit etre un nombre entier positif") 
+        msgBox(INFO_bootstraps_number_must_be_positive) 
         opt.list$n.boot<-NULL
       }
       if(dial & opt.list$test%in%c("boot","bootstrap","Bollen.Stine") || is.null(opt.list$n.boot) & opt.list$test%in%c("boot","bootstrap","Bollen.Stine")) {
         while(is.null(opt.list$n.boot)){
-          writeLines("Veuillez preciser le nombre de bootstrap. Pour ne pas avoir de bootstrap, choisir 1")
-          n.boot<-dlgInput("Nombre de bootstrap ?", 1)$res
+          writeLines(ASK_bootstrap_numbers_1_for_none)
+          n.boot<-dlgInput(ASK_bootstraps_number, 1)$res
           if(length(n.boot)==0) {Resultats<-Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
           return(Resultats)}
           strsplit(n.boot, ":")->n.boot
           tail(n.boot[[1]],n=1)->n.boot
           as.numeric(n.boot)->opt.list$n.boot
           if(is.na(opt.list$n.boot) ||  opt.list$n.boot%%1!=0 || opt.list$n.boot<1){
-            msgBox("Le nombre de bootstrap doit etre un nombre entier positif") 
+            msgBox(INFO_bootstraps_number_must_be_positive) 
             opt.list$n.boot<-NULL
           }
         }
@@ -153,14 +153,14 @@ ez.cfa <-
       
       if(opt.list$test%in%c("boot","bootstrap","Bollen.Stine")) se1<-c("standard","first.order", "robust", "bootstrap","none" ) else se1<-c("standard","first.order", "robust", "none" )
       if(any(options=="erreur standard [se]") || is.null(opt.list$se) || !opt.list$se%in%se1)  {
-        if(info) writeLines("Comment l'erreur standard doit-elle etre estimee ?")
-        opt.list$se<-dlgList(se1, multiple = FALSE, title="Erreur standard ?")$res
+        if(info) writeLines(ASK_how_standard_error_must_be_estimated)
+        opt.list$se<-dlgList(se1, multiple = FALSE, title=ASK_standard_error)$res
         if(length(opt.list$se)==0) {Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
         return(Resultats)}
       } 
       
       if(any(options=="groupes [group=NULL]") || !is.null(opt.list$group)){
-        msg2<-"Veuillez choisir la definissant les groupes"
+        msg2<-ASK_chose_defining_groups
         .var.type(X=opt.list$group, info=T, data=data, type="factor", message=msg2,multiple=T, title="Variable [groupes] ?", out=X)->group
         if(is.null(group)){
           Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
@@ -168,17 +168,17 @@ ez.cfa <-
         } 
         group$data->data
         group$X->opt.list$group
-        if(dial|| any(opt.list$group.equal %in% c("loadings", "intercepts","means","thresholds","regressions","residuals","residual.covariances","lv.variances", "lv.covariances"))==FALSE){
-          if(info) writeLines("Quels sont les parametres que vous desirez maintenir constants ?")
-          opt.list$group.equal<-dlgList(c("loadings", "intercepts","means","thresholds","regressions","residuals","residual.covariances","lv.variances", "lv.covariances"), multiple = T, 
-                                        preselect=c("loadings", "intercepts","means","thresholds","regressions","residuals","residual.covariances","lv.variances", "lv.covariances"), title="Parametres constants ?")$res
+        if(dial|| any(opt.list$group.equal %in% c("loadings", "intercepts","means","thresholds",TXT_regressions,"residuals","residual.covariances","lv.variances", "lv.covariances"))==FALSE){
+          if(info) writeLines(ASK_which_constant_parameters)
+          opt.list$group.equal<-dlgList(c("loadings", "intercepts","means","thresholds",TXT_regressions,"residuals","residual.covariances","lv.variances", "lv.covariances"), multiple = T, 
+                                        preselect=c("loadings", "intercepts","means","thresholds",TXT_regressions,"residuals","residual.covariances","lv.variances", "lv.covariances"), title=ASK_constant_parameters)$res
           if(length(opt.list$group.equal)==0) {Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
           return(Resultats)
           }}
         # ecrase group equal puisque aa libere les group sur cette contraintes ==> utilite ? 
-        #group.partial<-dlgList(c("loadings", "intercepts","means","thresholds","regressions","residuals","residual.covariances","lv.variances", "lv.covariances"))
-        if(info) writeLines("est-ce que les frequences des differents group est un parametre libre ? ") 
-        opt.list$group.w.free<-dlgList(c(TRUE, FALSE), multiple=F, preselect=FALSE, title="Constance de la frequence ?")$res
+        #group.partial<-dlgList(c("loadings", "intercepts","means","thresholds",TXT_regressions,"residuals","residual.covariances","lv.variances", "lv.covariances"))
+        if(info) writeLines(ASK_are_frequences_free_parameters) 
+        opt.list$group.w.free<-dlgList(c(TRUE, FALSE), multiple=F, preselect=FALSE, title=ASK_freq_constance)$res
         if(length(opt.list$group.w.free)==0) {Resultats<.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
           return(Resultats)
         }
@@ -186,7 +186,7 @@ ez.cfa <-
       ### zero.keep.margins
       if(any(options=="correction de continuite [zero.keep.margins]") || is.null(opt.list$zero.keep.margins)||(!is.logical(opt.list$zero.keep.margins) & opt.list$zero.keep.margins!="default")){
         if(info) writeLines("Faut-il ajouter une valeur aux cellules vides pour les correlations polychorique ? Pour specifier les valeurs,choisissez TRUE, sinon choisissez [default]")
-        opt.list$zero.keep.margins<-dlgList(c(TRUE, FALSE,"default"), preselect="default", multiple = FALSE, title="Cellules vides ?")$res
+        opt.list$zero.keep.margins<-dlgList(c(TRUE, FALSE,"default"), preselect="default", multiple = FALSE, title=ASK_empty_cells)$res
         if(length(opt.list$zero.keep.margins)==0) {
           Resultats<-Resultats<.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
           return(Resultats)
@@ -195,21 +195,21 @@ ez.cfa <-
       
       if( opt.list$zero.keep.margins==TRUE){
         if(!is.null(opt.list$zero.add) && ((class(opt.list$zero.add)!="numeric" ) || any( opt.list$zero.add<0) || any(opt.list$zero.add>1))){
-          msgBox("La correction pour le calcul de correlations polycoriques doit etre comprise entre 0 et 1.") 
+          msgBox(TXT_correction_for_polyc_corr_must_be_between_zero_and_one) 
           opt.list$zero.add<-NULL
         }
         while(is.null(opt.list$zero.add)){
-          writeLines("Veuillez preciser la valeur pour les tableaux 2x2")
-          zero.add1<-dlgInput("tableau 2x2 ?", 0.5)$res
+          writeLines(ASK_2x2_table_value)
+          zero.add1<-dlgInput(ASK_2x2_table, 0.5)$res
           if(length(zero.add1)==0) {Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
           return(Resultats)}
           strsplit(zero.add1, ":")->zero.add1
           tail(zero.add1[[1]],n=1)->zero.add1
           as.numeric(zero.add1)->zero.add1
           if(is.na(zero.add1) ||  zero.add1<0 || zero.add1>1){
-            msgBox("La valeur doit etre comprise entre 0 et 1") 
+            msgBox(INFO_value_must_be_between_zero_and_one) 
             opt.list$zero.add<-NA} else{
-              writeLines("Veuillez preciser la valeur pour les tableaux plus grand que 2x2")
+              writeLines(ASK_bigger_tables_value)
               zero.add2<-dlgInput("tableau > 2x2 ?", 0)$res
               if(length(zero.add2)==0) {Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
               return(Resultats)}
@@ -217,7 +217,7 @@ ez.cfa <-
               tail(zero.add2[[1]],n=1)->zero.add2
               as.numeric(zero.add2)->zero.add2
               if(is.na(zero.add2) ||  zero.add2<0 || zero.add2>1){
-                msgBox("La valeur doit etre comprise entre 0 et 1") 
+                msgBox(INFO_value_must_be_between_zero_and_one) 
                 opt.list$zero.add<-NA}
             }
           opt.list$zero.add<-c(zero.add1,zero.add2)
@@ -228,51 +228,51 @@ ez.cfa <-
       
       ### fin zero.keep.margins
       if(any(options=="Vraisemblance (seulement pour estimator=ML) [likelihood=default]") & opt.list$mimic=="default" & opt.list$estimator=="ML" ||is.null(opt.list$likelihood) || length(opt.list$likelihood)!=1 || try(opt.list$likelihood%in%c("wishart","normal", "default" ),silent=T)!=T) {
-        if(info) writeLines("Veuillez preciser la vraisemblance.")
-        opt.list$likelihood<-dlgList(c("wishart","normal", "default" ), multiple=F, preselect="default", title="Vraisemblance ?")$res # depend de mimic
+        if(info) writeLines(ASK_specify_likelihood)
+        opt.list$likelihood<-dlgList(c("wishart","normal", "default" ), multiple=F, preselect="default", title=ASK_likelihood)$res # depend de mimic
         if(length(opt.list$likelihood)==0) {Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
         return(Resultats)}
       } 
       
       if(any(options=="Lien (seulement pour estimator=MML) [link=probit]") & opt.list$estimator=="MML" ||length(opt.list$link)!=1 || try(opt.list$link%in%c("logit","probit" ),silent=T)!=T ){
-        if(info) writeLines("Veuillez preciser la famille (i.e. forme de la distribution).")
-        opt.list$link<-dlgList(c("logit","probit" ), multiple=F, preselect=FALSE, title="Distribution ?")$res
+        if(info) writeLines(ASK_family)
+        opt.list$link<-dlgList(c("logit","probit" ), multiple=F, preselect=FALSE, title=ASK_distribution)$res
         if(length(opt.list$link)==0) {Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
         return(Resultats)}
       }  
       
       
       if(any(options=="information [information=default]") ||is.null(opt.list$information) || try(opt.list$information%in%c("expected","observed", "default" ),silent=T)!=T ){
-        if(info) writeLines("Sur quelle matrice d'information doit se realiser l'estimation des erreurs standards ?")
-        opt.list$information<-dlgList(c("expected","observed", "default" ), multiple=F, preselect=FALSE, title="Matrice d'information ?")$res
+        if(info) writeLines(ASK_which_information_matrix_for_standard_error_estimation)
+        opt.list$information<-dlgList(c("expected","observed", "default" ), multiple=F, preselect=FALSE, title=ASK_information_matrix)$res
         if(length(opt.list$information)==0) {Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
         return(Resultats)}
       }  
       
       if(any(options=="Variables exogenes fixees [fixed.x=default]") ||length(opt.list$fixed.x)!=1 || (!is.logical(opt.list$fixed.x) & opt.list$fixed.x!="default") ){
-        if(info) writeLines("Si vrai, on considere les covaries exogenes comme fixes, sinon on les considere comme aleatoires et leurs parametres sont libres")
-        opt.list$fixed.x<-dlgList(c(TRUE, FALSE ), multiple=F, preselect=FALSE, title="Covariables fixees ?")$res
+        if(info) writeLines(INFO_if_true_covariates_as_fixed)
+        opt.list$fixed.x<-dlgList(c(TRUE, FALSE ), multiple=F, preselect=FALSE, title=ASK_fixed_covariables)$res
         if(length(opt.list$fixed.x)==0) {Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
         return(Resultats)}
       }  
       
       if(any(options=="Orthogonalite des facteurs [orthogonal=FALSE]") ||length(opt.list$orthogonal)!=1 || !is.logical(opt.list$orthogonal) ){
-        if(info) writeLines("Est-ce que les facteurs sont correles (FALSE) ou sont-ils orthogonaux (TRUE)?")
-        opt.list$orthogonal<-dlgList(c(TRUE, FALSE ), multiple=F, preselect=FALSE, title="Orthogonalite des facteurs ?")$res
+        if(info) writeLines(ASK_correlated_or_orthogonal_factors)
+        opt.list$orthogonal<-dlgList(c(TRUE, FALSE ), multiple=F, preselect=FALSE, title=ASK_factors_ortho)$res
         if(length(opt.list$orthogonal)==0) {Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
         return(Resultats)}
       } 
       
       if(any(options=="standardisation des variables observees [std.ov=T]") ||length(opt.list$std.ov)!=1 || !is.logical(opt.list$std.ov) ){
-        if(info) writeLines("Faut-il standardise (i.e. centrer reduire) les variables observees au prelable (TRUE) ou non (FALSE) ?")
-        opt.list$std.ov<-dlgList(c(TRUE, FALSE ), multiple=F, preselect=FALSE, title="Standardisation ?")$res
+        if(info) writeLines(ASK_standardize_obs_variables_before)
+        opt.list$std.ov<-dlgList(c(TRUE, FALSE ), multiple=F, preselect=FALSE, title=ASK_standardization)$res
         if(length(opt.list$std.ov)==0) {Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
         return(Resultats)}
       } 
       
       #####
       if(any(options=="Intercept des variables observees [int.ov.free=FALSE]") ||length(opt.list$int.ov.free)!=1 || !is.logical(opt.list$int.ov.free) ){
-        if(info) writeLines("Faut-il fixer l'intercept des variables observees a 0 ?")
+        if(info) writeLines(ASK_should_intercept_of_obs_variables_be_fixed_to_zero)
         opt.list$int.ov.free<-dlgList(c(TRUE, FALSE ), multiple=F, preselect=FALSE, title="Intercept VO=0 ?")$res
         if(length(opt.list$int.ov.free)==0) {Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
         return(Resultats)}
@@ -280,7 +280,7 @@ ez.cfa <-
       
       
       if(any(options=="Intercept des variables latentes [int.lv.free=FALSE]") ||length(opt.list$int.lv.free)!=1 || !is.logical(opt.list$int.lv.free) ){
-        if(info) writeLines("Est-ce que l'intercept des variables latentes doit etre fixe a 0 ?")
+        if(info) writeLines(ASK_should_intercept_of_latent_variable_be_fixed_to_zero)
         opt.list$int.lv.free<-dlgList(c(TRUE, FALSE ), multiple=F, preselect=FALSE, title="Intercept VL=0 ?")$res
         if(length(opt.list$int.lv.free)==0) {Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
         return(Resultats)}
@@ -289,8 +289,8 @@ ez.cfa <-
       
       
       if(any(options=="Estimation des indicateurs des variables latentes [std.lv=FALSE]") ||length(opt.list$std.lv)!=1 || !is.logical(opt.list$std.lv) ){
-        if(info) writeLines("Si vrai, les residus des variables latentes sont fixes a 1, sinon les parametres de la variable latente sont estimes en fixant le premier indicateur a 1")
-        opt.list$std.lv<-dlgList(c(TRUE, FALSE ), multiple=F, preselect=FALSE, title="Standardisation VL?")$res
+        if(info) writeLines(INFO_if_true_latent_residuals_one)
+        opt.list$std.lv<-dlgList(c(TRUE, FALSE ), multiple=F, preselect=FALSE, title=ASK_standardization_vl)$res
         if(length(opt.list$std.lv)==0) {Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
         return(Resultats)}
       } 
@@ -316,43 +316,43 @@ ez.cfa <-
       
       
       if(is.null(modele)){ 
-        msg3<-"Veuillez choisir les variables manifestes que vous desirez analyser. Vous devez choisir au moins 3 variables" 
+        msg3<-ASK_chose_manifest_variables_at_least_three 
         
-        X<-.var.type(X=X, info=info, data=data, type=NULL, check.prod=F, message=msg3,  multiple=T, title="Variables", out=NULL)
+        X<-.var.type(X=X, info=info, data=data, type=NULL, check.prod=F, message=msg3,  multiple=T, title=TXT_variables, out=NULL)
         data<-X$data
         X<-X$X
         if(is.null(X) || length(X)<3) return(NULL)
         
         
-        if(dial || length(outlier)>1 || outlier %in% c("Donnees completes", "Donnees sans valeur influente") ==FALSE){
-          if(info) writeLines("Desirez-vous l'analyse sur les donnees completes ou sur les donnees pour lesquelles les valeurs influentes ont ete enlevees ?")
-          if(info) writeLines("les valeurs influentes sont identifiees sur la base de la distance de Mahalanobis avec un seuil du chi a 0.001")
-          outlier<- dlgList(c("Donnees completes", "Donnees sans valeur influente"), preselect="Donnees completes",multiple = FALSE, title="Quels resultats voulez-vous obtenir ?")$res
+        if(dial || length(outlier)>1 || outlier %in% c(TXT_complete_dataset, TXT_without_outliers) ==FALSE){
+          if(info) writeLines(ASK_analysis_on_complete_data_or_remove_outliers)
+          if(info) writeLines(INFO_outliers_identified_on_mahalanobis)
+          outlier<- dlgList(c(TXT_complete_dataset, TXT_without_outliers), preselect=TXT_complete_dataset,multiple = FALSE, title=ASK_results_desired)$res
           if(length(outlier)==0) { Resultats<-cfa.in()
           return(Resultats)}
         }
         
-        if(outlier=="Donnees sans valeur influente"){
+        if(outlier==TXT_without_outliers){
           inf<-VI.multiples(data,X)
-          Resultats$"Valeurs considerees comme influentes"<-inf$"Valeurs considerees comme influentes"
+          Resultats$TXT_labeled_outliers<-inf$TXT_labeled_outliers
           data<-inf$data
         }
         
         if(dial){
-          if(info) writeLines("Veuillez preciser le type de variables. Des correlations tetra/polychoriques seront realisees sur les variables dichotomiques/ordinales et Bravais-Pearson sur les variables continues")
-          if(length(unique(unlist(data[,X])))<9) {type<-dlgList(c("dichotomiques/ordinales","continues", "mixte"), preselect=NULL, multiple = FALSE, title="Nature des variables ?")$res}else {
-            type<-dlgList(c("continues", "mixte"), preselect=NULL, multiple = FALSE, title="Nature des variables ?")$res 
+          if(info) writeLines(ASK_variables_type_correlations)
+          if(length(unique(unlist(data[,X])))<9) {type<-dlgList(c(TXT_dichotomic_ordinal,"continues", "mixte"), preselect=NULL, multiple = FALSE, title=ASK_variables_type)$res}else {
+            type<-dlgList(c("continues", "mixte"), preselect=NULL, multiple = FALSE, title=ASK_variables_type)$res 
           }
           
           if(length(type)==0) {Resultats<-cfa.in()
           return(Resultats)}
-        } else{if(is.null(ord)) type<-"continues" else type<-"dichotomiques/ordinales"
+        } else{if(is.null(ord)) type<-"continues" else type<-TXT_dichotomic_ordinal
         }
         
         if(type!="continues"){ 
           if(type=="mixte") {
-            if(info) writeLines("Veuillez preciser les variables ordinales ?") 
-            ord<-dlgList(X, multiple = TRUE, title="Variables ordinales ?")$res
+            if(info) writeLines(ASK_ordinal_variables) 
+            ord<-dlgList(X, multiple = TRUE, title=ASK_ordinal_variables)$res
             if(length(ord)==0) {Resultats<-cfa.in()
             return(Resultats)}
           }else ord<-X
@@ -370,9 +370,9 @@ ez.cfa <-
           }
         }
       if(any(is.na(data[,X]))) {
-        if(is.null(imp))  {msgBox("Des valeurs manquantes ont ete detectees. Comment voulez-vous les traiter ?")
-          imp<- dlgList(c("Ne rien faire - Garder l'ensemble des observations", "Suppression des observations avec valeurs manquantes","Remplacer par la mediane","Multiple imputation - Amelia"), 
-                        preselect=FALSE, multiple = TRUE, title="Traitement des valeurs manquantes ?")$res}
+        if(is.null(imp))  {msgBox(ASK_missing_values_detected_what_to_do)
+          imp<- dlgList(c(TXT_do_nothing_keep_all_obs, TXT_delete_observations_with_missing_values,TXT_replace_by_median,TXT_multiple_imputation_amelia), 
+                        preselect=FALSE, multiple = TRUE, title=ASK_missing_values_treatment)$res}
         if(length(imp)==0){
           Resultats<-cfa.in()
           return(Resultats)
@@ -391,16 +391,16 @@ ez.cfa <-
       }
       
       
-      if(dial || class(output)!="character"|| any(!output%in% c("default", "Sorties par defaut", "parEst", "Parametres estimes", "parSt", "Parametres standardises","Matrice de covariance ajustee", "fitted.cov",
-                                                                "Residus standardises", "res.St","res.Unst","Residus non standardises","vcov","Matrice de covariance estimee",
-                                                                "AIC", "BIC", "Mesures d'adequation","fitM", "Inspecter les valeurs de depart", "start", "Inspecter les matrices du modele",
-                                                                "modmat", "Inspecter la representation du modele", "modrep"))==TRUE){
-        if(info) writeLines("Quels resultats souhaitez-vous ? Attention : les sorties par defaut ne peuvent etre sauvegrdees. Si vous voulez une sauvarde, choisissez le detail")
-        output<-c( "Sorties par defaut", "Parametres estimes", "Parametres standardises","Matrice de covariance ajustee", 
-                   "Residus standardises", "Residus non standardises","Matrice de covariance estimee","AIC", "BIC", "Mesures d'adequation", 
-                   "Inspecter les valeurs de depart",  "Inspecter les matrices du modele", "Inspecter la representation du modele")
-        if(info) writeLines("Quelles sorties de resultats souhaitez-vous ?")
-        output<- dlgList(output, preselect="Sorties par defaut", multiple = TRUE, title="Sorties de resultats ?")$res
+      if(dial || class(output)!="character"|| any(!output%in% c("default", TXT_default_outputs, "parEst", TXT_estimated_parameters, "parSt", TXT_standardized_parameters,TXT_covariance_matrix_adjusted, "fitted.cov",
+                                                                TXT_residue_standardized, "res.St","res.Unst",TXT_non_standardized_residuals,"vcov",TXT_covariance_matrix_estimated,
+                                                                "AIC", "BIC", TXT_adequation_measures,"fitM", TXT_inspect_initial_values, "start", TXT_inspect_model_matrices,
+                                                                "modmat", TXT_inspect_model_representation, "modrep"))==TRUE){
+        if(info) writeLines(ASK_which_results_warning_on_default_output)
+        output<-c( TXT_default_outputs, TXT_estimated_parameters, TXT_standardized_parameters,TXT_covariance_matrix_adjusted, 
+                   TXT_residue_standardized, TXT_non_standardized_residuals,TXT_covariance_matrix_estimated,"AIC", "BIC", TXT_adequation_measures, 
+                   TXT_inspect_initial_values,  TXT_inspect_model_matrices, TXT_inspect_model_representation)
+        if(info) writeLines(ASK_which_output_results)
+        output<- dlgList(output, preselect=TXT_default_outputs, multiple = TRUE, title=ASK_results_output)$res
         if(is.null( Resultats$opt.list)) {
           Resultats<-cfa.in()
           return(Resultats)
@@ -409,7 +409,7 @@ ez.cfa <-
       
       
       if(dial || length(sauvegarde)!=1 || !is.logical(sauvegarde)){
-        sauvegarde<- dlgList(c(TRUE, FALSE), preselect=FALSE, multiple = FALSE, title="Voulez-vous sauver les resultats ?")$res
+        sauvegarde<- dlgList(c(TRUE, FALSE), preselect=FALSE, multiple = FALSE, title=ASK_save_results)$res
         if(length(sauvegarde)==0) {
           Resultats<-cfa.in()
           return(Resultats)}
@@ -471,27 +471,27 @@ ez.cfa <-
                             group.w.free= group.w.free,fixed.x=fixed.x,information=information,se=se,std.ov=as.logical(std.ov),
                             orthogonal=as.logical(orthogonal),likelihood=likelihood, link=link, int.ov.free=as.logical(int.ov.free),
                             int.lv.free=as.logical(int.lv.free),std.lv=as.logical(std.lv),zero.add=zero.add, zero.keep.margins=zero.keep.margins), silent=T)
-      if(class(fit)=="try-error") {msgBox("Nous n'avons pas pu terminer correctement l'analyse. Veuillez tenter de respecifier les parametres")
+      if(class(fit)=="try-error") {msgBox(ASK_could_not_finish_analysis_respecify_parameters)
         return(ez.cfa())}
       
-      if(any(output== "default") | any(output== "Sorties par defaut"))  {
+      if(any(output== "default") | any(output== TXT_default_outputs))  {
         print(summary(fit, fit.measures = TRUE, standardized=T))
-        Resultats<-"Pour afficher les resultats, veuillez utiliser summary(modele.cfa)"
+        Resultats<-INFO_to_display_results_use_summary
         summary(fit)->>fit
         if(length(output)==1) fit->>modele.cfa
         }
-      if(any(output== "parEst") | any(output=="Parametres estimes")) parameterEstimates(fit)->Resultats$"Parametres estimes non standardises"
-      if(any(output== "parSt") | any(output=="Parametres standardises")) standardizedSolution(fit)->Resultats$"Parametres estimes standardises"
-      if(any(output== "Matrice de covariance ajustee") | any(output=="fitted.cov")) fitted(fit)->Resultats$"Matrice de covariance ajustee"
-      if(any(output== "Residus standardises") | any(output=="res.St")) resid(fit, type="standardized")->Resultats$"Residus standardises"
-      if(any(output== "Residus non standardises") | any(output=="res.Unst")) resid(fit)->Resultats$"Residus non standardises"
-      if(any(output== "vcov") | any(output=="Matrice de covariance estimee")) vcov(fit)->Resultat$"Matrice de covariance estimee"
+      if(any(output== "parEst") | any(output==TXT_estimated_parameters)) parameterEstimates(fit)->Resultats$TXT_estimated_parameters_not_standardized
+      if(any(output== "parSt") | any(output==TXT_standardized_parameters)) standardizedSolution(fit)->Resultats$TXT_estimated_parameters_standardized
+      if(any(output== TXT_covariance_matrix_adjusted) | any(output=="fitted.cov")) fitted(fit)->Resultats$TXT_covariance_matrix_adjusted
+      if(any(output== TXT_residue_standardized) | any(output=="res.St")) resid(fit, type="standardized")->Resultats$TXT_residue_standardized
+      if(any(output== TXT_non_standardized_residuals) | any(output=="res.Unst")) resid(fit)->Resultats$TXT_non_standardized_residuals
+      if(any(output== "vcov") | any(output==TXT_covariance_matrix_estimated)) vcov(fit)->Resultat$TXT_covariance_matrix_estimated
       if(any(output== "AIC") ) AIC(fit)->Resultats$AIC
       if(any(output== "BIC") ) BIC(fit)->Resultats$BIC
-      if(any(output== "Mesures d'adequation") | any(output=="fitM")) fitMeasures(fit)->Resultats$"Mesure d'ajustement"
-      if(any(output== "Inspecter les valeurs de depart") | any(output=="start"))inspect(fit, what=start)->Resultats$"Valeurs de depart"
-      if(any(output== "Inspecter les matrices du modele") | any(output=="modmat")) inspect(fit)->Resultats$"Matrices du modeles"
-      if(any(output== "Inspecter la representation du modele") | any(output=="modrep"))inspect(fit, what=list)->Resultats$"Representation du modele"
+      if(any(output== TXT_adequation_measures) | any(output=="fitM")) fitMeasures(fit)->Resultats$TXT_adjustement_measure
+      if(any(output== TXT_inspect_initial_values) | any(output=="start"))inspect(fit, what=start)->Resultats$TXT_init_values
+      if(any(output== TXT_inspect_model_matrices) | any(output=="modmat")) inspect(fit)->Resultats$TXT_model_matrix
+      if(any(output== TXT_inspect_model_representation) | any(output=="modrep"))inspect(fit, what=list)->Resultats$TXT_model_representation
       semPaths(fit, what="path", whatLabels="std", edge.label.cex = 0.65,edge.color="black", exoVar = FALSE,exoCov =T)
       
       
@@ -521,7 +521,7 @@ ez.cfa <-
       def.values<-list(mimic="default", fixed.x="default", missing="default",information="default", zero.keep.margins="default",zero.add=c(0.5,0),
                      estimator="ml",group=NULL, test="standard",se="standard",std.ov=T, orthogonal=F, likelihood="default",
                      link="probit",int.ov.free=FALSE, int.lv.free=FALSE,fixed.x="default", std.lv=FALSE, n.boot=1000, group.w.free=F,
-                     group.equal=c("loadings", "intercepts", "means", "thresholds", "regressions", "residuals", "residual.covariances", 
+                     group.equal=c("loadings", "intercepts", "means", "thresholds", TXT_regressions, "residuals", "residual.covariances", 
                                    "lv.variances" , "lv.covariances"))
     
     if(!is.null(cfa.options$ord)) paste(cfa.options$ord, collapse="','", sep="")->ord

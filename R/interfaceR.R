@@ -7,43 +7,43 @@ interfaceR <-
 
     
     
-    choix <- dlgList(c("obtenir le repertoire de travail","specifier le repertoire de travail", "Suppression d objet en memoire", 
-                       "liste des objets en memoire", "rechercher une nouvelle fonction", "mise a jour des packages","Verifier l installation des packages"), preselect=NULL, multiple = FALSE, title="Quel est votre choix ?")$res
+    choix <- dlgList(c(TXT_get_working_dir,TXT_specify_working_dir, TXT_remove_object_in_memory, 
+                       TXT_list_of_objects_in_mem, TXT_search_for_new_function, TXT_packages_update,TXT_verify_packages_install), preselect=NULL, multiple = FALSE, title=ASK_what_is_your_choice)$res
     while(length(choix)==0) return(easieR())
     
     switch(choix, 
-           "obtenir le repertoire de travail" = Resultats$"Repertoire de travail" <- getwd(),
-           "liste des objets en memoire"= Resultats$"Objets en memoire" <- ls(envir=.GlobalEnv),
-           "specifier le repertoire de travail"={
-             repertoire <- dlgDir(title="Veuillez choisir le repertoire de travail")$res
+           TXT_get_working_dir = Resultats$TXT_working_dir <- getwd(),
+           TXT_list_of_objects_in_mem= Resultats$TXT_objects_in_mem <- ls(envir=.GlobalEnv),
+           TXT_specify_working_dir={
+             repertoire <- dlgDir(title=ASK_chose_the_working_dir)$res
              if(length(repertoire)==0) repertoire <- getwd()
              setwd(repertoire)
-             Resultats$"nouveau repertoire" <- paste("Le repertoire de travail est a present", repertoire)
+             Resultats$TXT_new_dir <- paste(INFO_working_dir_is_now, repertoire)
            },
-           "Suppression d objet en memoire"={
+           TXT_remove_object_in_memory={
              ls(envir=.GlobalEnv)->tout
              Filter( function(x) 'function' %in% class( get(x) ), ls(envir=.GlobalEnv) )->fonctions
              tout[!is.element(tout,fonctions)]->tout
-             X<-dlgList(tout, multiple = TRUE, title="Objets a supprimer")$res
+             X<-dlgList(tout, multiple = TRUE, title=TXT_object_to_remove)$res
              if(length(X)==0) return(easieR())
              rm(list=X, envir=.GlobalEnv)
              Resultats <- list()
-             Resultats$"Liste des objects encore en memoire de R" <- ls(envir=.GlobalEnv)
+             Resultats$INFO_list_of_objects_still_in_mem <- ls(envir=.GlobalEnv)
            },
-           "rechercher une nouvelle fonction"={
+           TXT_search_for_new_function={
              require(sos)
              writeLines("Pour trouver une nouvelle analyse, il est necessaire de faire votre recherche en anglais. Vous pouvez utiliser plusieurs mots dans la recherche.
 Une page html reprenant l'ensemble des packages faisant reference a l'analyse recherchee va s'ouvrir.")
-             critere <- dlgInput("Quelle analyse recherchez vous ?", "Tapez votre recherche ici")$res
+             critere <- dlgInput(ASK_which_analysis_you_looking_for, INFO_search_here)$res
              if(length(critere)==0) return(easieR())
              critere <- strsplit(critere, ":")
              critere <- tail(critere[[1]],n=1)
              Resultats<- findFn(critere)
              return(Resultats)
            },
-           "mise a jour des packages"= {update.packages(ask=FALSE)},
-           "Verifier l installation des packages"=vef.pack()->Resultats$"Verification des packages")
-             if(choix =="rechercher une nouvelle fonction") packages<-c(packages, "sos")
+           TXT_packages_update= {update.packages(ask=FALSE)},
+           TXT_verify_packages_install=vef.pack()->Resultats$TXT_packages_verification)
+             if(choix ==TXT_search_for_new_function) packages<-c(packages, "sos")
     Resultats$ref<- ref1(packages)
     return(Resultats)
   }

@@ -70,7 +70,7 @@ ez.install <-
     
     # 2c. installer packages manquants si necessaires et si utilisateur le souhaite
     if(length(pack.uninst)>0){
-        writeLines("Installation des packages")
+        writeLines(TXT_packages_install)
         print(pack.uninst)
         flush.console()
         install.packages(pack.uninst, quiet=TRUE)

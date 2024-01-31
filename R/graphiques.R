@@ -8,8 +8,7 @@ function(){
   if(length(data)==0) return(easieR())
   nom<-data[[1]]
   data<-data[[2]]
-
-  msgBox("Ne pas oublier de fermer la fenetre htmlt (firexfox, chrome, internet explorer...) pour revenir à la session R")
+  msgBox(INFO_close_browser_to_come_back)
    print(ref1(packages))
    if (Sys.info()[[1]]=="Darwin") {
    	options(browser="open")

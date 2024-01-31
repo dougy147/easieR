@@ -12,6 +12,6 @@ function(){
 }
 
 voir.msg<-function(){
-if(grepl("French",Sys.setlocale())) msg<-"Choix du dataframe" else msg<-"Choose dataframe"
+if(grepl("French",Sys.setlocale())) msg<-TXT_dataframe_choice else msg<-"Choose dataframe"
 
 return(msg)}

@@ -7,14 +7,14 @@ choix.data <-
     list()->Resultats
     Filter( function(x) 'data.frame' %in% class( get(x) ), ls(envir=.GlobalEnv))->nom1
     if(length(nom1)==0) {
-      writeLines("il n'y a pas de donnees dans la memoire de R, veuillez importer les donnnees sur lesquelles realiser l'analyse")
+      writeLines(INFO_no_data_in_R_memory)
       import()
       choix.data(data=NULL,info=T, nom=nom)->Resultats
       return(Resultats)}
     if(any(!is.null(data)) && data%in% nom1) data->nom1
     if(length(nom1)==1)  data<-get(nom1) else{
-      if(info=="TRUE") writeLines("Veuillez choisir la base de donnees")
-      nom1 <- dlgList(nom1, multiple = FALSE, title="Donnees ?")$res
+      if(info=="TRUE") writeLines(ASK_chose_database)
+      nom1 <- dlgList(nom1, multiple = FALSE, title=ASK_data)$res
       if(length(nom1)==0) {nom1<-NULL
       data<-NULL}
       if(!is.null(nom1))  data<-get(nom1)

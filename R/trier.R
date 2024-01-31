@@ -9,22 +9,22 @@ trier <-
     if(length(data)==0) return(preprocess())
     data[[1]]->nom1
     data[[2]]->data
-    if(info==TRUE) writeLines("Veuillez selectionner la (les) variable(s) a trier")
-    X<-dlgList(c(names(data), "autres donnees"), multiple = TRUE, title="Variable(s)")$res
-    if(any(X=="autres donnees")) return(trier())
+    if(info==TRUE) writeLines(ASK_variables_to_order)
+    X<-dlgList(c(names(data), TXT_other_data), multiple = TRUE, title=TXT_variables)$res
+    if(any(X==TXT_other_data)) return(trier())
     if(length(X)==0) return(preprocess())
     X->diff
     Y2<-c()
     d<-c()
     for(i in 1:length(diff)) {
-      writeLines(paste("Veuillez choisir le niveau", i, "de tri"))
-      Y<-dlgList(diff, multiple = FALSE, title="Variable(s)")$res
+      writeLines(paste(ASK_level, i, INFO_order))
+      Y<-dlgList(diff, multiple = FALSE, title=TXT_variables)$res
       if(length(Y)==0) return(trier())
       setdiff(diff, Y)->diff
       c(Y2,Y)->Y2
     }
     data[do.call("order", data[Y2]), ]->data
     View(data)
-    Resultats<-"les donnees ont ete triees correctement "
+    Resultats<-INFO_data_succesfully_ordered
     assign(x=nom1, value=data, envir=.GlobalEnv)
     return(Resultats)}

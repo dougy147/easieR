@@ -6,8 +6,8 @@ ez.html <-
       require(packages)}
     dir.create(path= paste0(tempdir(),"\\easieR") , showWarnings = FALSE)
 
-    outputb<-c("---","title: 'Resultats de vos analyses'",
-               "author: 'Genere automatiquement par easieR'",
+    outputb<-c("---",INFO_title,
+               INFO_author,
                paste("date:","'", date(),"'"),
                if(html) {c("output:",
                            "  html_document:",

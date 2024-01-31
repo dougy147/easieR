@@ -17,8 +17,8 @@ ez.rank <-
       data[[1]]->nom1
       data[[2]]->data}
     if(!is.null(X)) dial<-FALSE else dial<-TRUE
-    msg.pre1<-"Veuillez preciser les variables dont vous souhaiter faire les rangs"
-    .var.type(X=X, info=T, data=data, type="numeric", message=msg.pre1,multiple=T, title="Variable-s")->X1
+    msg.pre1<-ASK_specify_variables_for_ranks
+    .var.type(X=X, info=T, data=data, type="numeric", message=msg.pre1,multiple=T, title=TXT_variables)->X1
     if(is.null(X1)) return(preprocess())
     if(!is.null(X) && X1$X!=X) dial<-TRUE 
     X1$X->X
@@ -26,7 +26,7 @@ ez.rank <-
       if(info) writeLines("Comment voulez-vous traiter les ex-aequo ? La methode *average* fait la moyenne entre les ex aequo (le plus habituel),
                         *first* attribue le premier rang ex aequo a la premiere valeur dans les donnees, *laste* a la derniere, *min* attribue la
                         valeur minimale a l'ensemble des ex aequo et *max* la valeur maximale.")
-      ties.method<-dlgList(c("average", "first", "last", "random", "max", "min"), multiple = F, preselect="average", title="Specifier effectifs ?")$res
+      ties.method<-dlgList(c("average", "first", "last", "random", "max", "min"), multiple = F, preselect="average", title=ASK_specify_sample)$res
     }
     if(length(X)==1) rangs<-rank(data[,X],ties.method=ties.method, na.last="keep" ) else sapply(data[,X], rank, ties.method=ties.method, na.last="keep")->rangs
     if(length(X)==1) data.frame(rangs)->rangs

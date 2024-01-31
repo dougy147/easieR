@@ -1,5 +1,5 @@
 corr.complet <-
-  function(X=NULL, Y=NULL, Z=NULL,data=NULL,  group=NULL, param=c("test parametrique", "test non parametrique","Test robustes - impliquant des bootstraps", "Facteurs bayesiens"), 
+  function(X=NULL, Y=NULL, Z=NULL,data=NULL,  group=NULL, param=c(TXT_param_test, TXT_non_param_test,TXT_robusts_tests_with_bootstraps, TXT_bayesian_factors), 
            save=F, outlier=c("complete", "id", "removed"),  z=NULL, info=T, n.boot=NULL, rscale=0.353, html=T){options (warn=-1) 
     
     
@@ -7,13 +7,13 @@ corr.complet <-
       
       Resultats<-list()
       if(!is.null(X) & !is.null(data) & !is.null(Y)) {dial<-F 
-      if(is.null(Z)) choix<-"Correlations" else choix<-"Correlations partielle et semi partielle"
+      if(is.null(Z)) choix<-TXT_correlations else choix<-TXT_partial_and_semi_correlations
       }  else {dial<-T
       choix<-NULL}
       
       if(is.null(choix) ){
-        if(info) writeLines("Veuillez preciser le type de correlation que vous souhaitez realiser.")
-        choix<-dlgList(c("Correlations", "Correlations partielle et semi partielle"), preselect="Correlations", multiple = FALSE, title="Correlations simples ou partielles?")$res
+        if(info) writeLines(ASK_type_correlation)
+        choix<-dlgList(c(TXT_correlations, TXT_partial_and_semi_correlations), preselect=TXT_correlations, multiple = FALSE, title=ASK_simple_or_partial_corr)$res
         if(length(choix)==0) return(NULL)
       }
       data<-choix.data(data=data, info=info, nom=T)
@@ -22,10 +22,10 @@ corr.complet <-
       data<-data[[2]]
       
       
-      msg3<-"Veuillez choisir la variable en abcisse"
-      msg4<-"Veuillez choisir la variable en ordonnee"
+      msg3<-ASK_chose_variable_x_axis
+      msg4<-ASK_chose_variable_y_axis
       
-      X<-.var.type(X=X, info=info, data=data, type="numeric", check.prod=F, message=msg3,  multiple=T, title="Variable-s en abcisse", out=NULL)
+      X<-.var.type(X=X, info=info, data=data, type="numeric", check.prod=F, message=msg3,  multiple=T, title=TXT_x_axis_variables, out=NULL)
       if(is.null(X)) {
         corr.complet.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, save=NULL, info=T, group=NULL,
                         n.boot=NULL, rscale=0.707)->Resultats
@@ -33,16 +33,16 @@ corr.complet <-
       data<-X$data
       X1<-X$X
       
-      Y<-.var.type(X=Y, info=info, data=data, type="numeric", check.prod=F, message=msg4,  multiple=T, title="Variable-s en ordonnee", out=X1)
+      Y<-.var.type(X=Y, info=info, data=data, type="numeric", check.prod=F, message=msg4,  multiple=T, title=TXT_y_axis_variables, out=X1)
       if(is.null(Y)) {
         corr.complet.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, save=NULL, info=T, group=NULL,
                         n.boot=NULL, rscale=0.707)->Resultats
         return(Resultats)}
       data<-Y$data
       Y<-Y$X 
-      if(choix=="Correlations partielle et semi partielle"){
-        msg6<-"Veuillez preciser la ou les variables a controler" 
-        Z<-.var.type(X=Z, info=info, data=data, type="numeric", check.prod=F, message=msg6,  multiple=T, title="Variable-s a controler", out=c(X1,Y))
+      if(choix==TXT_partial_and_semi_correlations){
+        msg6<-ASK_control_variables 
+        Z<-.var.type(X=Z, info=info, data=data, type="numeric", check.prod=F, message=msg6,  multiple=T, title=TXT_control_variables, out=c(X1,Y))
         if(is.null(Z)) {
           corr.complet.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, save=NULL, info=T, group=NULL,
                           n.boot=NULL, rscale=0.707)->Resultats
@@ -58,21 +58,21 @@ corr.complet <-
                                   \n choisissez oui. Dans ce cas, l'analyse est realisee sur l'echantillon complet et sur les sous-echantillons.
                                   \n Si vous desirez l'analyse pour l'echantillon complet uniquement, chosissez non.
                                   \n l'analyse par groupe ne s'appliquent pas aux statistiques robustes.")
-        dlgList(c("oui", "non"), preselect="non", multiple = FALSE, title="Analyse par groupe?")$res->par.groupe
+        dlgList(c(TXT_yes, TXT_no), preselect=TXT_no, multiple = FALSE, title=ASK_analysis_by_group)$res->par.groupe
         if(length(par.groupe)==0) {
           corr.complet.in(X=NULL, Y=NULL, data=NULL,param=NULL, outlier=NULL, save=NULL, info=T, group=NULL,
                           n.boot=NULL, rscale=0.707)->Resultats
           return(Resultats)
         } 
-        msg5<-"Veuillez choisir le facteur de classement categoriel."
-        if(par.groupe=="oui"){group<-.var.type(X=group, info=info, data=data, type="factor", check.prod=F, message=msg5,  multiple=TRUE, title="Variable-s", out=c(X1,Y,Z)) 
+        msg5<-ASK_chose_ranking_categorial_factor
+        if(par.groupe==TXT_yes){group<-.var.type(X=group, info=info, data=data, type="factor", check.prod=F, message=msg5,  multiple=TRUE, title=TXT_variables, out=c(X1,Y,Z)) 
         if(length(group)==0) {  corr.complet.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, save=NULL, info=T, group=NULL,
                                                 n.boot=NULL, rscale=0.707)->Resultats
           return(Resultats)}
         data<-group$data
         group<-group$X 
         if(any(ftable(data[,group])<3)){
-          msgBox("Certaines combinaisons des modalites ont moins de 3 observations. Vous devez avoir au moins 3 observations pour chaque combinaison")
+          msgBox(INFO_need_at_least_three_observation_by_combination)
           corr.complet.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, save=NULL, info=T, group=NULL,
                           n.boot=NULL, rscale=0.707)->Resultats
           return(Resultats)
@@ -80,10 +80,10 @@ corr.complet <-
         }
       }
       
-      msg.options1<-"Le test parametrique est la correlation de Bravais-Pearson"
-      msg.options2<- "Le test non parametrique correspond au rho de Spearman et au tau de Kendall"
+      msg.options1<-INFO_param_is_BP
+      msg.options2<- INFO_non_param_are_rho_and_tau
       
-      options<-.ez.options(options=c("choix","outlier"), n.boot=n.boot,param=T, non.param=T, robust=T, Bayes=T, msg.options1=msg.options1, msg.options2=msg.options2, info=info, dial=dial, 
+      options<-.ez.options(options=c(TXT_choice,"outlier"), n.boot=n.boot,param=T, non.param=T, robust=T, Bayes=T, msg.options1=msg.options1, msg.options2=msg.options2, info=info, dial=dial, 
                            choix=param,sauvegarde=save, outlier=outlier, rscale=rscale)
       if(is.null(options)){
         corr.complet.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, save=NULL, info=T, group=NULL,
@@ -106,17 +106,17 @@ corr.complet <-
       boot_BPSP<-function(data,i)cor(data[ , X][i], data[ , Y1][i], use="complete.obs", method="pearson")
       boot_SpearmanSP<-function(data,i)cor(data[ ,X][i], data[ , Y1][i], use="complete.obs", method="spearman")
       list()->Resultats
-      Resultats$"statistiques descriptives"<-.stat.desc.out(X=c(X,Y,Z), groupes=NULL, data=data, tr=.1, type=3, plot=T)
-      if(!is.null(group)) {Resultats$"statistiques descriptives par groupe"<-.stat.desc.out(X=c(X,Y,Z), groupes=group, data=data, tr=.1, type=3, plot=T) }
+      Resultats$TXT_descriptive_statistics<-.stat.desc.out(X=c(X,Y,Z), groupes=NULL, data=data, tr=.1, type=3, plot=T)
+      if(!is.null(group)) {Resultats$TXT_descriptive_statistics_by_group<-.stat.desc.out(X=c(X,Y,Z), groupes=group, data=data, tr=.1, type=3, plot=T) }
       
       
-      if(choix== "Correlations") {
-        title<-"Correlation de Bravais-Pearson"
-        title2<-"Rho de Spearman"
+      if(choix== TXT_correlations) {
+        title<-TXT_BP_correlation
+        title2<-TXT_rho
         X1<-X
         Y1<-Y} else {
-          title<-"Correlation partielle de Bravais-Pearson"
-          title2<-"Rho partiel de Spearman"
+          title<-TXT_partial_corr_BP
+          title2<-TXT_partial_rho
           modele1<-as.formula(paste0(X,"~",Z[1]))
           modele2<-as.formula(paste0(Y,"~", Z[1]))
           if(length(Z)>1) for(i in 2:length(Z)){
@@ -134,8 +134,8 @@ corr.complet <-
       lm.r<-lm(modele,na.action=na.exclude,data=data)
       resid(lm.r)->data$residus # recuperation du residu sur le modele lineaire
       
-      if(any(param=="Bayes") | any(param=="Facteurs bayesiens") | any(param=="param") | any(param=="Test parametrique"))  {
-        Resultats$"Tests de normalite"<-.normalite(data=data, X="residus", Y=NULL)
+      if(any(param=="Bayes") | any(param==TXT_bayesian_factors) | any(param=="param") | any(param==TXT_param_tests))  {
+        Resultats$TXT_normality_tests<-.normalite(data=data, X="residus", Y=NULL)
         graphiques<-list()
         p<-ggplot(data)
         p<-p+ eval(parse(text=paste0("aes(x=", X,", y=", Y,")"))) + geom_point() 
@@ -158,28 +158,28 @@ corr.complet <-
           }
           graphiques[[2]]<-p1
         }
-        Resultats$"Test parametrique"$Graphiques<-graphiques
+        Resultats$TXT_param_tests$Graphiques<-graphiques
       }
-      if(any(param=="param") | any(param=="Test parametrique")){
+      if(any(param=="param") | any(param==TXT_param_tests)){
         
-        if(choix!="Correlations") {
+        if(choix!=TXT_correlations) {
           cor.part<-rbind( pcor.test(data[,X], data[ ,Y], data[ , Z], method = "pearson")[1:3],
                            spcor.test(data[,X], data[ ,Y], data[ ,Z], method = "pearson")[1:3])
           cor.part$estimate^2->cor.part$r.carre
           round(cor.part, 4)->cor.part
           cor.part$ddl<-(pcor.test(data[,X], data[ ,Y], data[ , Z], method = "pearson")$n-2-length(Z))
-          dimnames(cor.part)<-list(c("Correlation partielle de Bravais Pearson","Correlation semi-partielle de Bravais Pearson"), c("Correlation", "valeur.p", "test.t", "r.carre","ddl"))
-          Resultats$"Correlation partielle/semi-partielle de Bravais Pearson"<-cor.part
+          dimnames(cor.part)<-list(c(TXT_partial_corr_BP,TXT_semi_BP), c("Correlation", "valeur.p", "test.t", "r.carre","ddl"))
+          Resultats$TXT_partial_semi_BP<-cor.part
           
         } else {
           BP<-cor.test(data[, X1], data[ ,Y1], method = "pearson")
-          Resultats$"Test parametrique"$"Correlation de Bravais Pearson"<-round(data.frame("r"=BP$estimate,"r.deux"=BP$estimate^2, "IC lim inf"=BP$conf.int[1],"IC lim sup"=BP$conf.int[2], "t"=BP$statistic, 
+          Resultats$TXT_param_tests$TXT_BP_correlation<-round(data.frame("r"=BP$estimate,"r.deux"=BP$estimate^2, "IC lim inf"=BP$conf.int[1],"IC lim sup"=BP$conf.int[2], "t"=BP$statistic, 
                                                                                            "ddl"=BP$parameter, "valeur.p"=BP$p.value),4)
         } 
         
         
         if(!is.null(group)){  
-          if(choix=="Correlations") {
+          if(choix==TXT_correlations) {
             corr.g<-function(X2){ 
               return(data.frame(BP.r= cor.test(X2[, X1], X2[ ,Y1], method = "pearson")$estimate,
                                 BP.ddl= cor.test(X2[, X1], X2[ ,Y1], method = "pearson")$parameter,
@@ -202,11 +202,11 @@ corr.complet <-
           
           dimnames(BPgroup)[[2]]<- c("BP.r", "BP.ddl", "BP.t", "BP.p")
           BPgroup<-data.frame(gr.l,BPgroup )
-          if(choix!="Correlations") Resultats$"Test parametrique"$"Correlation partielle de Bravais-Pearson par groupe"<-BPgroup else Resultats$"Correlation de Bravais-Pearson par groupe"<-BPgroup
+          if(choix!=TXT_correlations) Resultats$TXT_param_tests$TXT_partial_corr_BP_by_group<-BPgroup else Resultats$TXT_BP_correlation_by_group<-BPgroup
           
         }
       }
-      if(any(param=="non param")| any(param=="Test non parametrique")){
+      if(any(param=="non param")| any(param==TXT_non_parametric_test)){
         
         
         graphiques<-list()
@@ -232,28 +232,28 @@ corr.complet <-
           }
           graphiques[[2]]<-p1
         }
-        Resultats$"Test non parametrique"$Graphiques<-graphiques
+        Resultats$TXT_non_parametric_test$Graphiques<-graphiques
         
-        if(choix!="Correlations") {
+        if(choix!=TXT_correlations) {
           spear<-rbind( pcor.test(data[,X], data[ ,Y], data[ , Z], method = "spearman")[1:3],spcor.test(data[,X], data[ ,Y], data[ ,Z], method = "spearman")[1:3])
           tau<-rbind(pcor.test(data[,X], data[ ,Y], data[ , Z], method = "kendall")[1:3],spcor.test(data[,X], data[ ,Y], data[ , Z], method = "kendall")[1:3])       
           spear<-round(spear,4)
           tau<-round(tau,4)
           spear$estimate^2->spear$r.carre
           round(spear, 4)->cor.part
-          dimnames(spear)<-list(c("Rho partiel de Spearman","Rho semi-partiel de Spearman"), c("rho", "valeur.p", "t", "r.carre"))
-          Resultats$"Test non parametrique"$"Rho partiel/semi partiel de Spearman"<-spear
+          dimnames(spear)<-list(c(TXT_partial_rho,TXT_semi_partial_rho), c("rho", "valeur.p", "t", "r.carre"))
+          Resultats$TXT_non_parametric_test$TXT_partial_semi_partial_rho<-spear
           tau<-round(tau,4)
-          dimnames(tau)<-list(c("Tau partiel de Kendall","Tau semi-partiel de Kendall"), c("tau", "valeur.p", "z"))
-          Resultats$"Test non parametrique"$"Tau partiel/semi-partiel de Kendall"<-tau
+          dimnames(tau)<-list(c(TXT_kendall_partial_tau,TXT_kendall_semipartial_tau), c("tau", "valeur.p", "z"))
+          Resultats$TXT_non_parametric_test$TXT_kendall_partial_semipartial_tau<-tau
         } else { Spear<-cor.test(data[,X1], data[ ,Y1], method = "spearman", exact=T, continuity=T)
         cor.test(data[,X1], data[ ,Y1], method = "kendall")->Kendall 
-        Resultats$"Test non parametrique"$"Rho de Spearman"<-round(data.frame("rho"=Spear$estimate,"rho.deux"=Spear$estimate^2,"S"=Spear$statistic,"valeur.p"=Spear$p.value),4)
-        round(data.frame("tau"=Kendall$estimate,"z"=Kendall$statistic,"valeur.p"=Kendall$p.value),4)->Resultats$"Test non parametrique"$"Tau de Kendall"}
+        Resultats$TXT_non_parametric_test$TXT_rho<-round(data.frame("rho"=Spear$estimate,"rho.deux"=Spear$estimate^2,"S"=Spear$statistic,"valeur.p"=Spear$p.value),4)
+        round(data.frame("tau"=Kendall$estimate,"z"=Kendall$statistic,"valeur.p"=Kendall$p.value),4)->Resultats$TXT_non_parametric_test$TXT_kendall_tau}
         
         
         if(!is.null(group)){
-          if(choix=="Correlations") {corr.g<-function(X2){ return(data.frame(Sp.r= cor.test(X2[, X1], X2[ ,Y1], method = "spearman")$estimate,
+          if(choix==TXT_correlations) {corr.g<-function(X2){ return(data.frame(Sp.r= cor.test(X2[, X1], X2[ ,Y1], method = "spearman")$estimate,
                                                                              Sp.p= cor.test(X2[, X1], X2[ ,Y1], method = "spearman")$p.value,
                                                                              Kendall.r= cor.test(X2[, X1], X2[ ,Y1], method = "kendall")$estimate,
                                                                              Kendall.p= cor.test(X2[, X1], X2[ ,Y1], method = "kendall")$p.value))}
@@ -271,63 +271,63 @@ corr.complet <-
           gr.l<-data.frame(gr.l)
           gr.l<-expand.grid(gr.l)
           } 
-          if(choix!="Correlations"){
+          if(choix!=TXT_correlations){
             dimnames(BPgroup)[[2]]<- c("Spearman.rho", "Spearman.ddl", "Spearman.t", "Spearman.p")
             BPgroup<-data.frame(gr.l,BPgroup )
-            Resultats$"Test non parametrique"$"Correlation partielle de Spearman par groupe"<-BPgroup 
+            Resultats$TXT_non_parametric_test$TXT_partial_spearman_by_group<-BPgroup 
           } else {dimnames(BPgroup)[[2]]<- c( "Spearman.r", "Spearman.p", "Tau.Kendall.r", "Tau.Kendall.p")
           BPgroup<-data.frame(gr.l,BPgroup )
-          Resultats$"Test non parametrique"$"Correlation de Spearman/Kendall par groupe"<-BPgroup}
+          Resultats$TXT_non_parametric_test$TXT_spearman_kendall_corr_by_group<-BPgroup}
         }
       }
       
-      if(any(param=="robust"| any(param=="Test robustes - impliquant des bootstraps"))){
+      if(any(param=="robust"| any(param==TXT_robusts_tests_with_bootstraps))){
         boot_BP_results<-boot(data, boot_BP, n.boot)
-        if(!is.null(Resultats$"Test parametrique"$"Correlation de Bravais Pearson")) {
-          try(Resultats$"Test parametrique"$"Correlation de Bravais Pearson"$"Bca lim inf"<-round( boot.ci(boot_BP_results)$bca[,4],4), silent=T)
-          try(Resultats$"Test parametrique"$"Correlation de Bravais Pearson"$"Bca lim sup"<-round( boot.ci(boot_BP_results)$bca[,5],4),silent=T)
-        } else if(!is.null(Resultats$"Test parametrique"$"Correlation partielle/semi-partielle de Bravais Pearson")) {
+        if(!is.null(Resultats$TXT_param_tests$TXT_BP_correlation)) {
+          try(Resultats$TXT_param_tests$TXT_BP_correlation$"Bca lim inf"<-round( boot.ci(boot_BP_results)$bca[,4],4), silent=T)
+          try(Resultats$TXT_param_tests$TXT_BP_correlation$"Bca lim sup"<-round( boot.ci(boot_BP_results)$bca[,5],4),silent=T)
+        } else if(!is.null(Resultats$TXT_param_tests$TXT_partial_semi_BP)) {
           boot_BPSP_results<-boot(data, boot_BPSP, n.boot)  
-          try(Resultats$"Test parametrique"$"Correlation partielle/semi-partielle de Bravais Pearson"$"Bca lim inf"<-round( c(boot.ci(boot_BP_results)$bca[,4], boot.ci(boot_BPSP_results)$bca[,4]),4),silent=T)
-          try(Resultats$"Test parametrique"$"Correlation partielle/semi-partielle de Bravais Pearson"$"Bca lim sup"<-round( c(boot.ci(boot_BP_results)$bca[,5], boot.ci(boot_BPSP_results)$bca[,5]) ,4), silent=T)
-        } else try(Resultats$"Analyses robustes"$"Bootstrap sur la correlation de Bravais Pearson"<-round(data.frame("Bca.lim.inf"= boot.ci(boot_BP_results)$bca[,4], " Bca.lim.sup"=boot.ci(boot_BP_results)$bca[,5] ), 4),silent=T)
+          try(Resultats$TXT_param_tests$TXT_partial_semi_BP$"Bca lim inf"<-round( c(boot.ci(boot_BP_results)$bca[,4], boot.ci(boot_BPSP_results)$bca[,4]),4),silent=T)
+          try(Resultats$TXT_param_tests$TXT_partial_semi_BP$"Bca lim sup"<-round( c(boot.ci(boot_BP_results)$bca[,5], boot.ci(boot_BPSP_results)$bca[,5]) ,4), silent=T)
+        } else try(Resultats$TXT_robust_analysis$TXT_bootstrap_on_BP<-round(data.frame("Bca.lim.inf"= boot.ci(boot_BP_results)$bca[,4], " Bca.lim.sup"=boot.ci(boot_BP_results)$bca[,5] ), 4),silent=T)
         
-        if(any(param=="non param")| any(param=="Test non parametrique")) {
+        if(any(param=="non param")| any(param==TXT_non_parametric_test)) {
           boot_Spearman_results<-boot(data, boot_Spearman, n.boot)
-          if(!is.null(Resultats$"Test non parametrique"$"Rho de Spearman")) {
-            try(Resultats$"Test non parametrique"$"Rho de Spearman"$"Bca lim inf"<-round( boot.ci(boot_Spearman_results)$bca[,4],4), silent=T)
-            try(Resultats$"Test non parametrique"$"Rho de Spearman"$"Bca lim sup"<-round( boot.ci(boot_Spearman_results)$bca[,5],4), silent=T)
+          if(!is.null(Resultats$TXT_non_parametric_test$TXT_rho)) {
+            try(Resultats$TXT_non_parametric_test$TXT_rho$"Bca lim inf"<-round( boot.ci(boot_Spearman_results)$bca[,4],4), silent=T)
+            try(Resultats$TXT_non_parametric_test$TXT_rho$"Bca lim sup"<-round( boot.ci(boot_Spearman_results)$bca[,5],4), silent=T)
           } else{
             boot_SpearmanSP_results<-boot(data, boot_SpearmanSP, n.boot)
             
-            try(Resultats$"Test non parametrique"$"Rho partiel/semi partiel de Spearman"$"Bca lim inf"<-round(c( boot.ci(boot_Spearman_results)$bca[,4], boot.ci(boot_SpearmanSP_results)$bca[,4]),4), silent=T)
-            try(Resultats$"Test non parametrique"$"Rho partiel/semi partiel de Spearman"$"Bca lim sup"<-round(c( boot.ci(boot_Spearman_results)$bca[,5], boot.ci(boot_SpearmanSP_results)$bca[,5]),4), silent=T)
+            try(Resultats$TXT_non_parametric_test$TXT_partial_semi_partial_rho$"Bca lim inf"<-round(c( boot.ci(boot_Spearman_results)$bca[,4], boot.ci(boot_SpearmanSP_results)$bca[,4]),4), silent=T)
+            try(Resultats$TXT_non_parametric_test$TXT_partial_semi_partial_rho$"Bca lim sup"<-round(c( boot.ci(boot_Spearman_results)$bca[,5], boot.ci(boot_SpearmanSP_results)$bca[,5]),4), silent=T)
           } 
           
         }
       }
       
       
-      if(any(param=="Bayes") | any(param=="Facteurs bayesiens") ){
+      if(any(param=="Bayes") | any(param==TXT_bayesian_factors) ){
         
         BF<-regressionBF(modele, data=data, rscaleCont=rscale )
         sample<-posterior(BF, iterations = ifelse(is.null(n.boot), 1000, n.boot))
         BF<-extractBF(BF, onlybf=F)
-        BF<-data.frame("Facteur bayesien"=c(ifelse(BF$bf>10000,">10000", round(BF$bf,5)), 
+        BF<-data.frame(TXT_bayesian_factor=c(ifelse(BF$bf>10000,">10000", round(BF$bf,5)), 
                                             ifelse(1/BF$bf>10000, ">10000", round((1/BF$bf),5))), "Erreur"=round(c( BF$error, BF$error),5))
         
-        dimnames(BF)[[1]]<-c("En faveur de l'hypothese alternative", "En faveur de l'hypothese nulle")
+        dimnames(BF)[[1]]<-c(TXT_supports_alternative, TXT_supports_null)
         # what is the t-value for the data?
         r2Val <-cor.test(data[,X1],data[,Y1])$estimate
         BF$r<-r2Val
         r2Val<-r2Val^2
         BF$r.carre<-r2Val
-        Resultats$"Facteurs bayesiens"$"Facteurs Bayesiens pour la correlation de Bravais-Pearson"<-BF
+        Resultats$TXT_bayesian_factors$TXT_bayesian_factors_for_BP<-BF
         
-        if(any(param=="non param")| any(param=="Test non parametrique")) {
+        if(any(param=="non param")| any(param==TXT_non_parametric_test)) {
           data2<-sapply(data[,c(X,Y,Z)], rank, ties.method="average", na.last="keep")
           data2<-data.frame(data2)
-          if(choix!="Correlations"){
+          if(choix!=TXT_correlations){
             lm.r1<-lm(modele1, data2)
             lm.r2<-lm(modele2, data2)
             data2$residus1<-lm.r1$residuals
@@ -336,10 +336,10 @@ corr.complet <-
           
           BFS<-regressionBF(modele, data=data2, rscaleCont=rscale )
           BFS<-extractBF(BFS, onlybf=F)
-          BFS<-data.frame("Facteur bayesien"=c(ifelse(BFS$bf>10000,">10000", round(BFS$bf,5)), 
+          BFS<-data.frame(TXT_bayesian_factor=c(ifelse(BFS$bf>10000,">10000", round(BFS$bf,5)), 
                                                ifelse(1/BFS$bf>10000, ">10000", round((1/BFS$bf),5))), "Erreur"=round(c( BFS$error, BF$error),5))
-          dimnames(BFS)[[1]]<-c("En faveur de l'hypothese alternative", "En faveur de l'hypothese nulle")
-          Resultats$"Facteurs bayesiens"$"Facteurs Bayesiens pour la correlation de Spearman"<-BFS
+          dimnames(BFS)[[1]]<-c(TXT_supports_alternative, TXT_supports_null)
+          Resultats$TXT_bayesian_factors$TXT_bayesian_factors_for_spearman<-BFS
           
         }
         
@@ -347,24 +347,24 @@ corr.complet <-
           
           corr.g<-function(X2){  BF<-regressionBF(modele, X2, rscaleCont=rscale ,progress=F)
           BF<-extractBF(BF, onlybf=F)
-          return(data.frame("Facteur bayesien"=round(BF$bf,5), "Erreur"=round(BF$error,5)))}
+          return(data.frame(TXT_bayesian_factor=round(BF$bf,5), "Erreur"=round(BF$error,5)))}
           
           BPgroup<-by(data=data, INDICES=data[,group], FUN=corr.g)
           BPgroup<-round(matrix(unlist(BPgroup), ncol=2, byrow=T), 4) 
-          dimnames(BPgroup)[[2]]<- c("FB", "erreur")
+          dimnames(BPgroup)[[2]]<- c("FB", TXT_error)
           if(length(group)==1) {gr.l<-expand.grid(levels(data[,group])) 
           names(gr.l)<-group}else gr.l<-expand.grid(sapply(data[,group],levels))
           BPgroup<-data.frame(gr.l,BPgroup )
           
           
           
-          if( any(param=="non param")| any(param=="Test non parametrique")){
+          if( any(param=="non param")| any(param==TXT_non_parametric_test)){
             BFgroupS<-by(data=data2, INDICES=data[,group], FUN=corr.g)
             BFgroupS<-matrix(unlist(BFgroupS), ncol=2, byrow=T)
             BPgroup<-cbind(BPgroup, BFgroupS)
             names(BPgroup)<-c(group, "FB.BP","Erreur.BP", "FB.Spearman", "Erreur.Spearman")
           }  
-          BPgroup->Resultats$"Facteurs bayesiens"$"Facteur bayesien par groupe"
+          BPgroup->Resultats$TXT_bayesian_factors$TXT_bayesian_factor_by_group
         }
         
         plot(sample)
@@ -379,7 +379,7 @@ corr.complet <-
         SBF<-data.frame("n"=rep(5:length(data[,X]), each=3 ),"BF"= bfs, 
                         "rscale"=as.factor(rep(c("moyen - 0.353", "large - 0.5", "ultra large - 0.707"), length.out= 3*(length(data[,X])-4) )))
         SBF$rscale<-relevel(SBF$rscale, ref=2)
-        Resultats$"Facteurs bayesiens sequentiels"<-.plotSBF(SBF)
+        Resultats$TXT_bayesian_factors_sequential<-.plotSBF(SBF)
         
         ##### Debut du graphique  Bayes Factor Robustness Check     
         
@@ -407,7 +407,7 @@ corr.complet <-
         format(axe2, scientific=T)->axe2b
         par(mar = c(4, 10, 0.5, 0.5), mgp = c(8, 1, 0))
         plot(cauchyRates, bayesFactors, type = "l", lwd = 2, col = "gray48", ylim= c(min(bayesFactors), max(bayesFactors)),
-             yaxt = "n"    , xaxt = "n",  xlab = "Cauchy Prior Width (r)" , ylab = "Bayes Factor (10)")
+             yaxt = "n"    , xaxt = "n",  xlab = TXT_cauchy_prior_width , ylab = TXT_bayes_factor_10)
         axis(2, labels=axe2b, at=axe2, las=2)
         abline(h = 0, lwd = 1)
         abline(h = 6, col = "black", lty = 2, lwd = 2)
@@ -432,7 +432,7 @@ corr.complet <-
     
     
     # package supprime "plyr",
-    packages<-c("BayesFactor", "boot", "ggplot2", "ppcor","outliers","psych",  "svDialogs")
+    packages<-c(TXT_bayes_factor, "boot", "ggplot2", "ppcor","outliers","psych",  "svDialogs")
     
     try(lapply(packages, library, character.only=T), silent=T)->test2
     if(class(test2)== "try-error") return(ez.install())
@@ -463,27 +463,27 @@ corr.complet <-
       Y1<-as.character(XY[i,2])
       data1<-data[complete.cases(data[,c(Y1,X1,Z)]),]
       R1<-list()
-      if(any(outlier%in%  c("Donnees completes", "complete"))){
-        R1$"Donnees completes"<-corr.complet.out(X=X1, Y=Y1,Z=Z, data=data1, choix=choix, group=group, param=param, n.boot=n.boot, rscale=rscale)
+      if(any(outlier%in%  c(TXT_complete_dataset, "complete"))){
+        R1$TXT_complete_dataset<-corr.complet.out(X=X1, Y=Y1,Z=Z, data=data1, choix=choix, group=group, param=param, n.boot=n.boot, rscale=rscale)
       } 
-      if(any(outlier%in%c("Identification des valeurs influentes","id"))|
-         any(outlier%in%c("Donnees sans valeur influente", "removed"))){
+      if(any(outlier%in%c(TXT_identifying_outliers,"id"))|
+         any(outlier%in%c(TXT_without_outliers, "removed"))){
         modele<-as.formula(paste0(X1,"~",Y1))
         if(!is.null(Z)){for(i in 1:length(Z))      modele<-update(modele, as.formula(paste0(".~.+",Z[i])))}
         data1$residu<-resid(lm(modele, data=data1))
         critere<-ifelse(is.null(z), "Grubbs", "z")
-        valeurs.influentes(X="residu", critere=critere,z=z, data=data1)->influentes
+        valeurs.influentes(X=TXT_residual, critere=critere,z=z, data=data1)->influentes
       }
-      if(any(outlier%in% c("id","Identification des valeurs influentes"))){influentes->R1$"Valeurs influentes"}
-      if(any(outlier%in%c("removed", "Donnees sans valeur influente"))) {
-        if(length(influentes$"observations influentes")!=0 | 
-           ! any(outlier %in% c("Donnees completes","complete"))){
+      if(any(outlier%in% c("id",TXT_identifying_outliers))){influentes->R1$TXT_outliers_values}
+      if(any(outlier%in%c("removed", TXT_without_outliers))) {
+        if(length(influentes$TXT_outliers)!=0 | 
+           ! any(outlier %in% c(TXT_complete_dataset,"complete"))){
           get("nettoyees", envir=.GlobalEnv)->nettoyees
-          R1$"Donnees sans valeur influente"<-corr.complet.out(X=X1, Y=Y1,Z=Z, data=nettoyees, choix=choix, group=group, param=param, n.boot=n.boot, rscale=rscale)
+          R1$TXT_without_outliers<-corr.complet.out(X=X1, Y=Y1,Z=Z, data=nettoyees, choix=choix, group=group, param=param, n.boot=n.boot, rscale=rscale)
         }
       }
       Resultats[[i]]<-R1
-      names(Resultats)[i]<-paste("Correlation entre la variable", X1, "et la variable", Y1)
+      names(Resultats)[i]<-paste(TXT_correlation_between_var_x, X1, INFO_and_variabe, Y1)
     }
     
     paste(X, collapse="','", sep="")->X
@@ -507,7 +507,7 @@ corr.complet <-
     
     if(save){ try(ez.html(Resultats, html=F), silent=T) }
     
-    ref1(packages)->Resultats$"References"
+    ref1(packages)->Resultats$TXT_references
     if(html) try(ez.html(Resultats), silent=T)
     ### Obtenir les Resultats
     return(Resultats) 
