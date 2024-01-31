@@ -21,13 +21,13 @@ ez.mediation <-
       }
       if (save.pdf == TRUE) {
         if (save.eps == TRUE) 
-          stop("Only one file format for saving figure may be used at a time (you have both PDF and EPS specified).")
+          stop(INFO_only_one_file_format_at_time_EPS_PDF)
         if (save.jpg == TRUE) 
-          stop("Only one file format for saving figure may be used at a time (you have both PDF and JPG specified).")
+          stop(INFO_only_one_file_format_at_time_PDF_JPG)
       }
       if (save.eps == TRUE) {
         if (save.jpg == TRUE) 
-          stop("Only one file format for saving figure may be used at a time (you have both EPS and JPG specified).")
+          stop(INFO_only_one_file_format_at_time_EPS_JPG)
       }
       if (save.pdf == TRUE | save.eps == TRUE | save.jpg == TRUE) {
         no.file.name <- FALSE
@@ -118,29 +118,29 @@ ez.mediation <-
     try(lapply(packages, library, character.only=T), silent=T)->test2
     if(class(test2)== "try-error") return(ez.install())
     Resultats<-list()
-    dlgList(c("Effets de mediation simple", 
-              "Effet de mediation distante"), preselect=NULL, multiple = FALSE, title="Quel type de mediation ?")$res->choix
+    dlgList(c(TXT_simple_mediation_effect, 
+              TXT_distance_mediation_effect), preselect=NULL, multiple = FALSE, title=ASK_mediation_type)$res->choix
     if(length(choix)==0) return(analyse())
     choix.data(nom=T)->data
     if(is.null(data)) return(ez.mediation())
     data[[1]]->nom
     data[[2]]->data
     listes<-data.frame(paste(names(data), "(format :", sapply(data, class), ")", sep=" "), names(data))
-    if(info) writeLines("veuillez preciser le predicteur")
+    if(info) writeLines(ASK_predictor)
     X<-dlgList(paste(names(data), "(format :", sapply(data, class), ")", sep=" "), multiple = F, 
-               title="Predicteur")$res
+               title=TXT_predictor)$res
     if(length(X)==0) return(ez.mediation())
     subset(listes, listes[,1] %in% X)[,2]->X
     as.character(X)->X
-    if(info) writeLines("veuillez choisir le mediateur")
+    if(info) writeLines(ASK_mediator)
     Mediator<-dlgList(c(paste(names(data), "(format :", sapply(data, class), ")", sep=" ")), multiple = F, 
-                      title="Mediateur")$res
+                      title=TXT_mediator)$res
     if(length(Mediator)==0) return(ez.mediation())
     subset(listes, listes[,1] %in% Mediator)[,2]->Mediator
     as.character(Mediator)->Mediator
-    if(choix=="Effet de mediation distante"){
-      writeLines("veuillez preciser le second mediateur.")
-      Mediator2<-dlgList(c(paste(names(data), "(format :", sapply(data, class), ")", sep=" ")), multiple = F, title="Mediateur 2")$res
+    if(choix==TXT_distance_mediation_effect){
+      writeLines(ASK_second_mediator)
+      Mediator2<-dlgList(c(paste(names(data), "(format :", sapply(data, class), ")", sep=" ")), multiple = F, title=TXT_mediator2)$res
       if(length(Mediator2)==0) return(ez.mediation())
       subset(listes, listes[,1] %in% Mediator2)[,2]->Mediator2
       as.character(Mediator2)->Mediator2
@@ -148,18 +148,18 @@ ez.mediation <-
     
     if(info) writeLines("veuillez choisir la variable dependante")
     VD<-dlgList(c(paste(names(data), "(format :", sapply(data, class), ")", sep=" ")), multiple = F, 
-                title="Variable dependante")$res
+                title=TXT_dependant_variable)$res
     subset(listes, listes[,1] %in% VD)[,2]->VD
     as.character(VD)->VD
-    writeLines("veuillez preciser le nombre de bootstrap. Un minimum de 500 est idealement requis. Peut prendre du temps pour N>1000")
-    n.boot<-dlgInput("Nombre de bootstrap ?", 1)$res
+    writeLines(ASK_bootstrap_number_min_500)
+    n.boot<-dlgInput(ASK_bootstraps_number, 1)$res
     if(length(n.boot)==0) n.boot<-"0"
     strsplit(n.boot, ":")->n.boot
     tail(n.boot[[1]],n=1)->n.boot
     as.numeric(n.boot)->n.boot
     if(!is.na(n.boot) && any(n.boot>50)) bootstrap<-TRUE else bootstrap<-FALSE
     
-    if(choix=="Effets de mediation simple"){
+    if(choix==TXT_simple_mediation_effect){
       MBESS::mediation(data[,X], data[,Mediator], data[,VD], conf.level = 0.95, bootstrap = bootstrap, B = n.boot, which.boot="both", save.bs.replicates=TRUE, complete.set=TRUE)->mediation.out
       for(i in 1:length(mediation.out)){
         if(class(mediation.out[[i]])== "list") for(j in 1 : length(mediation.out[[i]])){
@@ -167,9 +167,9 @@ ez.mediation <-
             round(mediation.out[[i]], 4)->mediation.out[[i]]}
       }  
       Resultats$Analyse.mediation<-mediation.out
-      Resultats$Information<-"Pour une description detaillee des resultats, ?mediation"
+      Resultats$Information<-TXT_for_a_detailed_results_description_mediation
       mediation.effect.bar.plot2(data[,X], data[,Mediator], data[,VD],main = "Mediation Effect Bar Plot", width = 1, left.text.adj = 0,right.text.adj = 0, rounding = 3, file = "", save.pdf = FALSE,save.eps = FALSE, save.jpg = FALSE)
-    }else { print("Les mediations distales ne sont pas disponibles pour le moment / Distal mediations are not available for now")
+    }else { print(INFO_unavailable_distal_mediations)
     #data2<-data[,c(X, Mediator, Mediator2, VD)]
     #names(data2)<-c("x", "m1","m2","y")
     #distal.med(data2)->results
@@ -178,21 +178,21 @@ ez.mediation <-
     #round(as.numeric(as.character(results$SE)),4)->results$SE
     #round(as.numeric(as.character(results[,3])),3)->results$t.ratio
     #round(as.numeric(as.character(results$Med.Ratio)),4)->results$Med.Ratio 
-    #names(results)<-c("Effet", "Erreur.st","test.t", "Ratio.med")
-    #results->Resultats$"Mediation a distance"
-    #Resultats$Information<-"Pour une description detaillee des resultats, ?distal.med"
+    #names(results)<-c(TXT_effect, "Erreur.st","test.t", "Ratio.med")
+    #results->Resultats$TXT_distance_mediator
+    #Resultats$Information<-TXT_for_a_detailed_results_description_distal
     #distmed.boot <- boot(data2, distInd.ef, R=n.boot)
     #boot.ci(distmed.boot, conf=.95, type=c("basic","perc", "norm"))->IC.boot
     #round(matrix(c(IC.boot$normal[,2:3],IC.boot$basic[,4:5],IC.boot$percent[,4:5]), ncol=2 ),4)->IC.boot
     #dimnames(IC.boot)[[1]]<-c("normal","basic","percentile")
     #dimnames(IC.boot)[[2]]<-c("limite.inf","limite.sup")
-    #IC.boot->Resultats$"Intervalle de confiance estime par bootstrap"
+    #IC.boot->Resultats$TXT_confidence_interval_estimated_by_bootstrap
           }
     
-    dlgList(c("TRUE","FALSE"), preselect="FALSE", multiple = FALSE, title="voulez-vous sauvegarder?")$res->sauvegarde
+    dlgList(c("TRUE","FALSE"), preselect="FALSE", multiple = FALSE, title=ASK_save_results)$res->sauvegarde
     if(length(sauvegarde)==0) sauvegarde<-FALSE  
     if(sauvegarde) save(Resultats=Resultats, choix=choix, env=.e)
-    ref1(packages)->Resultats$"References" 
+    ref1(packages)->Resultats$TXT_references 
     if(html) ez.html(Resultats)
     return(Resultats)  
     

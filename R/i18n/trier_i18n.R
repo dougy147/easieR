@@ -1,6 +1,0 @@
-txt_other_data <- "autres donnees"
-desc_order <- "de tri"
-desc_data_succesfully_ordered <- "les donnees ont ete triees correctement "
-txt_variables <- "Variable(s)"
-ask_level <- "Veuillez choisir le niveau"
-ask_variables_to_order <- "Veuillez selectionner la (les) variable(s) a trier"

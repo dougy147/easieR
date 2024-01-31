@@ -1,6 +1,0 @@
-txt_other_data <- "autres donnees"
-txt_selected_data <- "donnees que vous venez de selectionner"
-desc_variables_are_in <- "les variables selectionnees sont dans"
-ask_variables <- "Quelles sont les variables a selectionner ?"
-ask_filename <- "Quel nom voulez-vous donner au fichier?"
-txt_variable <- "Variable"

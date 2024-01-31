@@ -26,15 +26,15 @@ regressions.log <-
       if(dial && is.null(modele)){
         if(info) writeLines("Veuillez choisir le(s) type(s) de relations entre les variables. Les effets additifs prennent la forme de
                             y=X1+X2 tandis que les effets d'interaction prennent la forme de Y=X1+X2+X1:X2")
-        dlgList(c("Effets additifs", "Effets d'interaction", "Specifier le modele"), preselect="Regressions", multiple = TRUE, title="Quel type de regression ?")$res->link
+        dlgList(c(TXT_additive_effects, TXT_interaction_effects, TXT_specify_model), preselect=TXT_regressions, multiple = TRUE, title=ASK_which_regression_type)$res->link
         if(length(link)==0) return(NULL)} else link<-"none"
       
       if(length(Y)>1){
-        msgBox("Il ne peut y avoir qu'une seule variable dependante.")
+        msgBox(INFO_only_one_dependant_variable_alllowed)
         Y<-NULL }
-      if(any(link %in% c("Effets additifs", "Effets d'interaction"))){
-        msg3<-"Veuillez choisir la variable dependante."
-        Y<-.var.type(X=Y, info=info, data=data, type=NULL, check.prod=F, message=msg3,  multiple=FALSE, title="Variable dependante", out=NULL)
+      if(any(link %in% c(TXT_additive_effects, TXT_interaction_effects))){
+        msg3<-ASK_chose_dependant_variable
+        Y<-.var.type(X=Y, info=info, data=data, type=NULL, check.prod=F, message=msg3,  multiple=FALSE, title=TXT_dependant_variable, out=NULL)
         if(is.null(Y)) {
           reg.log.in()->Resultats
           return(Resultats)}
@@ -42,27 +42,27 @@ regressions.log <-
         Y<-Y$X
         
         if(length(unique(data[,Y]))!=2) {
-          msg1<-paste("Votre veriable dependante a", length(unique(data[,Y])), "modalites. Elle est incompatible avec une regression logistique. Elle doit etre dichotomique" )
+          msg1<-paste(INFO_your_dependant_variable_has, length(unique(data[,Y])), INFO_must_be_dichotomic )
           msgBox(msg1)
           if(class(data[,Y]) %in%c("numeric","integer")){
             dlgMessage("voulez-vous convertir la variable dependante en une variable dichotomique,  ?","yesno")$res->conv
             
             if(conv=="no") return(reg.log.in())  else{
-              if(info) writeLines("Veuillez specifier le critere sur lequel vous souhaitez dichotomiser votre variable.Vous pouvez utiliser la mediane ou choisir un seuil specifique.")
-              dlgList(c("Mediane", "Seuil"), preselect="Mediane", multiple = FALSE, title="Quel critere de codage voulez-vous ?")$res->codage
+              if(info) writeLines(ASK_criterion_for_dichotomy)
+              dlgList(c(TXT_median, TXT_threshold), preselect=TXT_median, multiple = FALSE, title=ASK_coding_criterion)$res->codage
               if(length(codage)==0) return(reg.log.in())
-              if(codage=="Mediane") data[,Y]<-ifelse(data[,Y]>median(data[,Y]),1, 0)
+              if(codage==TXT_median) data[,Y]<-ifelse(data[,Y]>median(data[,Y]),1, 0)
               View(data)
               readline()
-              if(codage=="Seuil") {
+              if(codage==TXT_threshold) {
                 seuil<-NA
                 while(is.na(seuil)){
-                  seuil<-dlgInput("Veuillez preciser la valeur de separation", median(data[,Y]))$res 
+                  seuil<-dlgInput(ASK_separation_value, median(data[,Y]))$res 
                   if(length(seuil)==0) return(reg.log.in())
                   strsplit(seuil, ":")->seuil
                   tail(seuil[[1]],n=1)->seuil
                   as.numeric(seuil)->seuil
-                  if(is.na(seuil) || seuil>max(data[,Y]) || seuil<min(data[,Y])) {msgBox("La valeur doit etre numerique et comprise entre le minimum et le maximum de la variable dependante.")
+                  if(is.na(seuil) || seuil>max(data[,Y]) || seuil<min(data[,Y])) {msgBox(INFO_value_must_be_numeric)
                     Y<-NA}
                 }
                 data[,Y]<-ifelse(data[,Y]>seuil,1, 0)
@@ -71,10 +71,10 @@ regressions.log <-
             }
           }
           if(class(data[,Y]) %in%c("factor","character")){
-            dlgMessage("Voulez-vous faire des regroupements entre les modalites ?","yesno")$res->reg
+            dlgMessage(ASK_regroup_modalities,"yesno")$res->reg
             if(reg=="no") return(reg.log.in()) else {
-              if(info) writeLines("Veuillez specifier la/les modalite(s) qui serviront pour la ligne de base (e.g. 0). Les autres modalites seront regroupes dans la categorie 1.")
-              reg<- dlgList(levels(data[,Y]), preselect=NULL, multiple = TRUE, title="Modalites a regrouper")$res
+              if(info) writeLines(ASK_linebase_modalities)
+              reg<- dlgList(levels(data[,Y]), preselect=NULL, multiple = TRUE, title=TXT_modalities_to_regroup)$res
               setdiff(levels(data[,Y]),reg)->reste
               data[,Y]<-ifelse(data[,Y]%in%reg, 0,1) 
               data[,Y]<-factor(data[,Y])
@@ -83,9 +83,9 @@ regressions.log <-
         }
         
         
-        if(any(link=="Effets additifs") || !is.null(X_a)| any(X_a %in% names(data)==F)) {
-          msg3<-"Veuillez choisir la variable dependante."
-          X_a<-.var.type(X=Y, info=info, data=data, type=NULL, check.prod=F, message=msg3,  multiple=TRUE, title="Variables modele additif", out=Y)
+        if(any(link==TXT_additive_effects) || !is.null(X_a)| any(X_a %in% names(data)==F)) {
+          msg3<-ASK_chose_dependant_variable
+          X_a<-.var.type(X=Y, info=info, data=data, type=NULL, check.prod=F, message=msg3,  multiple=TRUE, title=TXT_additive_model_variables, out=Y)
           if(is.null(X_a)) {
             reg.log.in()->Resultats
             return(Resultats)}
@@ -94,11 +94,11 @@ regressions.log <-
           
         }else X_a<-NULL 
         
-        if(any(link=="Effets d'interaction") || !is.null(X_i) & (length(X_i)<2 | any(X_i %in% names(data)==F))) {
-          msg3<-"Veuillez choisir les predicteurs a entrer dans le modele d'interaction. Il est necessaire d'avoir au moins deux variables"
+        if(any(link==TXT_interaction_effects) || !is.null(X_i) & (length(X_i)<2 | any(X_i %in% names(data)==F))) {
+          msg3<-ASK_chose_interaction_model_predictors
           X_i<-c()
           while(length(X_i)<2){
-            X_i<-.var.type(X=Y, info=info, data=data, type=NULL, check.prod=F, message=msg3,  multiple=TRUE, title="Variables modele interactif", out=c(X_a,Y))
+            X_i<-.var.type(X=Y, info=info, data=data, type=NULL, check.prod=F, message=msg3,  multiple=TRUE, title=TXT_interactive_model_variables, out=c(X_a,Y))
             if(is.null(X_i)) {
               reg.log.in()->Resultats
               return(Resultats)}
@@ -128,7 +128,7 @@ regressions.log <-
       
       
       
-      if(any(link=="Specifier le modele")) modele<-fix(modele)
+      if(any(link==TXT_specify_model)) modele<-fix(modele)
       variables<-terms(as.formula(modele))
       variables<-as.character( attributes(variables)$variables)[-1]
       pred<-attributes(terms(as.formula(modele)))$term.labels
@@ -139,7 +139,7 @@ regressions.log <-
           while(length(pred)!=0){
             if(info)  writeLines("L'ordre d'entree des variables est important pour le calcul du maximum de vraisemblance. Veuillez
                                  preciser l'ordre d'entree des variables") 
-            V1<-dlgList(pred, multiple = FALSE,title="Quelle variable a cette etape")$res
+            V1<-dlgList(pred, multiple = FALSE,title=ASK_variable_at_this_point)$res
             c(pred.ord,V1)->pred.ord
             setdiff(pred,V1)->pred}
         }else pred.ord<-pred
@@ -150,7 +150,7 @@ regressions.log <-
       
       model.test<-try(model.matrix(modele, data), silent=T)
       if(any(class(model.test)=="try-error")) {
-        msgBox("Le modele specifie est incorrect. Verifiez vos variables et votre modele")
+        msgBox(INFO_incorrect_model)
         return(reg.log.in())
       }
       
@@ -165,7 +165,7 @@ regressions.log <-
       
       if(dial){
         if(info) writeLines('voulez-vous integrer les probabilites a votre base de donnees ?')
-        dlgList(c(TRUE, FALSE), preselect=FALSE, multiple = FALSE, title="Probabilites ?")$res->proba
+        dlgList(c(TRUE, FALSE), preselect=FALSE, multiple = FALSE, title=ASK_probabilities)$res->proba
         
       }
       
@@ -185,9 +185,9 @@ regressions.log <-
       variables<-terms(as.formula(modele))
       variables<-as.character( attributes(variables)$variables)[-1]
       pred<-attributes(terms(as.formula(modele)))$term.labels
-      Resultats$"Statistiques descriptives"<-.stat.desc.out(X=variables, groupes=NULL, data=data, tr=.1, type=3, plot=T)
+      Resultats$TXT_descriptive_statistics<-.stat.desc.out(X=variables, groupes=NULL, data=data, tr=.1, type=3, plot=T)
       
-      if(scale==T || scale=="Centre") {Resultats$info<-"En accord avec les recommandations de Schielzeth 2010, les donnees ont ete prealablement centrees"
+      if(scale==T || scale==TXT_center) {Resultats$info<-INFO_centered_data_schielzeth_recommandations
       fun<-function(X){X-mean(X)}
       variables[-1]->pred2
       sapply(X=data[, names(which(sapply(data[,pred2],class)!="factor"))], fun)->data[,names(which(sapply(data[,pred2],class)!="factor"))]
@@ -215,10 +215,10 @@ regressions.log <-
         hier<-paste0(hier,")")
         hier<-eval(parse(text=hier))
         
-        attributes(hier)$heading[1]<-"Table de l'analyse de la deviance des modeles hierarchiques"
+        attributes(hier)$heading[1]<-TXT_hierarchical_models_deviance_table
         round(1-pchisq(hier$Deviance,hier$Df,lower.tail=F),4)->hier$valeur.p
-        names(hier)<-c("ddl.resid", "Deviance.resid","ddl.effet", "Deviance", "valeur.p")
-        Resultats$"Analyse hierarchique des modeles "<-hier
+        names(hier)<-c("ddl.resid", "Deviance.resid","ddl.effet", TXT_deviation, "valeur.p")
+        Resultats$TXT_hierarchical_model_analysis<-hier
       }
       
       
@@ -239,25 +239,25 @@ regressions.log <-
       
       summary(mod[[length(mod)]])->resultats
       as(resultats$call,"character")->texte
-      paste("le modele teste est" , texte[2])->Resultats$"Modele teste"
+      paste(INFO_tested_model_is , texte[2])->Resultats$TXT_test_model
       
       cbind(rms::vif(mod[[length(mod)]]), 1/rms::vif(mod[[length(mod)]]))->MC
-      dimnames(MC)[[2]]<-c("Facteur d'inflation de la variance", "Tolerance")
-      round(MC,4)->Resultats$"Test de multicolinearite"
+      dimnames(MC)[[2]]<-c(TXT_inflation_variance_factor, TXT_tolerance)
+      round(MC,4)->Resultats$TXT_multicolinearity_test
       
       sum(Amelioration_du_MV$Df[2:length(Amelioration_du_MV$Df)])->ddl
       Amelioration_du_MV$`Resid. Dev`[1]-Amelioration_du_MV$`Resid. Dev`[length(Amelioration_du_MV$`Resid. Dev`)]->chi.carre.modele
       round(1-pchisq(chi.carre.modele,ddl),4)->valeur.p
       logisticPseudoR2s(mod[[length(mod)]])->Pseudo.R.carre
       data.frame(chi.carre.modele, ddl, valeur.p,Pseudo.R.carre[1],Pseudo.R.carre[2],Pseudo.R.carre[3])->mod.glob
-      names(mod.glob)<-c("chi.2.modele", "ddl", "valeur.p","Hosmer and Lemeshow R^2","Cox and Snell R^2","Nagelkerke R^2")
-      mod.glob->Resultats$"Significativite du modele global"
+      names(mod.glob)<-c("chi.2.modele", "ddl", "valeur.p",TXT_hosmer_lemeshow_r_2,TXT_cox_snell_r_2,"Nagelkerke R^2")
+      mod.glob->Resultats$TXT_model_significance
       
       
       Amelioration_du_MV$chi.deux.prob<-1-pchisq(Amelioration_du_MV$Deviance, Amelioration_du_MV$Df)
       round(Amelioration_du_MV,4)->Amelioration_du_MV
       names(Amelioration_du_MV)<-c("ddl predicteur", "MV","ddl.residuels","MV residuel","valeur.p")
-      Resultats$"Amelioration de la vraisemblance pour chaque variable"<-data.frame(Amelioration_du_MV)
+      Resultats$INFO_improve_likelihood_for_each_variable<-data.frame(Amelioration_du_MV)
       
       data.frame(resultats$coefficients)->table
       (table$z.value)^2->table$Wald.statistic
@@ -265,25 +265,25 @@ regressions.log <-
       round(table,4)->table
       names(table)<-c("b","Erreur.standard","valeur.Z","p.Wald", "Wald","Odd.ratio")
       cbind(table, round(exp(confint(mod[[length(mod)]])),4))->table
-      table$interpretation<-ifelse(table$Odd.ratio>=1,paste(table$Odd.ratio, "fois plus"), paste(round(1/table$Odd.ratio,4), "fois moins"))
-      table->Resultats$"Table des coefficients"
+      table$interpretation<-ifelse(table$Odd.ratio>=1,paste(table$Odd.ratio, INFO_times_more), paste(round(1/table$Odd.ratio,4), INFO_times_less))
+      table->Resultats$TXT_coeff_table
       
       R_sq<-NULL
       for(i in 1:length(mod)){logisticPseudoR2s(mod[[i]])->R_squared
         rbind(R_sq, R_squared)->R_sq}
       diff(R_sq,lag=1)->R_sq[2.]
       dimnames(R_sq)[[1]]<-pred
-      dimnames(R_sq)[[2]]<-c("Hosmer and Lemeshow R^2","Cox and Snell R^2","Nagelkerke R^2")
-      R_sq->Resultats$"Delta du pseudo R carre"
+      dimnames(R_sq)[[2]]<-c(TXT_hosmer_lemeshow_r_2,TXT_cox_snell_r_2,"Nagelkerke R^2")
+      R_sq->Resultats$TXT_pseudo_r_square_delta
       
       if(proba=="TRUE")	{ 
-        round(fitted(mod[[length(mod)]]),4)->data$"Probabilites predites"
+        round(fitted(mod[[length(mod)]]),4)->data$TXT_predicted_probabilities
         head(data)
         print(nom)
         assign(x=nom, value=data, envir=.GlobalEnv)}
       
       if(select.m!="none"){
-        select.m<-switch(select.m,"Forward - pas-a-pas ascendant"="forward", "Backward- pas-a-pas descendant"="backward", "Bidirectionnel"="both",
+        select.m<-switch(select.m,TXT_forward_step_ascending="forward", TXT_backward_step_descending="backward", TXT_bidirectionnal="both",
                          "forward"="forward", "bidirectional"="both","backward"="backward" )
         if(  select.m=="forward") { mod0<-as.formula(paste0(as.character(modele)[2], "~1"))
           glm.0<-glm(mod0, data=data, family="binomial")
@@ -294,7 +294,7 @@ regressions.log <-
     lower = glm.0)) }else{
         steps<-stepAIC(glm.r1, direction=select.m)
         }
-        Resultats$"Methode de selection - criteres d'information d'Akaike"<-steps$anova
+        Resultats$TXT_selection_method_akaike<-steps$anova
        # modele<-as.formula(attributes(steps$anova)$heading[5])
       }
       
@@ -327,10 +327,10 @@ regressions.log <-
     group<-reg.in.output$reg.options$group
     proba<-reg.in.output$proba
     
-    if(!is.null(reg.in.output$reg.options$CV) && reg.in.output$reg.options$CV==TRUE) print("La validation croisee n'est pas encore disponible.")
+    if(!is.null(reg.in.output$reg.options$CV) && reg.in.output$reg.options$CV==TRUE) print(INFO_cross_validation_is_not_yet_supported)
     
-    if(any(outlier==  "Donnees completes")){
-      Resultats$"Donnees completes"<-  reg.log.out(data=data, modele=modele,  select.m=select.m, step=step, scale=scale, proba=proba, nom=nom)
+    if(any(outlier==  TXT_complete_dataset)){
+      Resultats$TXT_complete_dataset<-  reg.log.out(data=data, modele=modele,  select.m=select.m, step=step, scale=scale, proba=proba, nom=nom)
       if(!is.null(group))   {  
         R1<-list()
         G<-data[,group]
@@ -338,14 +338,14 @@ regressions.log <-
         G<-split(data, G)
         for(i in 1:length(G)){
           resg<-  try(reg.log.out(data=G[[i]], modele=modele,  select.m=select.m, step=step, scale=scale,proba=proba), silent=T)
-          if(class(resg)=="try-error")   R1[[length(R1)+1]]<-"Le nombre d'observations est insuffisant pour mener a bien les analyses pour ce groupe" else R1[[length(R1)+1]]<-resg
+          if(class(resg)=="try-error")   R1[[length(R1)+1]]<-INFO_insufficient_obs else R1[[length(R1)+1]]<-resg
           names(R1)[length(R1)]<-names(G)[i]
         }
-        Resultats$"Donnees completes"$"Analyse par groupe"<-R1
+        Resultats$TXT_complete_dataset$TXT_group_analysis<-R1
       } 
       
     } 
-    if(any(outlier=="Identification des valeurs influentes")|any(outlier=="Donnees sans valeur influente")|inf==T){
+    if(any(outlier==TXT_identifying_outliers)|any(outlier==TXT_without_outliers)|inf==T){
       
       lm.r1<-glm(modele, data, na.action=na.exclude ,family="binomial")
       as.character(attributes(terms(modele))$variables)->variables
@@ -362,7 +362,7 @@ regressions.log <-
         data[which(apply(mesure_influence$is.inf, 1, any)),"est.inf"]<-"*"
         
         data[order(data$res.student.p.Bonf), ]->data
-        writeLines("Les observations marquees d'un asterisque sont considerees comme influentes au moins sur un critere")
+        writeLines(INFO_obs_with_asterisk_are_outliers)
         View(data)
         suppression<-"yes"
         outliers<-data.frame()
@@ -373,12 +373,12 @@ regressions.log <-
           line <- readline()
           sup<-NA
           while(is.na(sup)){
-            sup <- dlgInput("Quelle observation souhaitez-vous retirer des analyses ? 0=aucune", 0)$res
+            sup <- dlgInput(ASK_obs_to_remove, 0)$res
             if(length(sup)==0) return(regressions())
             strsplit(sup, ":")->sup
             tail(sup[[1]],n=1)->sup
             as.numeric(sup)->sup
-            if(is.na(sup)) msgBox("Vous devez entrer le numero de l'observation")  
+            if(is.na(sup)) msgBox(INFO_you_must_give_obs_number)  
           }
           if(sup==0) suppression<-"no" else {
             rbind(outliers, nettoyees[sup,])->outliers
@@ -394,22 +394,22 @@ regressions.log <-
         data[which(data$cook.d<= seuil_cook), ]->nettoyees 
         data[which(data$cook.d>= seuil_cook), ]->outliers
         cbind(outliers[,variables],outliers$cook.d)->outliers
-        Resultats$"information"$"les valeurs influentes sont identifiees sur la base de 4/n"
+        Resultats$"information"$INFO_outliers_identified_on_4_div_n
       }
       nettoyees->>nettoyees   
       
-      if(any(outlier== "Identification des valeurs influentes")){
+      if(any(outlier== TXT_identifying_outliers)){
         length(data[,1])-length(nettoyees[,1])->N_retire # identifier le nombre d observations retirees sur la base de la distance de cook
         paste(N_retire/length(data[,1])*100,"%")->Pourcentage_retire # fournit le pourcentage retire
-        data.frame("N.retirees"=N_retire, "Pourcentage.obs.retirees"=Pourcentage_retire)->Resultats$"Synthese du nombre d'observations considerees comme influentes"
-        if(length(outliers)!=0) Resultats$"Identification des valeurs influentes"$"Observations considerees comme influentes"<-outliers
+        data.frame("N.retirees"=N_retire, "Pourcentage.obs.retirees"=Pourcentage_retire)->Resultats$TXT_identified_outliers_synthesis
+        if(length(outliers)!=0) Resultats$TXT_identifying_outliers$INFO_identified_outliers<-outliers
         
       }
-      if(any(outlier== "Donnees sans valeur influente")) {
-        if(N_retire!=0 | all(outlier!="Donnees completes")){
+      if(any(outlier== TXT_without_outliers)) {
+        if(N_retire!=0 | all(outlier!=TXT_complete_dataset)){
           so<- try(reg.log.out(data=nettoyees,modele=modele,  select.m=select.m, step=step, scale=scale,proba=proba, nom=paste0(nom,".nettoyees")),silent=T)
-          if(class(so)=="try-error") Resultats$"Donnees sans valeur influente"<-"La suppression des valeurs influentes entraîne un effectif trop faible sur certaines modalites pour mener a bien l'analyse" else{
-            Resultats$"Donnees sans valeur influente"<-so 
+          if(class(so)=="try-error") Resultats$TXT_without_outliers<-INFO_removing_outliers_weakens_sample_size else{
+            Resultats$TXT_without_outliers<-so 
             
             if(!is.null(group))   {  
               R1<-list()
@@ -419,10 +419,10 @@ regressions.log <-
               for(i in 1:length(G)){
                 resg<- try( reg.log.out(data=G[[i]], modele=modele,  VC=VC, select.m=select.m, method=method, step=step, group=group,  scale=scale,proba=proba), silent=T)
                 
-                if(class(resg)=="try-error")   R1[[length(R1)+1]]<-"Le nombre d'observations est insuffisant pour mener a bien les analyses pour ce groupe" else R1[[length(R1)+1]]<-resg
+                if(class(resg)=="try-error")   R1[[length(R1)+1]]<-INFO_insufficient_obs else R1[[length(R1)+1]]<-resg
                 names(R1)[length(R1)]<-names(G)[i]
               }
-              Resultats$"Donnees sans valeur influente"$"Analyse par groupe"<-R1
+              Resultats$TXT_without_outliers$TXT_group_analysis<-R1
             } 
           } 
           
@@ -451,7 +451,7 @@ regressions.log <-
     .add.history(data=data, command=Resultats$Call, nom=nom)
     .add.result(Resultats=Resultats, name =paste("Regressions.logistique", Sys.time() ))  
     if(sauvegarde)   if(sauvegarde) save(Resultats=Resultats, choix="Regressions.logistique", env=.e)
-    Resultats$"References"<-ref1(packages)
+    Resultats$TXT_references<-ref1(packages)
     if(html) try(ez.html(Resultats), silent=T)
     return(Resultats)
     

@@ -1,7 +1,0 @@
-txt_multiple_imputation_amelia <- "Multiple imputation - Amelia"
-txt_do_nothing_keep_all_obs <- "Ne rien faire - Garder l'ensemble des observations"
-txt_replace_by_median <- "Remplacer par la mediane"
-txt_replace_by_mean <- "Remplacer par la moyenne"
-txt_delete_observations_with_missing_values <- "Suppression des observations avec valeurs manquantes"
-txt_missing_values_treatment <- "Traitement des valeurs manquantes"
-ask_missing_value_treatment <- "Nombre de valeurs manquantes par variable. Comment voulez-vous les traiter ?"

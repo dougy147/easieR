@@ -3,13 +3,13 @@ choix.reg <-
     try(library(svDialogs), silent=T)->test2
     if(class(test2)== "try-error") return(ez.install())
     
-    dlgList(c("Regressions", 
-              "Effets de mediation", 
-              "Regressions logistiques"), preselect="Regressions", multiple = FALSE, title="Quel type de regression ?")$res->choix
+    dlgList(c(TXT_regressions, 
+              TXT_mediation_effect, 
+              TXT_logistic_regressions), preselect=TXT_regressions, multiple = FALSE, title=ASK_which_regression_type)$res->choix
     if(length(choix)==0) return(analyse())
-    if(choix=="Regressions") regressions(html=html)->Resultats
-    if(choix=="Effets de mediation") ez.mediation(html=html)->Resultats
-    if(choix=="Regressions logistiques") regressions.log(html=html)->Resultats
+    if(choix==TXT_regressions) regressions(html=html)->Resultats
+    if(choix==TXT_mediation_effect) ez.mediation(html=html)->Resultats
+    if(choix==TXT_logistic_regressions) regressions.log(html=html)->Resultats
     return(Resultats)
     
   }
