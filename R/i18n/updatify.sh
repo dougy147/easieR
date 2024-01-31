@@ -17,7 +17,7 @@ for file in *; do
 		while read -r line_dest; do
 			if [[ ${string_src} == ${line_dest} ]]; then
 				#exit
-				sed -i "s/${line_dest}/${line}/g" ${DEST}
+				sed -i "s/${line_dest}/${line_src}/g" ${DEST}
 				continue
 			fi
 			var_dest=$(echo $line_dest | sed "s/\ *<-\s*.*//");
@@ -25,7 +25,7 @@ for file in *; do
 			#sed -i "s/${string}/${var}/g" "$DEST"
 			if [[ ${string_src} == ${string_dest} ]]; then
 				#exit
-				sed -i "s/${line_dest}/${line}/g" ${DEST}
+				sed -i "s/${line_dest}/${line_src}/g" ${DEST}
 				continue
 			fi
 		done < ${DEST}
