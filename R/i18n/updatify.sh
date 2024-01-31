@@ -1,9 +1,16 @@
 #!/bin/sh
 
-# ./updatify.sh file_to_translate
+# ./updatify.sh [source_file] file_to_translate
 
-DEST="$1"
-for file in *; do
+if [[ -z $2 ]]; then
+	SOURCE="*"
+	DEST="$1"
+else
+	SOURCE="$1"
+	DEST="$2"
+fi
+#DEST="$1"
+for file in $SOURCE; do
 	SOURCE_NAME=$(echo "${file%.*}" | sed "s/.*\///");
 	DEST_NAME=$(echo "${DEST%.*}" | sed "s/.*\///");
 	if [[ ${SOURCE_NAME} == ${DEST_NAME} ]]; then
