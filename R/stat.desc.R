@@ -17,8 +17,8 @@ stat.desc <-
       # choix X
       if(!is.null(x)) dial<-F else dial<-T
       
-      msg1<-ASK_variables_for_description_statistics
-      .var.type(X=X, info=T, data=data, type=NULL, message=msg1,multiple=T, title=ASK_variable)->X1
+      msg1<-ask_variables_for_description_statistics
+      .var.type(X=X, info=T, data=data, type=NULL, message=msg1,multiple=T, title=ask_variable)->X1
       if(is.null(X1)) return(NULL)
       X1$X->x
       setdiff(names(data), x)->diff
@@ -29,15 +29,15 @@ stat.desc <-
       
       if(length(diff)>0){
         if(dial){
-          writeLines(ASK_subgroups)
-          groupes<-dlgList(c(TXT_yes, TXT_no), multiple = F, preselect=TXT_no, title=ASK_specify_groups)$res
+          writeLines(ask_subgroups)
+          groupes<-dlgList(c(txt_yes, txt_no), multiple = F, preselect=txt_no, title=ask_specify_groups)$res
           if(length(groupes)==0) {stat.desc.in(x=X, groupes=NULL, data=NULL, tr=tr, type=type,save=save)->Resultats
             return(Resultats)}
-          if(groupes==TXT_no) groupes<-NULL
+          if(groupes==txt_no) groupes<-NULL
         }
         
         if(!is.null(groupes)){
-          msg2<-ASK_variables_used_for_groups
+          msg2<-ask_variables_used_for_groups
           .var.type(X=groupes, info=T, data=data, type="factor", message=msg2,multiple=T, title="Variable(s)  groupes ?", out=x)->groupes
           if(is.null(groupes)){
             stat.desc.in(x=X, groupes=NULL, data=NULL, tr=tr, type=type,save=save)->Resultats
@@ -49,15 +49,15 @@ stat.desc <-
       } 
       
       if(dial==T | tr>1 | tr<0 | (type %in% 1:3==F) ) {
-        writeLines(INFO_flattening_and_asymetry_configurable)
-        options<-dlgList(c(TXT_yes, TXT_no), multiple = F, preselect=TXT_no, title=ASK_specify_other_options)$res
+        writeLines(desc_flattening_and_asymetry_configurable)
+        options<-dlgList(c(txt_yes, txt_no), multiple = F, preselect=txt_no, title=ask_specify_other_options)$res
         if(length(options)==0) {
           stat.desc.in(x=X, groupes=NULL, data=NULL, tr=tr, type=type,save=save)->Resultats
           return(Resultats)
         }
-        if(options==TXT_yes) {opts2<-NA
+        if(options==txt_yes) {opts2<-NA
         while(any(is.na(opts2))){
-          dlgForm(list(TXT_troncature_num=0.1, "Type de skew et kurtosis, doit se situer entre 1 et 3:NUM"=3),  ASK_troncature_threshold)$res->opts2
+          dlgForm(list(txt_troncature_num=0.1, "Type de skew et kurtosis, doit se situer entre 1 et 3:NUM"=3),  ask_troncature_threshold)$res->opts2
           if(opts2[[1]]>0.5 | opts2[[1]]<0 ) NA->opts2[[1]] else tr<-opts2[[1]]
           if(opts2[[2]]%in% 1:3)  type<-opts2[[2]]  else opts2[[2]]<-NA  
           
@@ -94,10 +94,10 @@ stat.desc <-
       paste0("'), groupes =c('",groupes ,"'), data=")->groupes}
     paste0("stat.desc(X=c('", X, groupes, data.in$nom1, ",tr=" , tr, ",type=", type, ", plot=", plot, ", ref=", ref,", html=",html, ")")->Resultats$Call
     .add.history(data=data.in$data, command=Resultats$Call, nom=data.in$nom1)
-    .add.result(Resultats=Resultats, name =paste(TXT_descriptive_statistics, Sys.time() ))
+    .add.result(Resultats=Resultats, name =paste(txt_descriptive_statistics, Sys.time() ))
     
-    if(data.in$sauvegarde==TRUE) save(Resultats=Resultats ,choix =paste(INFO_descriptive_statistics_on,data.in$nom1 ), env=.e)
-    if(ref) ref1(packages)->Resultats$INFO_references
+    if(data.in$sauvegarde==TRUE) save(Resultats=Resultats ,choix =paste(desc_descriptive_statistics_on,data.in$nom1 ), env=.e)
+    if(ref) ref1(packages)->Resultats$desc_references
     if(html) try(ez.html(Resultats), silent=T)
     return(Resultats)
   }

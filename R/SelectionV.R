@@ -6,20 +6,20 @@ SelectionV <-
     list()->Resultats
     choix.data()->data
     if(length(data)==0) return(preprocess())
-    if(info==TRUE) print(ASK_variables)
-    X<-dlgList(c(paste(names(data), "(format :", sapply(data, class), ")", sep=" "), TXT_other_data), multiple = TRUE, 
-               title=TXT_variable)$res
+    if(info==TRUE) print(ask_variables)
+    X<-dlgList(c(paste(names(data), "(format :", sapply(data, class), ")", sep=" "), txt_other_data), multiple = TRUE, 
+               title=txt_variable)$res
     if(length(X)==0) return(preprocess())
-    if( X== TXT_other_data) return(SelectionV())
+    if( X== txt_other_data) return(SelectionV())
     listes<-data.frame(paste(names(data), "(format :", sapply(data, class), ")", sep=" "), 1:length(data))
     subset(listes, listes[,1] %in% X)[,2]->X
     data[,X]->data
-    fichier<- dlgInput(ASK_filename, TXT_selection)$res
-    if(length(fichier)==0) fichier<-TXT_selection
+    fichier<- dlgInput(ask_filename, txt_selection)$res
+    if(length(fichier)==0) fichier<-txt_selection
     strsplit(fichier, ":")->fichier
     tail(fichier[[1]],n=1)->fichier
     assign(x=fichier, value=data, envir=.GlobalEnv)
-    View(data, TXT_selected_data)
-    Resultats<-paste(INFO_variables_are_in, fichier)
+    View(data, txt_selected_data)
+    Resultats<-paste(desc_variables_are_in, fichier)
     return(Resultats)
   }

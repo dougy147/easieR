@@ -18,8 +18,8 @@ tetrapoly <-
     Resultats<-list()
     
     if(is.null(data) | is.null(X))  {dial<-TRUE
-    if(info) writeLines(ASK_correlation_type)
-    dlgList(c(TXT_polyc_correlations, TXT_mixt_correlations), preselect=NULL, multiple = FALSE, title=ASK_correlations_type)$res->method
+    if(info) writeLines(ask_correlation_type)
+    dlgList(c(txt_polyc_correlations, txt_mixt_correlations), preselect=NULL, multiple = FALSE, title=ask_correlations_type)$res->method
     if(length(method)==0) return(choix.corr())
     } else dial<-F
     
@@ -34,26 +34,26 @@ tetrapoly <-
     }
     
     
-    msg3<-ASK_variabels_for_polyc_tetra_mixt_corr
-    X<-.var.type(X=X, info=info, data=data, type="numeric", check.prod=F, message=msg3,  multiple=T, title=ASK_variables, out=NULL)
+    msg3<-ask_variabels_for_polyc_tetra_mixt_corr
+    X<-.var.type(X=X, info=info, data=data, type="numeric", check.prod=F, message=msg3,  multiple=T, title=ask_variables, out=NULL)
     if(is.null(X)) {
       Resultats<-tetrapoly(data=NULL,X=NULL, sauvegarde=F, ord=NULL ,info=T, group=NULL, estimator=estimator, output=output)
       return(Resultats)}
     data<-X$data
     X<-X$X
     
-    if(!is.null(ord) & any(ord %in%X==F)||(dial && method==TXT_mixt_correlations ) ){
-      if(info) writeLines(ASK_ordinal_variables)
-      ord<-dlgList(X, preselect=X, multiple = TRUE, title=ASK_ordinal_variables)$res
+    if(!is.null(ord) & any(ord %in%X==F)||(dial && method==txt_mixt_correlations ) ){
+      if(info) writeLines(ask_ordinal_variables)
+      ord<-dlgList(X, preselect=X, multiple = TRUE, title=ask_ordinal_variables)$res
       if(length(ord)==0){
         Resultats<-tetrapoly(data=NULL,X=NULL, sauvegarde=F, ord=NULL ,info=T, group=NULL, estimator=estimator, output=output)
         return(Resultats)
       }
     } else ord<-X
     if(any(is.na(data[,X]))) {
-      if(is.null(imp))  {msgBox(ASK_how_to_treat_missing_values)
-        imp<- dlgList(c(TXT_do_nothing_keep_all_obs, TXT_delete_observations_with_missing_values,TXT_replace_by_median,TXT_multiple_imputation_amelia), 
-                      preselect=FALSE, multiple = TRUE, title=ASK_missing_values_treatment)$res}
+      if(is.null(imp))  {msgBox(ask_how_to_treat_missing_values)
+        imp<- dlgList(c(txt_do_nothing_keep_all_obs, txt_delete_observations_with_missing_values,txt_replace_by_median,txt_multiple_imputation_amelia), 
+                      preselect=FALSE, multiple = TRUE, title=ask_missing_values_treatment)$res}
       if(length(imp)==0){
         Resultats<-tetrapoly(data=NULL,X=NULL, sauvegarde=F, ord=NULL ,info=T, group=NULL, estimator=estimator, output=output)
         return(Resultats)
@@ -62,13 +62,13 @@ tetrapoly <-
       data<-data.frame(data1, data[which(dimnames(data)[[1]] %in% dimnames(data1)[[1]]),group])
     }  
     if(dial || !is.logical(sauvegarde)){
-      sauvegarde<- dlgList(c(TRUE, FALSE), preselect=FALSE, multiple = FALSE, title=ASK_save_results)$res
+      sauvegarde<- dlgList(c(TRUE, FALSE), preselect=FALSE, multiple = FALSE, title=ask_save_results)$res
       if(length(sauvegarde)==0) {
         Resultats<-tetrapoly(data=NULL,X=NULL, sauvegarde=F, ord=NULL ,info=T, group=NULL, estimator=estimator, output=output)
         return(Resultats)
       }
     }
-    Resultats$TXT_tetra_polyc_corr_matrix_or_mixt<-lavCor(data[,c(X,group)], ordered=ord,estimator=estimator, group=group,  missing="default", output=output)
+    Resultats$txt_tetra_polyc_corr_matrix_or_mixt<-lavCor(data[,c(X,group)], ordered=ord,estimator=estimator, group=group,  missing="default", output=output)
     paste(X, collapse="','", sep="")->X
     if(!is.null(ord)) paste(ord, collapse="','", sep="")->ord
     Resultats$Call<-paste0("tetrapoly(data=", nom,",X=c('", X,"'),sauvegarde=", sauvegarde, ",ord=", ifelse(!is.null(ord),paste0("c('",ord,"')"), "NULL"),
@@ -80,6 +80,6 @@ tetrapoly <-
     
     if(sauvegarde) save(Resultats=Resultats, choix="cor.polychorique", env=.e)
     
-    ref1(packages)->Resultats$TXT_references
+    ref1(packages)->Resultats$txt_references
     if(html) ez.html(Resultats)
     return(Resultats) }

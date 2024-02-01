@@ -8,16 +8,16 @@ save <-
     if(class(test2)== "try-error") return(ez.install())
     Resultats <- list()
                                                   
-    if(is.null(Resultats) & exists("ez.results")) Resultats<-ez.results else return(INFO_no_result_saved)
+    if(is.null(Resultats) & exists("ez.results")) Resultats<-ez.results else return(desc_no_result_saved)
     ez.html <-function(ez.results=Resultats)
       
     fileHTML<-file.path("file:/", tempdir(), "easieR/Rapport.easieR.html")
-    fileNAME<-dlgInput(ASK_filename)$res 
+    fileNAME<-dlgInput(ask_filename)$res 
     fileNAME<-strsplit(fileNAME, ":")
     fileNAME<-tail(fileNAME[[1]],n=1)                                         
     save_html(html=fileHTML, file=fileNAME, background = "white")
     
     Resultats<-NULL
-    Resultats$SAUVEGARDE<-paste(INFO_data_saved_in, getwd())
+    Resultats$SAUVEGARDE<-paste(desc_data_saved_in, getwd())
     
   }

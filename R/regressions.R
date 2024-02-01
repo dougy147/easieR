@@ -1,55 +1,55 @@
 regressions <-
   function(data=NULL, modele=NULL, Y=NULL, X_a=NULL, X_i=NULL, outlier='Donnees completes', inf=F, CV=F, select.m="none", method="p", step=NULL, group=NULL, criteria=0.15 , scale=T, dial=T, info=T,
            sauvegarde=F, n.boot=NULL, param="param", rscale=0.353, html=TRUE){
-    
-    
-    
+
+
+
     regressions.in<-function(data=NULL, modele=NULL, Y=NULL, X_a=NULL, X_i=NULL, outlier=NULL, inf=F, CV=F, select.m="none", method="p", step=NULL, group=NULL, criteria=NULL , scale=T, dial=T, info=T,
                              sauvegarde=F, n.boot=NULL, param=NULL, rscale=0.353){
-      options (warn=-1) 
+      options (warn=-1)
       Resultats<-list()
-      if(is.null(data) | is.null(modele))  {dial<-TRUE}else dial<-F 
-      
+      if(is.null(data) | is.null(modele))  {dial<-TRUE}else dial<-F
+
       data<-choix.data(data=data, info=info, nom=T)
-      if(length(data)==0) return(NULL) 
+      if(length(data)==0) return(NULL)
       nom<-data[[1]]
-      data<-data[[2]]  
-      
-      
+      data<-data[[2]]
+
+
       if(dial && is.null(modele)){
         if(info) writeLines("Veuillez choisir le(s) type(s) de relations entre les variables. Les effets additifs prennent la forme de
                             y=X1+X2 tandis que les effets d'interaction prennent la forme de Y=X1+X2+X1:X2")
-        dlgList(c(TXT_additive_effects, TXT_interaction_effects, TXT_specify_model), preselect=TXT_regressions, multiple = TRUE, title=ASK_which_regression_type)$res->link
+        dlgList(c(txt_additive_effects, txt_interaction_effects, txt_specify_model), preselect=txt_regressions, multiple = TRUE, title=ask_which_regression_type)$res->link
         if(length(link)==0) return(NULL) } else link<-"none"
-      
+
       if(length(Y)>1){
-        msgBox(INFO_only_one_dependant_variable_alllowed)
+        msgBox(desc_only_one_dependant_variable_alllowed)
         Y<-NULL }
-      if(any(link %in% c(TXT_additive_effects, TXT_interaction_effects))){
-        msg3<-ASK_chose_dependant_variable
-        Y<-.var.type(X=Y, info=info, data=data, type="numeric", check.prod=F, message=msg3,  multiple=FALSE, title=TXT_dependant_variable, out=NULL)
+      if(any(link %in% c(txt_additive_effects, txt_interaction_effects))){
+        msg3<-ask_chose_dependant_variable
+        Y<-.var.type(X=Y, info=info, data=data, type="numeric", check.prod=F, message=msg3,  multiple=FALSE, title=txt_dependant_variable, out=NULL)
         if(is.null(Y)) {
           regressions.in()->Resultats
           return(Resultats)}
         data<-Y$data
         Y<-Y$X
-        
-        if(any(link==TXT_additive_effects) || !is.null(X_a)| any(X_a %in% names(data)==F)) {
-          msg3<-ASK_chose_dependant_variable
-          X_a<-.var.type(X=Y, info=info, data=data, type=NULL, check.prod=F, message=msg3,  multiple=TRUE, title=TXT_additive_model_variables, out=Y)
+
+        if(any(link==txt_additive_effects) || !is.null(X_a)| any(X_a %in% names(data)==F)) {
+          msg3<-ask_chose_dependant_variable
+          X_a<-.var.type(X=Y, info=info, data=data, type=NULL, check.prod=F, message=msg3,  multiple=TRUE, title=txt_additive_model_variables, out=Y)
           if(is.null(X_a)) {
             regressions.in()->Resultats
             return(Resultats)}
           data<-X_a$data
           X_a<-X_a$X
-          
-        }else X_a<-NULL 
-        
-        if(any(link==TXT_interaction_effects) || !is.null(X_i) & (length(X_i)<2 | any(X_i %in% names(data)==F))) {
-          msg3<-ASK_chose_interaction_model_predictors
+
+        }else X_a<-NULL
+
+        if(any(link==txt_interaction_effects) || !is.null(X_i) & (length(X_i)<2 | any(X_i %in% names(data)==F))) {
+          msg3<-ask_chose_interaction_model_predictors
           X_i<-c()
           while(length(X_i)<2){
-            X_i<-.var.type(X=Y, info=info, data=data, type=NULL, check.prod=F, message=msg3,  multiple=TRUE, title=TXT_interactive_model_variables, out=c(X_a,Y))
+            X_i<-.var.type(X=Y, info=info, data=data, type=NULL, check.prod=F, message=msg3,  multiple=TRUE, title=txt_interactive_model_variables, out=c(X_a,Y))
             if(is.null(X_i)) {
               regressions.in()->Resultats
               return(Resultats)}
@@ -57,72 +57,72 @@ regressions <-
             X_i<-X_i$X
           }
         }else X_i<-NULL
-        
-        
-        
+
+
+
         paste0(Y," ~ ")->modele
         if(!is.null(X_a ))  {
           X_a.mod<-X_a[1]
           if(length(X_a)>1) for(i in 2 : length(X_a)) paste0(X_a.mod, "+", X_a[i])-> X_a.mod
         } else X_a.mod<-NULL
-        
+
         if(!is.null(X_i)){
           X_i.mod<-X_i[1]
           if(length(X_i)>1) for(i in 2 : length(X_i)) paste0(X_i.mod, "*", X_i[i])-> X_i.mod
         } else X_i.mod<-NULL
-        
+
         if(!is.null(X_a.mod) & !is.null(X_i.mod)) {
           paste0(modele, X_a.mod, "+", X_i.mod)->modele
         } else paste0(modele, X_a.mod, X_i.mod)->modele
-        
+
       }
-      
-      if(any(link==TXT_specify_model)) {
+
+      if(any(link==txt_specify_model)) {
         if(is.null(modele)) modele<-" "
         modele<-fix(modele)}
       modele<-as.formula(modele)
       variables<-terms(modele)
       variables<-as.character( attributes(variables)$variables)[-1]
-      
-      
+
+
       model.test<-try(model.matrix(modele, data), silent=T)
       if(any(class(model.test)=="try-error")) {
-        msgBox(INFO_incorrect_model)
+        msgBox(desc_incorrect_model)
         return(regressions.in())
       }
-      
-      
+
+
       data[complete.cases(data[,variables]),]->data
-      msg.options1<-INFO_param_test_is_classical_reg_robusts_are_m_estimator
-      
-      options<-.ez.options(options=c(TXT_choice,"outlier"), n.boot=n.boot,param=T, non.param=F, robust=T, Bayes=T, msg.options1=msg.options1, msg.options2=msg.options2, info=info, dial=dial, 
+      msg.options1<-desc_param_test_is_classical_reg_robusts_are_m_estimator
+
+      options<-.ez.options(options=c(txt_choice,"outlier"), n.boot=n.boot,param=T, non.param=F, robust=T, Bayes=T, msg.options1=msg.options1, msg.options2=msg.options2, info=info, dial=dial,
                            choix=param,sauvegarde=sauvegarde, outlier=outlier, rscale=rscale)
       if(is.null(options)) return(regressions.in())
-      
+
       reg.options<- .regressions.options(data=data, modele=modele, CV=CV, inf=inf, select.m=select.m, method=method, criteria=criteria, step=step, group=group, scale=scale, dial=dial,info=info)
       if(is.null(reg.options)) return(regressions.in())
-      
-      
+
+
       Resultats$data<-data
       Resultats$nom<-nom
       Resultats$modele<-modele
       Resultats$options<-options
       Resultats$reg.options<-reg.options
-      return(Resultats)   
-      
+      return(Resultats)
+
     }
-    
+
     regressions.out<-function(dtrgeasieR=NULL, modele=NULL,  VC=F, select.m="none", method=NULL, step=NULL, group=NULL, criteria=NULL , scale=T,
                               sauvegarde=F, n.boot=NULL, param=NULL, rscale=0.353){
-      
+
       Resultats<-list()
       variables<-terms(as.formula(modele))
       variables<-as.character( attributes(variables)$variables)[-1]
       pred<-attributes(terms(as.formula(modele)))$term.labels
-      Resultats$TXT_descriptive_statistics<-.stat.desc.out(X=variables, groupes=NULL, data=dtrgeasieR, tr=.1, type=3, plot=T)
-      
-       if(scale==T || scale==TXT_center) {
-         Resultats$info<-INFO_centered_data_schielzeth_recommandations
+      Resultats$txt_descriptive_statistics<-.stat.desc.out(X=variables, groupes=NULL, data=dtrgeasieR, tr=.1, type=3, plot=T)
+
+       if(scale==T || scale==txt_center) {
+         Resultats$info<-desc_centered_data_schielzeth_recommandations
       if(length(pred)>1) { which(!sapply(dtrgeasieR[,pred[which(pred %in% variables)]],class)%in%c("factor", "character"))->centre
         centre<-pred[centre]}else{centre<-NULL}
       if(!is.null(centre)){
@@ -131,9 +131,9 @@ regressions <-
            }
       }
       }
-      
-      
-      
+
+
+
       mod<-list()
       modele1<-as.formula(paste0(variables[1], "~", pred[1]))
       lm( modele1,na.action=na.exclude, data=dtrgeasieR)->lm.r1
@@ -144,42 +144,49 @@ regressions <-
       }
       assign("lm.r1",lm.r1, env= .GlobalEnv)
       resid(lm.r1)->dtrgeasieR$residu
-      Resultats$TXT_normality_tests<-.normalite(data=dtrgeasieR, X=TXT_residual, Y=NULL)
+      Resultats$txt_normality_tests<-.normalite(data=dtrgeasieR, X=txt_residual, Y=NULL)
       if(length(pred)>1)  {
         cont<-variables[which(!sapply(dtrgeasieR[,variables],class)%in%c("factor","character"))]
-        Resultats$TXT_multivariate_normality<-.normalite(data=dtrgeasieR, X=cont, Y=NULL)
+        Resultats$txt_multivariate_normality<-.normalite(data=dtrgeasieR, X=cont, Y=NULL)
         ols_plot_resid_fit(lm.r1)
-        FIV<-ols_coll_diag(lm.r1) # calcul du facteur d inflation de la variance 
+        FIV<-ols_coll_diag(lm.r1) # calcul du facteur d inflation de la variance
         FIV[[1]]<-data.frame(FIV[[1]])
-        names(FIV)<-c(TXT_multicolinearity_test, TXT_proper_values_index)
-        names(FIV$`Test de multicolinearite`)<-c(TXT_variables, TXT_tolerance, "FIV")
-        Resultats$TXT_multicolinearity_tests<-FIV$`Test de multicolinearite`
+        names(FIV)<-c(txt_multicolinearity_test, txt_proper_values_index)
+        names(FIV$`Test de multicolinearite`)<-c(txt_variables, txt_tolerance, "FIV")
+        Resultats$txt_multicolinearity_tests<-FIV$`Test de multicolinearite`
         if(any(FIV$`Test de multicolinearite`$Tolerance==0)) {
-          msgBox(INFO_instable_model_high_multicolinearity)
+          msgBox(desc_instable_model_high_multicolinearity)
           return(Resultats)
         }
-        
-        Resultats$TXT_linearity_graph_between_predictors_and_dependant_variable<-ols_plot_comp_plus_resid(lm.r1)
-        Resultats$TXT_proper_values_index<-FIV$`Indice des valeurs propres`
+
+        Resultats$txt_linearity_graph_between_predictors_and_dependant_variable<-ols_plot_comp_plus_resid(lm.r1)
+        Resultats$txt_proper_values_index<-FIV$`Indice des valeurs propres`
         dwt(lm.r1, simulate=TRUE, method= "normal", reps=500)->DWT.results
-        Resultats$TXT_durbin_watson_test_autocorr<-round(data.frame(TXT_autocorrelation=DWT.results[[1]],
-                                                                               TXT_dw_statistic=DWT.results[[2]],"valeur.p"=DWT.results[[3]]),4)
-        
+        Resultats$txt_durbin_watson_test_autocorr<-round(data.frame(txt_autocorrelation=DWT.results[[1]],
+                                                                               txt_dw_statistic=DWT.results[[2]],"valeur.p"=DWT.results[[3]]),4)
+
         var.err<-ols_test_breusch_pagan(lm.r1, rhs=T)
-        
-        Resultats$TXT_breusch_pagan_test<-data.frame(chi=var.err$bp,
-                                                                                                                 ddl=length(var.err$preds), valeur.p=var.err$p) 
-        
-        try(ceresPlots(lm.r1, main=TXT_ceres_graph_linearity), silent=T)
+
+        Resultats$txt_breusch_pagan_test<-data.frame(chi=var.err$bp,
+                                                                                                                 ddl=length(var.err$preds), valeur.p=var.err$p)
+
+        try(ceresPlots(lm.r1, main=txt_ceres_graph_linearity), silent=T)
       }
       if(select.m!="none"){
         dtrgeasieR<<-dtrgeasieR
-        if(method %in% c("F", TXT_f_value, "p", TXT_probability_value)){
-          select.m<-switch(select.m,TXT_forward_step_ascending="Forward", TXT_backward_step_descending=TXT_backward, TXT_bidirectionnal="Both",
-                           "forward"="Forward", "bidirectional"="Stepwise","backward"="Both" )
-          
+        if(method %in% c("F", txt_f_value, "p", txt_probability_value)){
+          #select.m<-switch(select.m,txt_forward_step_ascending="Forward", txt_backward_step_descending=txt_backward, txt_bidirectionnal="Both",
+          #                 "forward"="Forward", "bidirectional"="Stepwise","backward"="Both" )
+
+	  if (select.m==txt_forward_step_ascending) "Forward"
+	  if (select.m==txt_backward_step_descending) txt_backward
+	  if (select.m==txt_bidirectionnal) "Both"
+	  if (select.m=="forward") "Forward"
+	  if (select.m=="bidirectional") "Stepwise"
+	  if (select.m=="backward") "Both"
+
           if(select.m=="Forward") t<-capture.output({  ols.out <- ols_step_forward_p(lm.r1,penter = criteria, details=F)})
-          if(select.m==TXT_backward) t<-capture.output({  ols.out <- ols_step_backward_p(lm.r1, prem=criteria, details=F)})
+          if(select.m==txt_backward) t<-capture.output({  ols.out <- ols_step_backward_p(lm.r1, prem=criteria, details=F)})
           if(select.m=="Both") t<-capture.output({  ols.out <- ols_step_both_p(lm.r1,pent=criteria, details=F)})
           predname<-if(!is.null(ols.out$predictors)) rep(TRUE, length(ols.out$predictors)) else rep(FALSE,length(ols.out[[1]]) )
           methodname<-if(!is.null(ols.out$method)) rep(TRUE, length(ols.out$method)) else rep(select.m,length(ols.out[[1]]) )
@@ -191,61 +198,68 @@ regressions <-
                                 RMSE=ols.out$rmse,
                                 r.carre=ols.out$rsquare,
                                 r.carre.adj=ols.out$adjr,
-                                Method=ifelse(methodname==T, ols.out$method, ifelse(methodname=="Forward" , INFO_variable_added, INFO_removed_variable))
+                                Method=ifelse(methodname==T, ols.out$method, ifelse(methodname=="Forward" , desc_variable_added, desc_removed_variable))
           )
-          Resultats$TXT_selection_method<-ols.frame 
+          Resultats$txt_selection_method<-ols.frame
         }
-        
-        if(method %in% c(TXT_aic_criterion,"AIC")){ 
-          select.m<-switch(select.m,TXT_forward_step_ascending="Forward", TXT_backward_step_descending=TXT_backward, TXT_bidirectionnal="Both",
-                           "forward"="Forward", "bidirectional"="Both","backward"=TXT_backward )
+
+        if(method %in% c(txt_aic_criterion,"AIC")){
+          #select.m<-switch(select.m,txt_forward_step_ascending="Forward", txt_backward_step_descending=txt_backward, txt_bidirectionnal="Both",
+          #                 "forward"="Forward", "bidirectional"="Both","backward"=txt_backward )
+          if (select.m==txt_forward_step_ascending) "Forward"
+	  if (select.m==txt_backward_step_descending) txt_backward
+	  if (select.m==txt_bidirectionnal) "Both"
+          if (select.m=="forward") "Forward"
+	  if (select.m=="bidirectional") "Both"
+	  if (select.m=="backward") txt_backward
+
           lm.r1<-lm(modele, data=dtrgeasieR)
-          if(select.m=="Forward") t0<-capture.output({  ols.out <- ols_step_forward_aic(lm.r1, details=T)}) 
-          if(select.m==TXT_backward) t0<-capture.output({  ols.out <- ols_step_backward_aic(lm.r1, details=T)})
+          if(select.m=="Forward") t0<-capture.output({  ols.out <- ols_step_forward_aic(lm.r1, details=T)})
+          if(select.m==txt_backward) t0<-capture.output({  ols.out <- ols_step_backward_aic(lm.r1, details=T)})
           if(select.m=="Both")     t0<-capture.output({  ols.out <- ols_step_both_aic(lm.r1, details=T)})
-          
-          predname<-if(select.m!=TXT_backward) rep(TRUE, length(ols.out$predictors)) else rep(FALSE,length(ols.out[[1]])+1 )
+
+          predname<-if(select.m!=txt_backward) rep(TRUE, length(ols.out$predictors)) else rep(FALSE,length(ols.out[[1]])+1 )
           methodname<-if(!is.null(ols.out$method)) rep(TRUE, length(ols.out$method)) else rep(select.m,length(ols.out[[4]]) )
           ols.frame<-data.frame(etape=1:ols.out$steps,
-                                predicteurs=ifelse(predname,ols.out$predictors, c(TXT_complete_model, ols.out$predictor)) ,
+                                predicteurs=ifelse(predname,ols.out$predictors, c(txt_complete_model, ols.out$predictor)) ,
                                 Somme.Carre=ols.out$rss,
                                 AIC=ols.out$aic,
                                 SC.res=ols.out$ess,
                                 r.carre=ols.out$rsq,
                                 r.carre.adj=ols.out$arsq,
-                                Method=ifelse(methodname==T, ols.out$method, ifelse(methodname=="Forward" , INFO_variable_added, c(" ",INFO_removed_variable)))
+                                Method=ifelse(methodname==T, ols.out$method, ifelse(methodname=="Forward" , desc_variable_added, c(" ",desc_removed_variable)))
           )
-          
-          Resultats$TXT_selection_method_akaike<-ols.frame
-          
+
+          Resultats$txt_selection_method_akaike<-ols.frame
+
         }
-        
-        if(any(param=="Bayes")|any(param==TXT_bayesian_factors)){
+
+        if(any(param=="Bayes")|any(param==txt_bayesian_factors)){
           BF.out<-try(regressionBF(modele, data=dtrgeasieR,progress=F, rscaleCont=rscale), silent=T)
           if(class(BF.out)!="try-error") {
             try(plot(BF.out) , silent=T)
             BF.out<-extractBF(BF.out)
             BF.out<-head(BF.out[order(BF.out[,1], decreasing=T), ])
             BF.out<-BF.out[,1:2]
-            Resultats$TXT_selection_method_bayesian_factor<-BF.out
-          } else Resultats$TXT_selection_method_bayesian_factor<-INFO_selection_for_bayesian_factor_does_not_apply_to_complex_models
+            Resultats$txt_selection_method_bayesian_factor<-BF.out
+          } else Resultats$txt_selection_method_bayesian_factor<-desc_selection_for_bayesian_factor_does_not_apply_to_complex_models
         }
         rm( "dtrgeasieR", envir = .GlobalEnv)
       }
-      
+
       if(!is.null(step)){
-        
+
         as.formula(paste0(variables[1]," ~ ",step[[1]][1]))->modele.H
         list()->modele.H1
         list()->formule.H1
         for(i in 1:length(step)){
-          
+
           for(j in 1:length(step[[i]])){update(modele.H, as.formula(paste0(".~. + ",step[[i]][j])))->modele.H}
           formule.H1[[i]]<-modele.H
           lm(modele.H, data=dtrgeasieR, na.action=na.exclude )->lm.H
           lm.H->modele.H1[[i]]}
-        
-        if(any(param=="param")|any(param==TXT_param_tests)) {
+
+        if(any(param=="param")|any(param==txt_param_tests)) {
           hier<-paste0("anova(modele.H1[[1]],modele.H1[[2]]")
           if(length(modele.H1)>2){
             for(i in 3: length(modele.H1)){
@@ -254,29 +268,29 @@ regressions <-
           }
           hier<-paste0(hier,")")
           hier<-eval(parse(text=hier))
-          attributes(hier)$heading[1]<-TXT_hierarchical_models_variance_analysis_table
+          attributes(hier)$heading[1]<-txt_hierarchical_models_variance_analysis_table
           names(hier)<-c("ddl.resid", "SC.resid","ddl.effet", "SC", "F", "valeur.p")
-          Resultats$TXT_hierarchical_model_analysis<-hier
-          
-          
-          
+          Resultats$txt_hierarchical_model_analysis<-hier
+
+
+
           c(summary(modele.H1[[1]])$sigma, summary(modele.H1[[1]])$r.squared, summary(modele.H1[[1]])$fstatistic)->significativite_modele # fournit les residus, le R.deux et le F
           pf(summary(modele.H1[[1]])$fstatistic[1], summary(modele.H1[[1]])$fstatistic[2],summary(modele.H1[[1]])$fstatistic[3], lower.tail=F)->p.value #permet de savoir si le F est significatif
-          c(significativite_modele , p.value)->modele_avec_outliers 
-          
+          c(significativite_modele , p.value)->modele_avec_outliers
+
           for(i in 2:(length(modele.H1))){
             c(summary(modele.H1[[i]])$sigma, summary(modele.H1[[i]])$r.squared, summary(modele.H1[[i]])$fstatistic)->significativite_modele # fournit les residus, le R.deux et le F
             pf(summary(modele.H1[[i]])$fstatistic[1], summary(modele.H1[[i]])$fstatistic[2],summary(modele.H1[[i]])$fstatistic[3], lower.tail=F)->valeur.p #permet de savoir si le F est significatif
-            rbind(modele_avec_outliers, c(significativite_modele ,valeur.p))->modele_avec_outliers  
+            rbind(modele_avec_outliers, c(significativite_modele ,valeur.p))->modele_avec_outliers
           }
-          round(modele_avec_outliers,3)->modele_avec_outliers 
-          c(TXT_residual_error, "R.deux", "F", "Ddl(1)", "Ddl(2)","valeur.p")->dimnames(modele_avec_outliers)[[2]]
-          paste(TXT_step, 1:length(modele_avec_outliers[,1]))->dimnames(modele_avec_outliers)[[1]]
-          Resultats$TXT_hierarchical_models_complete_model_sig_at_each_step<-modele_avec_outliers
-          
+          round(modele_avec_outliers,3)->modele_avec_outliers
+          c(txt_residual_error, "R.deux", "F", "Ddl(1)", "Ddl(2)","valeur.p")->dimnames(modele_avec_outliers)[[2]]
+          paste(txt_step, 1:length(modele_avec_outliers[,1]))->dimnames(modele_avec_outliers)[[1]]
+          Resultats$txt_hierarchical_models_complete_model_sig_at_each_step<-modele_avec_outliers
+
         }
-        
-        if(any(param=="Bayes")|any(param==TXT_bayesian_factors)) {
+
+        if(any(param=="Bayes")|any(param==txt_bayesian_factors)) {
           BF<-lmBF(formula= as.formula(formule.H1[[1]]), data=dtrgeasieR, rscaleFixed=rscale)
           BF.modele<-extractBF(BF, onlybf=T)
           BF.hier<-c(NA)
@@ -286,56 +300,56 @@ regressions <-
             denomBF<-lmBF(formula= as.formula(formule.H1[[i-1]]), data=dtrgeasieR, rscaleFixed=rscale)
             OddBF<-numBF/denomBF
             BF.hier<-c(BF.hier, extractBF(OddBF, onlybf=T))}
-          
-          BF.hier<-data.frame(INFO_fb_ratio_between_models=BF.hier, TXT_bayesian_factor_of_model= BF.modele)
+
+          BF.hier<-data.frame(desc_fb_ratio_between_models=BF.hier, txt_bayesian_factor_of_model= BF.modele)
           dimnames(BF.hier)[[1]]<- unlist(as.character(formule.H1))
-          Resultats$TXT_bayesian_approach_hierarchical_models<-BF.hier
+          Resultats$txt_bayesian_approach_hierarchical_models<-BF.hier
         }
-        
+
       }
-      # TXT_param_test, TXT_non_param_test,TXT_robusts_tests_with_bootstraps, TXT_bayesian_factors   
-      if(any(param=="param")|any(param==TXT_param_tests)) {
+      # txt_param_test, txt_non_param_test,txt_robusts_tests_with_bootstraps, txt_bayesian_factors
+      if(any(param=="param")|any(param==txt_param_tests)) {
         c(summary(lm.r1)$sigma, summary(lm.r1)$r.squared, summary(lm.r1)$fstatistic)->significativite_modele # fournit les residus, le R.deux et le F
         pf(summary(lm.r1)$fstatistic[1], summary(lm.r1)$fstatistic[2],summary(lm.r1)$fstatistic[3], lower.tail=F)->p.value #permet de savoir si le F est significatif
-        c(significativite_modele , p.value)->modele.F # on combine les precedents 
+        c(significativite_modele , p.value)->modele.F # on combine les precedents
         round(modele.F,3)->modele.F # on arrondit les nombres a la 3e decimale
-        c(TXT_residual_error, "R.deux", "F", "Ddl (num)", "Ddl (dnom)","valeur.p")->names(modele.F)# attribue le nom aux colonnes
+        c(txt_residual_error, "R.deux", "F", "Ddl (num)", "Ddl (dnom)","valeur.p")->names(modele.F)# attribue le nom aux colonnes
         modele.F->Resultats$"Estimation  du modele global"
-        
-        
+
+
         data.frame(summary(lm.r1)$coefficients)->table # fournit le b, le t et la valeur de la probabilite. On le stocke dans table
-        round(table[,1:4],3)->table # on arrondit les valeurs a 3 decimales 
-        
+        round(table[,1:4],3)->table # on arrondit les valeurs a 3 decimales
+
         beta<-coef(lm.r1)*sapply(data.frame(model.matrix(lm.r1)),sd) /sd(dtrgeasieR[,variables[1]])
-        c("",round(beta[-1],5))->table$beta # fournit les betas qu on inclut a la table 
+        c("",round(beta[-1],5))->table$beta # fournit les betas qu on inclut a la table
         names(table)<-c("b","erreur.standard","t","valeur.p","beta")
-        
+
         r_carre<- matrix(c(0,0,0),1)
         for(i in 1:length(mod)){
           rep(summary(mod[[i]])$r.squared, (length(coef(mod[[i]]))-length(r_carre[,1])))->r_carre2
           summary(mod[[i]])$r.squared-r_carre[length(r_carre[,2]),1]->diff
           rep(diff, (length(coef(mod[[i]]))-length(r_carre[,1])))->diff
           rep(summary(mod[[i]])$adj.r.squared, (length(coef(mod[[i]]))-length(r_carre[,1])))->r_carre_adj
-          
+
           round(cbind(r_carre2, diff, r_carre_adj), 4)->r_carre2
           rbind(r_carre,r_carre2 )->r_carre
-          
+
         }
-        
+
         dimnames(r_carre)<-list(ligne=NULL, c("R.deux", "Delta R.deux", "R.deux.aj"))
         data.frame(table,r_carre)->table
         table[is.na(table)]<-""
-        table->Resultats$TXT_beta_table
+        table->Resultats$txt_beta_table
         if(length(pred)>1){
           ols.corr<-try(ols_correlations(lm.r1), silent=T)
           if(any(class(ols.corr)!="try-error")){
-          Resultats$TXT_variables_contribution_to_model<-ols.corr
-          Resultats$TXT_added_variables_graph <-ols_plot_added_variable(lm.r1)}
+          Resultats$txt_variables_contribution_to_model<-ols.corr
+          Resultats$txt_added_variables_graph <-ols_plot_added_variable(lm.r1)}
         }
       }
-      
-      if(any(param=="Bayes")|any(param==TXT_bayesian_factors)){
-        
+
+      if(any(param=="Bayes")|any(param==txt_bayesian_factors)){
+
         lmBF(modele1, data=dtrgeasieR)->BF.out
         BF.table<-extractBF(BF.out)[1:2]
         if(length(pred)>1) { for(i in 2:length(pred)){
@@ -343,22 +357,22 @@ regressions <-
           lmBF(modele1, data=dtrgeasieR)->BF.out
           BF.table<-rbind(BF.table, extractBF(BF.out)[1:2])
         }
-        } 
-        Resultats$TXT_bayesian_factors<-BF.table
-        
+        }
+        Resultats$txt_bayesian_factors<-BF.table
+
       }
-      
-      if(any(param==TXT_robusts| any(param==TXT_robusts_tests_with_bootstraps))){
-        
+
+      if(any(param==txt_robusts| any(param==txt_robusts_tests_with_bootstraps))){
+
         rlm(formula=modele, data=dtrgeasieR)->modele_robuste
         summary(modele_robuste)->res_modele_robuste
         (1-pt(abs(res_modele_robuste$coefficients[,3]), (length(dtrgeasieR[,1])-1-length(pred)), lower.tail=TRUE))*2->proba
         round(cbind(res_modele_robuste$coefficients, proba),3)->M_estimator
         data.frame(M_estimator)->M_estimator
-        noms<-c(TXT_b_m_estimator, "SE", "t", "valeur.p")
-        
-        
-        if(n.boot>100){ 
+        noms<-c(txt_b_m_estimator, "SE", "t", "valeur.p")
+
+
+        if(n.boot>100){
           bootReg<-function(formula, dtrgeasieR, i)
           {  d <- dtrgeasieR[i,]
           fit <- lm(formula, data = d)
@@ -377,28 +391,28 @@ regressions <-
           data.frame(M_estimator, round(intervalle,4))->M_estimator
         }
         names(M_estimator)<-noms
-        Resultats$TXT_robusts_statistics<-M_estimator
-      }  
-      
-      
-      if(CV) INFO_cross_validation_issues 
-      
-      return(Resultats) 
-      
+        Resultats$txt_robusts_statistics<-M_estimator
+      }
+
+
+      if(CV) desc_cross_validation_issues
+
+      return(Resultats)
+
     }
-    options (warn=-1) 
+    options (warn=-1)
     .e <- environment()
-    c("MASS",TXT_bayes_factor,"boot","car","ggplot2","gsl", "MBESS","olsrr","nortest","psych","svDialogs")->packages
+    c("MASS",txt_bayes_factor,"boot","car","ggplot2","gsl", "MBESS","olsrr","nortest","psych","svDialogs")->packages
     try(lapply(packages, library, character.only=T), silent=T)->test2
     if(class(test2)== "try-error") return(ez.install())
-    Resultats<-list() 
+    Resultats<-list()
     try( windows(record=T), silent=T)->win
     if(any(class(win)=="try-error")) quartz()
-    if(class(data)=="data.frame") deparse(substitute(data))->data 
-    reg.in.output<-regressions.in(data=data, modele=modele, Y=Y, X_a=X_a, X_i=X_i, outlier=outlier, inf=inf, 
+    if(class(data)=="data.frame") deparse(substitute(data))->data
+    reg.in.output<-regressions.in(data=data, modele=modele, Y=Y, X_a=X_a, X_i=X_i, outlier=outlier, inf=inf,
                                   CV=CV, select.m=select.m, method=method, step=step, group=group, criteria=criteria , scale=scale, info=info,
                                   sauvegarde=sauvegarde, n.boot=n.boot, param=param, rscale=rscale)
-    if(is.null(reg.in.output)) return(choix.reg()) 
+    if(is.null(reg.in.output)) return(choix.reg())
     data<-reg.in.output$data
     nom<-reg.in.output$nom
     modele<-reg.in.output$modele
@@ -415,18 +429,18 @@ regressions <-
     method<-reg.in.output$reg.options$method
     criteria<-reg.in.output$reg.options$criteria
     group<-reg.in.output$reg.options$group
-    
-    
-    
-    
-    
-    
-    
-    
-    if(any(outlier==  TXT_complete_dataset)){
-      Resultats$TXT_complete_dataset<-regressions.out(dtrgeasieR=data, modele=modele,  VC=VC, select.m=select.m, method=method, step=step, group=group, criteria=criteria , scale=scale,
+
+
+
+
+
+
+
+
+    if(any(outlier==  txt_complete_dataset)){
+      Resultats$txt_complete_dataset<-regressions.out(dtrgeasieR=data, modele=modele,  VC=VC, select.m=select.m, method=method, step=step, group=group, criteria=criteria , scale=scale,
                                                      sauvegarde=sauvegarde, n.boot=n.boot, param=param, rscale=rscale)
-      if(!is.null(group))   {  
+      if(!is.null(group))   {
         R1<-list()
         G<-data[,group]
         if(length(group)>1) G<-as.list(G)
@@ -434,15 +448,15 @@ regressions <-
         for(i in 1:length(G)){
           resg<-regressions.out(dtrgeasieR=G[[i]], modele=modele,  VC=VC, select.m=select.m, method=method, step=step, group=group, criteria=criteria , scale=scale,
                                 sauvegarde=sauvegarde, n.boot=n.boot, param=param, rscale=rscale)
-          
+
           R1[[length(R1)+1]]<-resg
           names(R1)[length(R1)]<-names(G)[i]
         }
-        Resultats$TXT_complete_dataset$TXT_group_analysis<-R1
-      } 
-      
-    } 
-    if(any(outlier==TXT_identifying_outliers)|any(outlier==TXT_without_outliers)|inf==T){
+        Resultats$txt_complete_dataset$txt_group_analysis<-R1
+      }
+
+    }
+    if(any(outlier==txt_identifying_outliers)|any(outlier==txt_without_outliers)|inf==T){
       lm.r1<-lm(modele, data)
       as.character(attributes(terms(modele))$variables)->variables
       variables[2:length(variables)]->variables
@@ -459,54 +473,54 @@ regressions <-
         data[which(apply(mesure_influence$is.inf, 1, any)),"est.inf"]<-"*"
         ols_plot_dfbetas(lm.r1)
         data[order(data$res.student.p.Bonf), ]->data
-        writeLines(INFO_obs_with_asterisk_are_outliers)
+        writeLines(desc_obs_with_asterisk_are_outliers)
         View(data)
         suppression<-"yes"
         outliers<-data.frame()
         nettoyees<-data
         while(suppression=="yes"){
-          
-          cat ("Appuyez [entree] pour continuer")
+
+          cat (ask_press_enter_to_continue)
           line <- readline()
           sup<-NA
           while(is.na(sup)){
-            sup <- dlgInput(ASK_obs_to_remove, 0)$res
+            sup <- dlgInput(ask_obs_to_remove, 0)$res
             if(length(sup)==0) return(regressions())
             strsplit(sup, ":")->sup
             tail(sup[[1]],n=1)->sup
             as.numeric(sup)->sup
-            if(is.na(sup)) msgBox(ASK_enter_number_of_to_be_removed_variable)  
+            if(is.na(sup)) msgBox(ask_enter_number_of_to_be_removed_variable)
           }
           if(sup==0) suppression<-"no" else {
             rbind(outliers, nettoyees[which(dimnames(nettoyees)[[1]]==sup),])->outliers
             nettoyees[-which(dimnames(nettoyees)[[1]]==sup),]->nettoyees
           }
-          
+
         }
         if(length(outliers)!=0) outliers<-outliers[,variables]
         assign(nom, data, envir=.GlobalEnv)
       } else {
-        4/length(data[,1])->seuil_cook # fixe le seuil pour les valeurs aberrantes 
-        cooks.distance(lm.r1)->data$cook.d  
-        data[which(data$cook.d<= seuil_cook), ]->nettoyees 
+        4/length(data[,1])->seuil_cook # fixe le seuil pour les valeurs aberrantes
+        cooks.distance(lm.r1)->data$cook.d
+        data[which(data$cook.d<= seuil_cook), ]->nettoyees
         data[which(data$cook.d>= seuil_cook), ]->outliers
         cbind(outliers[,variables],outliers$cook.d)->outliers
-        Resultats$"information"$INFO_outliers_identified_on_4_div_n
+        Resultats$"information"$desc_outliers_identified_on_4_div_n
       }
-      nettoyees->>nettoyees   
+      nettoyees->>nettoyees
       length(data[,1])-length(nettoyees[,1])->N_retire # identifier le nombre d observations retirees sur la base de la distance de cook
-      if(any(outlier== TXT_identifying_outliers)){
+      if(any(outlier== txt_identifying_outliers)){
         paste(N_retire/length(data[,1])*100,"%")->Pourcentage_retire # fournit le pourcentage retire
-        data.frame("N.retire"=N_retire, "Pourcent.obs.retirees"=Pourcentage_retire)->Resultats$TXT_identified_outliers_synthesis
-        if(length(outliers)!=0) Resultats$TXT_identifying_outliers$INFO_identified_outliers<-outliers
-        
+        data.frame("N.retire"=N_retire, "Pourcent.obs.retirees"=Pourcentage_retire)->Resultats$txt_identified_outliers_synthesis
+        if(length(outliers)!=0) Resultats$txt_identifying_outliers$desc_identified_outliers<-outliers
+
       }
-      if(any(outlier== TXT_without_outliers)) {
-        if(N_retire!=0 | all(outlier!=TXT_complete_dataset)){
-          Resultats$TXT_without_outliers<-regressions.out(dtrgeasieR=nettoyees, modele=modele,  VC=VC, select.m=select.m, method=method, step=step, group=group, criteria=criteria , scale=scale,
+      if(any(outlier== txt_without_outliers)) {
+        if(N_retire!=0 | all(outlier!=txt_complete_dataset)){
+          Resultats$txt_without_outliers<-regressions.out(dtrgeasieR=nettoyees, modele=modele,  VC=VC, select.m=select.m, method=method, step=step, group=group, criteria=criteria , scale=scale,
                                                                      sauvegarde=sauvegarde, n.boot=n.boot, param=param, rscale=rscale)
-          
-          if(!is.null(group))   {  
+
+          if(!is.null(group))   {
             R1<-list()
             G<-nettoyees[,group]
             if(length(group)>1) G<-as.list(G)
@@ -514,19 +528,19 @@ regressions <-
             for(i in 1:length(G)){
               resg<-regressions.out(dtrgeasieR=G[[i]], modele=modele,  VC=VC, select.m=select.m, method=method, step=step, group=group, criteria=criteria , scale=scale,
                                     sauvegarde=sauvegarde, n.boot=n.boot, param=param, rscale=rscale)
-              
+
               R1[[length(R1)+1]]<-resg
               names(R1)[length(R1)]<-names(G)[i]
             }
-            Resultats$TXT_without_outliers$TXT_group_analysis<-R1
-          } 
-          
-          
+            Resultats$txt_without_outliers$txt_group_analysis<-R1
+          }
+
+
         }
       }
     }
-    
-    
+
+
     paste(outlier, collapse="','", sep="")->outlier
     paste(param, collapse="','", sep="")->param
     as.character(modele)->m1
@@ -544,12 +558,12 @@ regressions <-
     Resultats$Call<-paste0("regressions(data=", nom, ",modele=",  modele, ",outlier=c('", outlier, "'),inf=", inf, ",CV=", CV,",select.m='", select.m,"',step=", ifelse(!is.null(step), step.call,"NULL"),
                            ",group=", ifelse(is.null(group), "NULL", paste0("c('",group,"')")),
                            ",criteria=", criteria, ",scale=", scale, ",dial=T, info=T,sauvegarde=", sauvegarde, ",n.boot=", n.boot, ",param=c('", param, "'),rscale=", round(rscale,3), ")")
-    
-    
+
+
     .add.history(data=data, command=Resultats$Call, nom=nom)
-    .add.result(Resultats=Resultats, name =paste("regressions.multiples", Sys.time() ))  
+    .add.result(Resultats=Resultats, name =paste("regressions.multiples", Sys.time() ))
     if(sauvegarde)   if(sauvegarde) save(Resultats=Resultats, choix="Regressions.multiples", env=.e)
-    Resultats$TXT_references<-ref1(packages)
+    Resultats$txt_references<-ref1(packages)
     if(html) ez.html(Resultats)
     return(Resultats)
   }
@@ -559,146 +573,146 @@ regressions <-
 
 
 .regressions.options<-function(data=NULL, modele=NULL, CV=F, inf=F, select.m="none", method="p", criteria=NULL, step=NULL, group=NULL, scale=T, dial=T,info=T){
-  # data : dataframe 
+  # data : dataframe
   # modele : formula as it is used in lm
-  # CV : logical. Should a cross validation to be performed ? 
-  # inf : Logical. Should influential observations be checked ? 
+  # CV : logical. Should a cross validation to be performed ?
+  # inf : Logical. Should influential observations be checked ?
   # select.m : character specifying method of selection. One among "none", "forward", "backward" and "bidirectional"
   # method : if select is different of "none", one among "AIC", "F", or "p"
-  # criteria : if method is "F", specify F value to use. If method is "p", specify p value to use as cutoff criteria. 
+  # criteria : if method is "F", specify F value to use. If method is "p", specify p value to use as cutoff criteria.
   # step : list. Each element of the list is a vector with the effect to test at the specific step (see details)
   # group : character. Name of the factor variable definying the groups
-  # scale : Logical. Should the predictor be scaled before the analysis (recommended) ? 
-  
+  # scale : Logical. Should the predictor be scaled before the analysis (recommended) ?
+
   Resultats<-list()
   step1<-terms(as.formula(modele))
-  
+
   step2<-as.character( attributes(step1)$variables)[-1]
   step1<-attributes(step1)$term.labels
   if(dial || !is.logical(scale)){
-    if(info)   writeLines(ASK_center_numeric_variables)
-    scale<-dlgList(c(TXT_center, TXT_non_centered), multiple = FALSE, title=ASK_center)$res
+    if(info)   writeLines(ask_center_numeric_variables)
+    scale<-dlgList(c(txt_center, txt_non_centered), multiple = FALSE, title=ask_center)$res
     if(length(scale)==0) return(NULL)
-    scale<-ifelse(scale==TXT_center,T,F) 
+    scale<-ifelse(scale==txt_center,T,F)
   }
   Resultats$scale<-scale
   if(dial || !is.logical(inf) || !is.logical(CV)) {
     writeLines("Voulez-vous preciser d'autres options ? Vous pouvez en selectionner plusieurs.
                Les methodes de selection permettent de selectionner le meilleur modele sur la base de criteres statistiques.
-               Les modeles hierarchiques permettent de comparer plusieurs modeles. 
-               Les validations croisees permettent de verifier si un modele n'est pas dependant des donnees. Cette option est a utiliser notamment 
+               Les modeles hierarchiques permettent de comparer plusieurs modeles.
+               Les validations croisees permettent de verifier si un modele n'est pas dependant des donnees. Cette option est a utiliser notamment
                avec les methodes de selection. L'analyse par groupe permet de realiser la meme regression pour des sous-groupes.
                Les mesures d'influences sont les autres mesures habituellement utilisees pour identifier les valeurs influentes.")
-    autres.options<-c(TXT_cross_validation,TXT_influence_method,  TXT_none)
-    if(dim(model.matrix(modele, data))[2]>2) autres.options<-c(TXT_selection_methods, TXT_hierarchical_models, autres.options)
-    if(length(step2)<length(data))  autres.options<-c(TXT_groups_analysis,autres.options)
-    
-    autres.options<- dlgList( autres.options, preselect=c(TXT_none), multiple = TRUE, title=ASK_other_options)$res 
+    autres.options<-c(txt_cross_validation,txt_influence_method,  txt_none)
+    if(dim(model.matrix(modele, data))[2]>2) autres.options<-c(txt_selection_methods, txt_hierarchical_models, autres.options)
+    if(length(step2)<length(data))  autres.options<-c(txt_groups_analysis,autres.options)
+
+    autres.options<- dlgList( autres.options, preselect=c(txt_none), multiple = TRUE, title=ask_other_options)$res
     if(length(autres.options)==0) return(.regressions.options(data=data, modele=modele))
-    # if(any(autres.options==TXT_none)) return(Resultats)   
-    if(any(autres.options==TXT_influence_method) ) Resultats$inf<-T else  Resultats$inf<-F
-    if(any(autres.options==TXT_cross_validation) ) Resultats$CV<-T else Resultats$CV<-F
+    # if(any(autres.options==txt_none)) return(Resultats)
+    if(any(autres.options==txt_influence_method) ) Resultats$inf<-T else  Resultats$inf<-F
+    if(any(autres.options==txt_cross_validation) ) Resultats$CV<-T else Resultats$CV<-F
   }else{Resultats$inf<-inf
-  Resultats$CV<-CV 
-  autres.options<-TXT_none
+  Resultats$CV<-CV
+  autres.options<-txt_none
   }
-  
-  
-  if(any(autres.options==TXT_groups_analysis) || !is.null(group)) {
-    
-    msg5<-ASK_chose_categorial_ranking_factor
-    group<-.var.type(X=group, info=info, data=data, type="factor", check.prod=T, message=msg5,  multiple=FALSE, title=TXT_groups_variables, out=step2)
+
+
+  if(any(autres.options==txt_groups_analysis) || !is.null(group)) {
+
+    msg5<-ask_chose_categorial_ranking_factor
+    group<-.var.type(X=group, info=info, data=data, type="factor", check.prod=T, message=msg5,  multiple=FALSE, title=txt_groups_variables, out=step2)
     if(length(group)==0) { return(.regressions.options(data=data, modele=modele))}
     data<-group$data
-    group<-group$X 
+    group<-group$X
     ftable(data[,group])->groupe.check
     if(any(is.na(groupe.check)) || min(groupe.check)<(length(dimnames(model.matrix(as.formula(modele), data))[[2]])+10)) {
-      msgBox(INFO_at_least_10_obs_needed)
+      msgBox(desc_at_least_10_obs_needed)
       return(groupe.check)
     }
   }
-  
-  if(any(autres.options==TXT_selection_methods) || select.m!="none" & length(select.m)!=1 | !select.m%in%c("none","forward", "backward", "bidirectional",TXT_forward_step_ascending,
-                                                                                                             TXT_backward_step_descending, TXT_bidirectionnal)){
-    if(info) writeLines(ASK_chose_selection_method)
-    select.m<- dlgList(c(TXT_forward_step_ascending,TXT_backward_step_descending, TXT_bidirectionnal), 
-                       preselect=NULL, multiple = FALSE, title=TXT_method_choice)$res
+
+  if(any(autres.options==txt_selection_methods) || select.m!="none" & length(select.m)!=1 | !select.m%in%c("none","forward", "backward", "bidirectional",txt_forward_step_ascending,
+                                                                                                             txt_backward_step_descending, txt_bidirectionnal)){
+    if(info) writeLines(ask_chose_selection_method)
+    select.m<- dlgList(c(txt_forward_step_ascending,txt_backward_step_descending, txt_bidirectionnal),
+                       preselect=NULL, multiple = FALSE, title=txt_method_choice)$res
     if(length(select.m)==0) return(.regressions.options(data=data, modele=modele))
-  } 
+  }
   if(!is.null(method)){
-    if(any(autres.options==TXT_selection_methods)   || (select.m!="none" && !method%in%c("AIC", "p", "F", TXT_f_value,TXT_probability_value, TXT_aic_criterion)) ){
-      if(info) writeLines(ASK_selection_method)
-      method<- dlgList(c(TXT_f_value,TXT_probability_value, TXT_aic_criterion), 
-                       preselect=c(TXT_f_value), multiple = FALSE, title=TXT_method_choice)$res
-      if(length(method)==0) return(.regressions.options(data=data, modele=modele)) 
+    if(any(autres.options==txt_selection_methods)   || (select.m!="none" && !method%in%c("AIC", "p", "F", txt_f_value,txt_probability_value, txt_aic_criterion)) ){
+      if(info) writeLines(ask_selection_method)
+      method<- dlgList(c(txt_f_value,txt_probability_value, txt_aic_criterion),
+                       preselect=c(txt_f_value), multiple = FALSE, title=txt_method_choice)$res
+      if(length(method)==0) return(.regressions.options(data=data, modele=modele))
     }
-    
-    if(select.m!="none" & (method==TXT_f_value | method=="F")){
-      if(!is.null(criteria) && (!is.numeric(criteria) || criteria<1)) {msgBox(INFO_specify_f_value)
+
+    if(select.m!="none" & (method==txt_f_value | method=="F")){
+      if(!is.null(criteria) && (!is.numeric(criteria) || criteria<1)) {msgBox(desc_specify_f_value)
         criteria<-NULL}
-      
+
       if(is.null(criteria)) {
         while(is.null(criteria)){
-          criteria <- dlgInput(ASK_f_value, 4)$res
+          criteria <- dlgInput(ask_f_value, 4)$res
           if(length(criteria)==0) return(.regressions.options(data=data, modele=modele))
           strsplit(criteria, ":")->criteria
           tail(criteria[[1]],n=1)->criteria
           as.numeric(criteria)->criteria
           if(is.na(criteria) || criteria<1) {criteria<-NULL
-          msgBox(INFO_specify_f_value)
+          msgBox(desc_specify_f_value)
           }
           criteria<-df(criteria, df1=1, df2=(length(data[,1])-1-length(step1)), log = FALSE)
         }
       }
     }
-    
-    if(select.m!="none" & (method==TXT_probability_value | method=="p")){
-      if(dial | !is.null(criteria) && (!is.numeric(criteria) || criteria<0 || criteria>1)) {msgBox(INFO_specify_probability_value)
+
+    if(select.m!="none" & (method==txt_probability_value | method=="p")){
+      if(dial | !is.null(criteria) && (!is.numeric(criteria) || criteria<0 || criteria>1)) {msgBox(desc_specify_probability_value)
         criteria<-NULL}
       if(is.null(criteria)) {
         while(is.null(criteria)){
-          criteria <- dlgInput(ASK_probability_value, 0.15)$res
+          criteria <- dlgInput(ask_probability_value, 0.15)$res
           if(length(criteria)==0) return(.regressions.options(data=data, modele=modele))
           strsplit(criteria, ":")->criteria
           tail(criteria[[1]],n=1)->criteria
           as.numeric(criteria)->criteria
           if(is.na(criteria) || criteria>1 || criteria<0 ) {criteria<-NULL
-          msgBox(INFO_specify_probability_value)}
+          msgBox(desc_specify_probability_value)}
         }
       }
-      
+
     }
   }
-  if(any(autres.options==TXT_hierarchical_models)| !is.null(step)) {
-    
+  if(any(autres.options==txt_hierarchical_models)| !is.null(step)) {
+
     if(!is.null(step) ){
       st1<-unlist(step)
-      if(any(table(st1>1))) st1<-TXT_error
-      if(any(!st1%in%step1 ))st1<-TXT_error
-      if(st1==TXT_error){
-        msgBox(INFO_issue_in_hierarchical_regression)
+      if(any(table(st1>1))) st1<-txt_error
+      if(any(!st1%in%step1 ))st1<-txt_error
+      if(st1==txt_error){
+        msgBox(desc_issue_in_hierarchical_regression)
         step<-NULL
       }
-    }         
+    }
     if(is.null(step)){
-      if(info) writeLines(ASK_chose_variables)      
+      if(info) writeLines(ask_chose_variables)
       step<-list()
-      step[[1]]<- dlgList(step1, preselect=NULL, multiple = TRUE, title=TXT_variables_from_step)$res
+      step[[1]]<- dlgList(step1, preselect=NULL, multiple = TRUE, title=txt_variables_from_step)$res
       if(length(step[[1]])==0) return(.regressions.options(data=data, modele=modele))
       setdiff(step1,step[[1]])->step1
-      
+
       while(length(step1!=0)){
-        step[[length(step)+1]]<-dlgList(step1, multiple = TRUE,title=TXT_variables_from_step)$res
+        step[[length(step)+1]]<-dlgList(step1, multiple = TRUE,title=txt_variables_from_step)$res
         if(length(step[[length(step)]])==0) return(.regressions.options(data=data, modele=modele))
         setdiff(step1,step[[length(step) ]])->step1
-      } 
+      }
     }
-  } 
-  
+  }
+
   Resultats$step<-step
   Resultats$select.m<-select.m
   Resultats$method<-method
   Resultats$criteria<-criteria
-  Resultats$group<-group 
-  return(Resultats) 
+  Resultats$group<-group
+  return(Resultats)
 }

@@ -23,13 +23,13 @@ VI.multiples <-
       if(class(essai)=="try-error") {
         corr.test(data2)$r->matrice
         if(any(abs(matrice)==1)) {
-          msgBox(INFO_perfectly_correlated_variables_in_matrix_trying_to_solve)
+          msgBox(desc_perfectly_correlated_variables_in_matrix_trying_to_solve)
           which(abs(matrice)==1, arr.ind=TRUE)->un
           un<-un[-which(un[,1]==un[,2]),]
           data2[,-un[,2]]->data2
           try(psych::outlier(data2), silent=T)->essai
           if(class(essai)=="try-error") {
-            writeLines(INFO_cannot_compute_mahalanobis)
+            writeLines(desc_cannot_compute_mahalanobis)
             0->data$D.Mahalanobis  }
         }else{essai-> data$D.Mahalanobis}
       } else{ essai-> data$D.Mahalanobis
@@ -42,7 +42,7 @@ VI.multiples <-
     data[which(data$D.Mahalanobis>seuil),]->outliers
     length(outliers[,1])/length(data[,1])*100->pourcent
     
-    msgBox(paste(round(pourcent,2), INFO_percentage_outliers))
+    msgBox(paste(round(pourcent,2), desc_percentage_outliers))
     
     
     if(pourcent!=0){
@@ -51,24 +51,24 @@ VI.multiples <-
                  consideree comme influente en partant de la valeur la plus extreme. La procedure s'arrete  
                  quand plus aucune observation n'est consideree comme influente")  
       
-      suppr<- dlgList(c(TXT_suppress_all_outliers, TXT_suppress_outliers_manually), 
-                      preselect=c(TXT_suppress_all_outliers), multiple = FALSE, title=ASK_how_to_remove)$res
+      suppr<- dlgList(c(txt_suppress_all_outliers, txt_suppress_outliers_manually), 
+                      preselect=c(txt_suppress_all_outliers), multiple = FALSE, title=ask_how_to_remove)$res
       if(length(suppr)==0) return(NULL)
-      if(suppr==TXT_suppress_all_outliers) {data[which(data$D.Mahalanobis<seuil),]->data 
-        outliers->Resultats$TXT_labeled_outliers}else{
+      if(suppr==txt_suppress_all_outliers) {data[which(data$D.Mahalanobis<seuil),]->data 
+        outliers->Resultats$txt_labeled_outliers}else{
           suppression<-"yes"
           outliers<-data.frame()
           while(suppression=="yes"){
             print(data[which.max(data$D.Mahalanobis),])
-            cat ("Appuyez [entree] pour continuer")
+            cat (ask_press_enter_to_continue)
             line <- readline()
-            dlgMessage(ASK_suppress_this_obs, "yesno")$res->suppression
+            dlgMessage(ask_suppress_this_obs, "yesno")$res->suppression
             if(suppression=="yes") {rbind(outliers, data[which.max(data$D.Mahalanobis),])->outliers
               data[-which.max(data$D.Mahalanobis),]->data
               
             }
           }
-          Resultats$TXT_labeled_outliers<-outliers
+          Resultats$txt_labeled_outliers<-outliers
         }
     }
     Resultats$data<-data

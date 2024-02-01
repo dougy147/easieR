@@ -1,34 +1,34 @@
 test.t <-
   function(X=NULL, Y=NULL, group=NULL, choix=NULL,
-           sauvegarde=F, outlier=c(TXT_complete_dataset,  TXT_identifying_outliers,TXT_without_outliers),  z=NULL, data=NULL,
-           alternative="two.sided", mu=NULL, formula=NULL, n.boot=NULL, 
-           param=c(TXT_param_test, TXT_non_param_test,TXT_robusts_tests_with_bootstraps, 
-                   TXT_bayesian_factors), info=TRUE, rscale=0.707, html=T){
-    # X : Character specifying the dependant variable in dataframe. 
+           sauvegarde=F, outlier=c(txt_complete_dataset,  txt_identifying_outliers,txt_without_outliers),  z=NULL, data=NULL,
+           alternative="two.sided", mu=NULL, formula=NULL, n.boot=NULL,
+           param=c(txt_param_test, txt_non_param_test,txt_robusts_tests_with_bootstraps,
+                   txt_bayesian_factors), info=TRUE, rscale=0.707, html=T){
+    # X : Character specifying the dependant variable in dataframe.
     # Y : character specifying either a two levels factor in dataframe or a numeric variable if paired is TRUE
     # group : Factor vector allowing to decompose analysis by group in one sample t test
-    # choix : Character. One among c(TXT_comparison_to_norm, TXT_two_paired_samples,TXT_two_independant_samples)
-    # sauvegarde : logical. Should the results be saved ? 
-    # outlier : character. One or several possibilities among c(TXT_complete_dataset,   TXT_identifying_outliers, TXT_without_outliers)
+    # choix : Character. One among c(txt_comparison_to_norm, txt_two_paired_samples,txt_two_independant_samples)
+    # sauvegarde : logical. Should the results be saved ?
+    # outlier : character. One or several possibilities among c(txt_complete_dataset,   txt_identifying_outliers, txt_without_outliers)
     # z : if NULL and the identification/exclusion of outlier is desired, outlier are identified on Grubbs' test. If z is numeric, outliers are identified on abs(z)
-    # data : data on which analysis has to be performed. 
-    # alternative : one among c("greater", "lower", "two.sided"). Two sided is default. 
+    # data : data on which analysis has to be performed.
+    # alternative : one among c("greater", "lower", "two.sided"). Two sided is default.
     # formula : a formula of the form dependant.variable~independant.variable
     # n.boot : number of bootstrap. Must be a positive value
-    # param : character vector with one or several choices among c(TXT_param_test, TXT_non_param_test,TXT_robusts_tests_with_bootstraps, TXT_bayesian_factors)
+    # param : character vector with one or several choices among c(txt_param_test, txt_non_param_test,txt_robusts_tests_with_bootstraps, txt_bayesian_factors)
     # info : logical. If dialog box are used, Should information be printed in the console
-    # rscale : if INFO_bayesian_factors_chosen_inparam", rscale is the prior scale. See t.testBF for more information
-    
+    # rscale : if desc_bayesian_factors_chosen_inparam", rscale is the prior scale. See t.testBF for more information
+
     #### 5 fonctions qui seront appelees pour realiser l'analyse
-    test.t.in<-function(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided", 
+    test.t.in<-function(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
                         formula=NULL,n.boot=NULL, rscale=NULL, mu=NULL){
-      
+
       Resultats<-list()
       if(!is.null(choix)) dial<-F else dial<-T
-      if(is.null(choix) || (choix %in%c(TXT_comparison_to_norm, TXT_two_paired_samples,TXT_two_independant_samples)==FALSE)){
-        if(info) writeLines(ASK_t_test_type)
-        choix<-dlgList(c(TXT_comparison_to_norm, TXT_two_paired_samples,
-                         TXT_two_independant_samples), preselect=NULL, multiple = FALSE, title=TXT_t_test_choice)$res
+      if(is.null(choix) || (choix %in%c(txt_comparison_to_norm, txt_two_paired_samples,txt_two_independant_samples)==FALSE)){
+        if(info) writeLines(ask_t_test_type)
+        choix<-dlgList(c(txt_comparison_to_norm, txt_two_paired_samples,
+                         txt_two_independant_samples), preselect=NULL, multiple = FALSE, title=txt_t_test_choice)$res
         if(length(choix)==0) return(NULL)
       }
       data<-choix.data(data=data, info=info, nom=T)
@@ -36,98 +36,98 @@ test.t <-
       nom<-data[[1]]
       data<-data[[2]]
       if(is.null(Y) || class(data[,Y]) == "factor") format<-"long" else format<-"large"
-      
+
       if(is.null(formula)){
-        if(choix==TXT_two_paired_samples){
+        if(choix==txt_two_paired_samples){
           if(dial){
             if(info==TRUE){
               temps1<-1:3
               temps2<-4:6
-              data.frame(TXT_time1=temps1,TXT_time2=temps2)->large
-              data.frame(c(rep(TXT_time1,3),rep(TXT_time2, 3)), 1:6)->long
+              data.frame(txt_time1=temps1,txt_time2=temps2)->large
+              data.frame(c(rep(txt_time1,3),rep(txt_time2, 3)), 1:6)->long
               names(long)<-c("moment","mesure")
-              writeLines(INFO_this_is_large_format)
+              writeLines(desc_this_is_large_format)
               print(large)
-              writeLines(INFO_this_is_long_format)
+              writeLines(desc_this_is_long_format)
               print(long)}
-            format<-dlgList(c("large", "long"), preselect="large", multiple = FALSE, title=ASK_data_format)$res
+            format<-dlgList(c("large", "long"), preselect="large", multiple = FALSE, title=ask_data_format)$res
             if(length(format)==0) {
-              Resultats<-test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided", 
+              Resultats<-test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
                                    formula=NULL,n.boot=NULL, rscale=NULL)
               return(Resultats)
             }
-          }}  
+          }}
         if(format=="large") {
-          msg3<-ASK_time1
-          msg4<-ASK_time2
-          title1<-TXT_time_1
-          title2<-TXT_time_2
+          msg3<-ask_time1
+          msg4<-ask_time2
+          title1<-txt_time_1
+          title2<-txt_time_2
         } else{
-          msg3<-ASK_chose_dependant_variable
-          msg4<-ASK_independant_variable
-          title1<-TXT_dependant_variables
-          title2<-TXT_independant_variable
-          
+          msg3<-ask_chose_dependant_variable
+          msg4<-ask_independant_variable
+          title1<-txt_dependant_variables
+          title2<-txt_independant_variable
+
         }
-        
-        if(choix==TXT_two_paired_samples) {multiple<-F 
+
+        if(choix==txt_two_paired_samples) {multiple<-F
         if(length(X)>1){
-          msgBox(INFO_single_dependant_variable_allowed_in_paired_t)
+          msgBox(desc_single_dependant_variable_allowed_in_paired_t)
           X<-NULL }}else multiple<-T
           X<-.var.type(X=X, info=info, data=data, type="numeric", check.prod=F, message=msg3,  multiple=multiple, title=title1, out=NULL)
           if(is.null(X)) {
-            test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided", 
+            test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
                       formula=NULL,n.boot=NULL, rscale=NULL)->Resultats
             return(Resultats)}
           data<-X$data
           X1<-X$X
-          
-          if(choix!=TXT_comparison_to_norm){
-            if(choix==TXT_two_paired_samples && format=="large") type<-"numeric" else type<-"factor"
+
+          if(choix!=txt_comparison_to_norm){
+            if(choix==txt_two_paired_samples && format=="large") type<-"numeric" else type<-"factor"
             Y<-.var.type(X=Y, info=info, data=data, type=type, check.prod=F, message=msg4,  multiple=FALSE, title=title2, out=X1)
             if(is.null(Y)) {
-              test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided", 
+              test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
                         formula=NULL,n.boot=NULL, rscale=NULL)->Resultats
               return(Resultats)}
             data<-Y$data
-            Y<-Y$X 
+            Y<-Y$X
             if(class(data[,Y])=="factor" && nlevels(data[,Y])!=2) {
-              msgBox(INFO_two_modalities_for_independante_categorial_variable)
-              test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided", 
+              msgBox(desc_two_modalities_for_independante_categorial_variable)
+              test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
                         formula=NULL,n.boot=NULL, rscale=NULL)->Resultats
               return(Resultats)
             }
-          } 
+          }
       } else {
         X1<-as.character(formula[2])
         Y<-as.character(formula[3])
       }
-      
-      
-      
-      
-      
-      if(choix==TXT_two_paired_samples){
+
+
+
+
+
+      if(choix==txt_two_paired_samples){
         if(format=="large"){
           if(dial){
-            if(info==TRUE)writeLines(ASK_independant_variable_name)
-            nomVI <- dlgInput(ASK_independant_variable_name, "Moment")$res
+            if(info==TRUE)writeLines(ask_independant_variable_name)
+            nomVI <- dlgInput(ask_independant_variable_name, "Moment")$res
             if(length(nomVI)==0) {
-              Resultats<-test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided", 
+              Resultats<-test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
                                    formula=NULL,n.boot=NULL, rscale=NULL)
               return(Resultats)
             }
             strsplit(nomVI, ":")->nomVI
             tail(nomVI[[1]],n=1)->nomVI
-            if(info==TRUE) writeLines(ASK_dependant_variable_name)
-            nomVD <- dlgInput(ASK_dependant_variable_name, TXT_result)$res
+            if(info==TRUE) writeLines(ask_dependant_variable_name)
+            nomVD <- dlgInput(ask_dependant_variable_name, txt_result)$res
             if(length(nomVD)==0) {
-              Resultats<-test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided", 
+              Resultats<-test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
                                    formula=NULL,n.boot=NULL, rscale=NULL)
               return(Resultats)
             }
           } else {
-            nomVD<-TXT_result
+            nomVD<-txt_result
             nomVI<-"Moment"
           }
           strsplit(nomVD, ":")->nomVD
@@ -141,77 +141,77 @@ test.t <-
         }
         if(format=="long") {
           if( length(unique(table(data[,Y])))!=1) {
-            msgBox(INFO_non_equal_independant_variable_modalities_occurrence) 
-            msg4<-ASK_id_variable
+            msgBox(desc_non_equal_independant_variable_modalities_occurrence)
+            msg4<-ask_id_variable
             ID<-.var.type(X=NULL, info=info, data=data, type=type, check.prod=F, message=msg4,  multiple=multiple, title="Variable *Identifiant*", out=c(X1,Y))
             if(is.null(ID)) {
-              test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided", 
+              test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
                         formula=NULL,n.boot=NULL, rscale=NULL)->Resultats
               return(Resultats)}
-            ID<-ID$X 
+            ID<-ID$X
             ID.fail<-names(which(table(data[,ID])!=2))
             data<-data[which(data[,ID]!=ID.fail),]
             data<-data[order(data[,c(Y,ID)]), ]
           } else {
             data[order(data[,Y]),]->data
-            data$IDeasy<-rep(paste0("p", 1:(length(data[,X1])/2)), 2) 
+            data$IDeasy<-rep(paste0("p", 1:(length(data[,X1])/2)), 2)
           }
         }
-        
+
       }
-      
-      if(choix==TXT_comparison_to_norm){
-        writeLines(ASK_specify_norm_value)
+
+      if(choix==txt_comparison_to_norm){
+        writeLines(ask_specify_norm_value)
         if(class(mu) !="numeric") mu<-NA
         while(is.na(mu)){
-          mu <- dlgInput(ASK_norm_value, 0)$res
-          if(length(mu)==0) { test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided", 
+          mu <- dlgInput(ask_norm_value, 0)$res
+          if(length(mu)==0) { test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
                                         formula=NULL,n.boot=NULL, rscale=NULL)->Resultats
             return(Resultats)}
           strsplit(mu, ":")->mu
           tail(mu[[1]],n=1)->mu
           as.numeric(mu)->mu
-          if(is.na(mu)) msgBox(INFO_norm_must_be_numeric)  
+          if(is.na(mu)) msgBox(desc_norm_must_be_numeric)
         }
         if(dial){
-          
-          
+
+
           if(info==TRUE) writeLines("Une analyse bilaterale teste l'existence d'une difference. Le choix superieur teste si la moyenne est strictement superieure
                                     \n Le choix inferieur teste l'existence d'une difference strictement inferieure")
-          dlgList(c("Bilateral", TXT_superior, TXT_inferior), preselect=NULL, multiple = FALSE, title=TXT_means_comparison)$res->alternative
+          dlgList(c("Bilateral", txt_superior, txt_inferior), preselect=NULL, multiple = FALSE, title=txt_means_comparison)$res->alternative
           if(length(alternative)==0) {
-            test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided", 
+            test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
                       formula=NULL,n.boot=NULL, rscale=NULL)->Resultats
             return(Resultats)
           } else car::recode(alternative, "'Bilateral'= 'two.sided';'Superieur'='greater'; 'Inferieur'='less'")->alternative
-          
+
           if(info==TRUE) writeLines("Si vous souhaitez realiser l'analyse pour differents sous-echantillons en fonction d'un critere categoriel (i.e; realiser une analyse par groupe)
                                     \n choisissez oui. Dans ce cas, l'analyse est realisee sur l'echantillon complet et sur les sous-echantillons.
                                     \n Si vous desirez l'analyse pour l'echantillon complet uniquement, chosissez non.
                                     \n l'analyse par groupe ne s'appliquent pas aux statistiques robustes.")
-          dlgList(c(TXT_yes, TXT_no), preselect=TXT_no, multiple = FALSE, title=ASK_analysis_by_group)$res->par.groupe
+          dlgList(c(txt_yes, txt_no), preselect=txt_no, multiple = FALSE, title=ask_analysis_by_group)$res->par.groupe
           if(length(par.groupe)==0) {
-            test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided", 
+            test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
                       formula=NULL,n.boot=NULL, rscale=NULL)->Resultats
             return(Resultats)
-          } 
-          msg5<-ASK_chose_categorial_ranking_factor
-          if(par.groupe==TXT_yes){group<-.var.type(X=group, info=info, data=data, type="factor", check.prod=F, message=msg5,  multiple=FALSE, title=TXT_variables, out=X1)
-          if(length(group)==0) { test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided", 
+          }
+          msg5<-ask_chose_categorial_ranking_factor
+          if(par.groupe==txt_yes){group<-.var.type(X=group, info=info, data=data, type="factor", check.prod=F, message=msg5,  multiple=FALSE, title=txt_variables, out=X1)
+          if(length(group)==0) { test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
                                            formula=NULL,n.boot=NULL, rscale=NULL)->Resultats
             return(Resultats)}
           data<-group$data
-          group<-group$X 
+          group<-group$X
           }
         }
       }
-      msg.options1<-INFO_param_is_t_test
-      msg.options2<- INFO_non_param_is_wilcoxon_or_mann_withney
-      
-      options<-.ez.options(options=c(TXT_choice,"outlier"), n.boot=n.boot,param=T, non.param=T, robust=T, Bayes=T, msg.options1=msg.options1, msg.options2=msg.options2, info=info, dial=dial, 
+      msg.options1<-desc_param_is_t_test
+      msg.options2<- desc_non_param_is_wilcoxon_or_mann_withney
+
+      options<-.ez.options(options=c(txt_choice,"outlier"), n.boot=n.boot,param=T, non.param=T, robust=T, Bayes=T, msg.options1=msg.options1, msg.options2=msg.options2, info=info, dial=dial,
                            choix=param,sauvegarde=sauvegarde, outlier=outlier, rscale=rscale)
       if(is.null(options)){
-        test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided", 
+        test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
                   formula=NULL,n.boot=NULL, rscale=NULL)->Resultats
         return(Resultats)
       }
@@ -221,18 +221,18 @@ test.t <-
       Resultats$X<-X1
       if(exists("Y")) Resultats$Y<-Y
       if(exists("mu")) Resultats$mu<-mu
-      if(exists(TXT_alternative)) Resultats$alternative<-alternative
+      if(exists(txt_alternative)) Resultats$alternative<-alternative
       if(exists("group")) Resultats$group<-group
       Resultats$options<-options
       return(Resultats)
       }
-    
-    norme<-function(X, mu, data, param=c("param", "non param", TXT_robusts), group=NULL, alternative="two.sided", n.boot=NULL, rscale=0.707){
+
+    norme<-function(X, mu, data, param=c("param", "non param", txt_robusts), group=NULL, alternative="two.sided", n.boot=NULL, rscale=0.707){
       if(class(data)!="data.frame") {data<-data.frame(data)
                                      names(data)[1]<-X}
       Resultats<-list()
       .e <- environment()
-      Resultats$TXT_descriptive_statistics<-.stat.desc.out(X=X, groupes=NULL, data=data, tr=.1, type=3, plot=F)
+      Resultats$txt_descriptive_statistics<-.stat.desc.out(X=X, groupes=NULL, data=data, tr=.1, type=3, plot=F)
       cutoff <- data.frame(x = c(-Inf, Inf), y = mu, cutoff = factor(mu) )
       p2<- ggplot(data)
       p2<-p2+ eval(parse(text=paste0("aes(x=factor(0), y=", X,")"))) + geom_violin()
@@ -241,61 +241,61 @@ test.t <-
       p2<-p2 + stat_summary(fun.data=data_summary,geom="pointrange", color="red", size=0.50,position=position_dodge(0.9))
       p2<-p2 + geom_dotplot(binaxis='y', stackdir='center', dotsize=1/4)
       p2<-p2 + theme(legend.position="none")
-      p2<-p2+theme(plot.title = element_text(size = 12))+ggtitle(TXT_mean_sd)
+      p2<-p2+theme(plot.title = element_text(size = 12))+ggtitle(txt_mean_sd)
       # print(p2)
-      Resultats$TXT_descriptive_statistics$Graphique<-p2
-      
-      if(!is.null(group)) {Resultats$TXT_descriptive_statistics_by_group<-.stat.desc.out(X=X, groupes=group, data=data, tr=.1, type=3, plot=T) }
-      if(any(param=="param") | any(param==TXT_param_tests)){
-        Resultats$TXT_normality_tests<-.normalite(data=data, X=X, Y=NULL)
+      Resultats$txt_descriptive_statistics$Graphique<-p2
+
+      if(!is.null(group)) {Resultats$txt_descriptive_statistics_by_group<-.stat.desc.out(X=X, groupes=group, data=data, tr=.1, type=3, plot=T) }
+      if(any(param=="param") | any(param==txt_param_tests)){
+        Resultats$txt_normality_tests<-.normalite(data=data, X=X, Y=NULL)
         t.test(data[,X], mu = mu, paired = FALSE, conf.level = 0.95, alternative=alternative)->ttest
         ttest$statistic^2/( ttest$statistic^2+ ttest$parameter)->R_carre
         cohensD(data[,X], mu=mu)->dc
-        data.frame("t test"=round(ttest$statistic,3), "ddl"=ttest$parameter, "valeur.p"=round(ttest$p.value,4), "Lim.inf.IC"=ttest$conf.int[[1]], "Lim.sup.IC"=ttest$conf.int[[2]], 
-                   "R.carre"=round(R_carre,4), TXT_cohen_d=round(dc,3))->ttest
+        data.frame("t test"=round(ttest$statistic,3), "ddl"=ttest$parameter, "valeur.p"=round(ttest$p.value,4), "Lim.inf.IC"=ttest$conf.int[[1]], "Lim.sup.IC"=ttest$conf.int[[2]],
+                   "R.carre"=round(R_carre,4), txt_cohen_d=round(dc,3))->ttest
         dimnames(ttest)[1]<-" "
-        ttest->Resultats$TXT_student_t_test_norm
+        ttest->Resultats$txt_student_t_test_norm
         if(!is.null(group)){
           data<-data[complete.cases(data[,group]),]
-          func <- function(data, moy=mu){ 
+          func <- function(data, moy=mu){
             t.test(data, mu = moy)->ttest
             ttest$statistic^2/( ttest$statistic^2+ ttest$parameter)->R_carre
             cohensD(data[,1], mu=moy)->dc
-            return(data.frame(test.t=round(ttest$statistic,3), 
-                              ddl=ttest$parameter, 
-                              valeur.p=round(ttest$p.value,4), 
-                              IC.inf=ttest$conf.int[[1]], 
-                              IC.sup=ttest$conf.int[[2]], 
-                              "R.carre"=round(R_carre,4), 
+            return(data.frame(test.t=round(ttest$statistic,3),
+                              ddl=ttest$parameter,
+                              valeur.p=round(ttest$p.value,4),
+                              IC.inf=ttest$conf.int[[1]],
+                              IC.sup=ttest$conf.int[[2]],
+                              "R.carre"=round(R_carre,4),
                               D.Cohen=round(dc,3)))}
           data.frame(data[,X])->Y
-          
+
           ddply(.data=Y, .(data[,group]), func)->t.groupes
-          t.groupes->Resultats$TXT_student_t_by_group}}
-      
-      if(any(param=="Bayes") | any(param==TXT_bayesian_factors) ){
-        if(all(param!="param") & all(param!=TXT_param_tests)) Resultats$TXT_normality_tests<-.normalite(data=data, X=X, Y=NULL)
-        
+          t.groupes->Resultats$txt_student_t_by_group}}
+
+      if(any(param=="Bayes") | any(param==txt_bayesian_factors) ){
+        if(all(param!="param") & all(param!=txt_param_tests)) Resultats$txt_normality_tests<-.normalite(data=data, X=X, Y=NULL)
+
         BF<-ttestBF(x = data[,X], mu=mu , paired=FALSE, rscale=rscale)
         BF<-extractBF(BF, onlybf=F)
-        BF<-data.frame(TXT_bayesian_factor=c(round(BF$bf,5), round((1/BF$bf),5)), "Erreur"=round(c( BF$error, BF$error),5))
-        dimnames(BF)[[1]]<-c(TXT_supports_alternative, TXT_supports_null)
-        Resultats$TXT_bayesian_factors<-BF
+        BF<-data.frame(txt_bayesian_factor=c(round(BF$bf,5), round((1/BF$bf),5)), "Erreur"=round(c( BF$error, BF$error),5))
+        dimnames(BF)[[1]]<-c(txt_supports_alternative, txt_supports_null)
+        Resultats$txt_bayesian_factors<-BF
         if(!is.null(group)){
-          func <- function(data, moy=mu, scale=rscale){ 
+          func <- function(data, moy=mu, scale=rscale){
             ttestBF(data, mu = moy, rscale=scale)->BF
             BF<-extractBF(BF, onlybf=F)
-            return(data.frame(TXT_bayesian_factor=round(BF$bf,5), "Erreur"=round(BF$error,5)))
+            return(data.frame(txt_bayesian_factor=round(BF$bf,5), "Erreur"=round(BF$error,5)))
           }
           BFgroup<-tapply(X=data[,X], data[,group], func,scale=rscale, moy=mu)
           BFgroup<-matrix(unlist(BFgroup), ncol=2, byrow=T)
-          dimnames(BFgroup)<-list(levels(data[,group]), c("FB", TXT_error))
-          BFgroup->Resultats$TXT_bayesian_factor_by_group
+          dimnames(BFgroup)<-list(levels(data[,group]), c("FB", txt_error))
+          BFgroup->Resultats$txt_bayesian_factor_by_group
         }
         samples<-ttestBF(x = data[,X], mu=mu , paired=FALSE, rscale=rscale, posterior=T, iterations = ifelse(is.null(n.boot), 1000, n.boot))
         plot(samples[,"mu"])
-        
-        
+
+
         bfs<-c()
         for (i in 5:length(data[,X])) {
           bfm <- ttestBF(x = data[,X][1:i], mu=mu,paired=FALSE, rscale=0.707)
@@ -303,15 +303,15 @@ test.t <-
           bful <- ttestBF(x = data[,X][1:i], mu=mu,paired=FALSE, rscale=1.41)
           bfs<-c(bfs, extractBF(bfm, onlybf=T), extractBF(bfl, onlybf=T), extractBF(bful, onlybf=T))
         }
-        
-        SBF<-data.frame("n"=rep(5:length(data[,X]), each=3 ),"BF"= bfs, 
+
+        SBF<-data.frame("n"=rep(5:length(data[,X]), each=3 ),"BF"= bfs,
                         "rscale"=factor(rep(c("moyen", "large", "ultra large"), length.out= 3*(length(data[,X])-4) )))
         names(SBF)<-c("n", "BF", "rscale")
         reorder( c("moyen", "large", "ultra large"),levels(SBF$rscale))->levels(SBF$rscale)
-        Resultats$TXT_bayesian_factors_sequential<-.plotSBF(SBF)
-        
-        ##### Debut du graphique  Bayes Factor Robustness Check     
-        
+        Resultats$txt_bayesian_factors_sequential<-.plotSBF(SBF)
+
+        ##### Debut du graphique  Bayes Factor Robustness Check
+
         # what is the t-value for the data?
         tVal <-  t.test(data[,X], mu = mu, paired = FALSE, conf.level = 0.95, alternative=alternative)$statistic
         # how many points in the prior should be explored?
@@ -320,19 +320,19 @@ test.t <-
         cauchyRates <- seq(from = 0.01, to = 1.5, length.out = 1000)
         # what effect sizes should be plotted?
         effSize <- seq(from = -2, to = 2, length.out = 1000)
-        
+
         # get the Bayes factor for each prior value
-        bayesFactors <- sapply(cauchyRates, function(x) 
+        bayesFactors <- sapply(cauchyRates, function(x)
           exp(ttest.tstat(t = tVal, n1 = length(data[,X]), rscale = x)[['bf']]))
-        
+
         exp(ttest.tstat(t = tVal, n1 = length(data[,X]), rscale = 0.707)[['bf']])->r1
         exp(ttest.tstat(t = tVal, n1 = length(data[,X]), rscale = 1)[['bf']])->r2
         exp(ttest.tstat(t = tVal, n1 = length(data[,X]), rscale = 1.41)[['bf']])->r3
         plotWidth <- round(seq(from = 1, to = nPoints, length.out = 1), 0)
         # do the Bayes factor plot
-        plot(cauchyRates, bayesFactors, type = "l", lwd = 2, col = "gray48", 
-             ylim = c(0, max(bayesFactors)), xaxt = "n", 
-             xlab = TXT_cauchy_prior_width, ylab = TXT_bayes_factor_10)
+        plot(cauchyRates, bayesFactors, type = "l", lwd = 2, col = "gray48",
+             ylim = c(0, max(bayesFactors)), xaxt = "n",
+             xlab = txt_cauchy_prior_width, ylab = txt_bayes_factor_10)
         abline(h = 0, lwd = 1)
         abline(h = 6, col = "black", lty = 2, lwd = 2)
         axis(1, at = seq(0, 1.5, 0.25))
@@ -344,19 +344,19 @@ test.t <-
         legend(x="topright", legend = c("r = 0.707 - medium", "r = 1 - wide ", "r = 1.41 - ultrawide"),
                pch = c(21, 21), lty = c(NA, NA), lwd = c(NA, NA), pt.cex = c(1, 1),
                col = c("black", "black"), pt.bg = c("black", "gray", "white"), bty = "n")
-        
+
       }
-      
-      if(any(param=="non param")| any(param==TXT_non_parametric_test)){
-        
-        wilcox.test(x= data[,X], y = NULL, alternative = alternative, mu = mu, paired = FALSE, exact = T,  
+
+      if(any(param=="non param")| any(param==txt_non_parametric_test)){
+
+        wilcox.test(x= data[,X], y = NULL, alternative = alternative, mu = mu, paired = FALSE, exact = T,
                     conf.int = TRUE, conf.level = 0.95)
         WT<-wilcox.test(data[,X],y=NULL, mu=mu, alternative, conf.int=T, conf.level=0.95)
         if(alternative!="two.sided")  abs(qnorm(WT$p.value))->z else abs(qnorm(WT$p.value/2))->z
         r<-z/(length(data[,X]))^0.5
         Resultats$Wilcoxon<- data.frame("Wilcoxon W"=WT$statistic, "valeur.p"=round(WT$p.value,4), "z"=round(z,4), "r"=round(r,4),
                                         "lim.inf.IC"=WT$conf.int[1],"lim.sup.IC"=WT$conf.int[2])
-        
+
         if(!is.null(group)){
           func <- function(data,Y=X, moy=mu, alt=alternative){
             WT<-wilcox.test(data[,Y],mu=moy, alternative=alt)
@@ -364,91 +364,91 @@ test.t <-
             r<-z/(length(data[,X]))^0.5
             return(data.frame(Wilcoxon.W=WT$statistic, valeur.p=round(WT$p.value,4), z=round(z,4), r=round(r,4)))
           }
-          
+
           ddply(.data=data, .(data[, group]), func)->Wilcox.groupes
-          Wilcox.groupes->Resultats$TXT_wilcoxon_by_group
+          Wilcox.groupes->Resultats$txt_wilcoxon_by_group
         }
       }
-      
-      if(any(param==TXT_robusts| any(param==TXT_robusts_tests_with_bootstraps))){
+
+      if(any(param==txt_robusts| any(param==txt_robusts_tests_with_bootstraps))){
         try( round(unlist(WRS::trimci(data[,X],tr=.2,alpha=.05, null.value=mu)),4), silent=T)->m.tr
         if(any(m.tr!="try-error")){
           names(m.tr)<-c("lim.inf.IC","lim.sup.IC", "M.tronquee","test.t", "se","valeur.p","n")
-          m.tr->Resultats$'Test sur la moyenne tronquee a 0.2' 
+          m.tr->Resultats$'Test sur la moyenne tronquee a 0.2'
           data[,X]->x
           try(WRS::trimcibt(x, tr=.2,alpha=.05,nboot=n.boot,plotit=T,op=3)$ci, silent=T)->trimci
           try(WRS::mestci(x,alpha=.05,nboot=n.boot,bend=1.28,os=F),silent=T)->M.estimator
           try(WRS:: momci(x,alpha=.05,nboot=n.boot),silent=T)->MoM
           IC.robustes<-data.frame()
           if(class(trimci)!="try-error") {IC.robustes<-rbind(IC.robustes,trimci)
-          dimnames(IC.robustes)[[1]][1]<-TXT_bootstrap_t_method}
+          dimnames(IC.robustes)[[1]][1]<-txt_bootstrap_t_method}
           if(class(M.estimator)!="try-error") {IC.robustes<-rbind(IC.robustes,M.estimator$ci)
           dimnames(IC.robustes)[[1]][length(IC.robustes[,1])]<-"M-estimator"}
           if(class(MoM)!="try-error") {IC.robustes<-rbind(IC.robustes,MoM$ci)
           dimnames(IC.robustes)[[1]][length(IC.robustes[,1])]<-"M-estimator modifie"}
           if(all(dim(IC.robustes)!=0)) names(IC.robustes )<-c("lim.inf.IC", "lim.sup.IC")
           Resultats$Robustes<-IC.robustes
-          c(INFO_bootstrap_t_adapt_to_truncated_mean, 
-            INFO_this_index_is_prefered_for_most_cases,
-            INFO_truncature_on_m_estimator_adapts_to_sample)->Resultats$infos
-        } else Resultats$Robustes<-INFO_robusts_statistics_could_not_be_computed_verify_WRS
+          c(desc_bootstrap_t_adapt_to_truncated_mean,
+            desc_this_index_is_prefered_for_most_cases,
+            desc_truncature_on_m_estimator_adapts_to_sample)->Resultats$infos
+        } else Resultats$Robustes<-desc_robusts_statistics_could_not_be_computed_verify_WRS
       }
-   
+
       return(Resultats)
     }
-    apparies<-function(X, Y, data=NULL, param=c("param", "non param", TXT_robusts),alternative="two.sided", n.boot=NULL, rscale=0.707){
+    apparies<-function(X, Y, data=NULL, param=c("param", "non param", txt_robusts),alternative="two.sided", n.boot=NULL, rscale=0.707){
       Resultats<-list()
       .e <- environment()
-      Resultats$TXT_descriptive_statistics<-.stat.desc.out(X=X, groupes=Y, data=data, tr=.1, type=3, plot=T)
+      Resultats$txt_descriptive_statistics<-.stat.desc.out(X=X, groupes=Y, data=data, tr=.1, type=3, plot=T)
       large<-data.frame("t1"=data[which(data[,Y]==levels(data[,Y])[1]), X], "t2"=data[which(data[,Y]==levels(data[,Y])[2]), X])
-      if(any(param=="param") | any(param==TXT_param_tests)){
+      if(any(param=="param") | any(param==txt_param_tests)){
         large$diff<--large$t2-large$t1
-        Resultats$TXT_normality_tests<-.normalite(data=large, X="diff", Y=NULL)
+        Resultats$txt_normality_tests<-.normalite(data=large, X="diff", Y=NULL)
         t.test(data[,X]~data[,Y], paired = TRUE, conf.level = 0.95, alternative=alternative)->ttest
         ttest$statistic^2/( ttest$statistic^2+ ttest$parameter)->R_carre
         cohensD(x= large[,1], y=large[,2], method="paired")->dc
-        data.frame("t test"= round(ttest$statistic,3), "ddl"= ttest$parameter, "valeur.p"= round(ttest$p.value,4), "Lim.inf.IC"= ttest$conf.int[[1]], 
-                   "Lim.sup.IC"=ttest$conf.int[[2]], "R.carre"=round(R_carre,4), TXT_cohen_d=round(dc,3))->ttest
+        data.frame("t test"= round(ttest$statistic,3), "ddl"= ttest$parameter, "valeur.p"= round(ttest$p.value,4), "Lim.inf.IC"= ttest$conf.int[[1]],
+                   "Lim.sup.IC"=ttest$conf.int[[2]], "R.carre"=round(R_carre,4), txt_cohen_d=round(dc,3))->ttest
         dimnames(ttest)[1]<-" "
-        ttest->Resultats$TXT_student_t_test_paired}
-      if(any(param=="param") | any(param==TXT_param_tests, any(param=="Bayes") | any(param==TXT_bayesian_factors))) {
+        ttest->Resultats$txt_student_t_test_paired}
+      if(any(param=="param") | any(param==txt_param_tests, any(param=="Bayes") | any(param==txt_bayesian_factors))) {
         # realisation du graphique
         X1<-which(names(data)==X)
-        nonaj<-ggplot(data) 
+        nonaj<-ggplot(data)
         nonaj<- nonaj+eval(parse(text=paste0("aes(x=", Y, ", y=", X,")")))
         # aes(x=data[,Y], y=data[,X1]))+labs(x=Y, y=X)+
         nonaj<- nonaj+ stat_summary(fun.y=mean, geom="bar",fill="grey", colour="White")+stat_summary(fun.data="mean_sdl", geom="errorbar", position=position_dodge(width=0.90), width=0.2)
-        nonaj<-nonaj+theme(plot.title = element_text(size = 12))+ggtitle(TXT_non_adjusted_data)
+        nonaj<-nonaj+theme(plot.title = element_text(size = 12))+ggtitle(txt_non_adjusted_data)
         # realisation du graphique ajuste propose par Loftus et Masson 1994 (pour plus d informations voir l article)
-        Resultats$TXT_mean_sd_for_non_adjusted_data<-nonaj
+        Resultats$txt_mean_sd_for_non_adjusted_data<-nonaj
         large$meanD2<-(large[ ,1]+large[ ,2])/2
         mean(large$meanD2)->GMean
         GMean-large$meanD2->large$adj
         large$adjM1<-large[ ,1]+large$adj
         large$adjM2<-large[ ,2]+large$adj
         data[,paste0(X, ".ajustee")]<-c(large$adjM1,large$adjM2)
-        
+
         aj<-ggplot(data)
         aj<-aj+eval(parse(text=paste0("aes(x=", Y, ", y=", names(data)[length(data)],")")))
-        aj<-aj+labs(x=Y, y=X)+stat_summary(fun.y=mean, geom="bar", 
+        aj<-aj+labs(x=Y, y=X)+stat_summary(fun.y=mean, geom="bar",
                                            fill="grey", colour="White")+stat_summary(fun.data="mean_sdl", geom="errorbar", position=position_dodge(width=0.90), width=0.2)
-        aj<-aj+theme(plot.title = element_text(size = 12))+ggtitle(TXT_adjusted_data_loftus_masson)
-        Resultats$TXT_mean_sd_for_adjusted_data<-aj
+        aj<-aj+theme(plot.title = element_text(size = 12))+ggtitle(txt_adjusted_data_loftus_masson)
+        Resultats$txt_mean_sd_for_adjusted_data<-aj
         .multiplot(nonaj,aj, cols=2 )
       }
-      
-      if(any(param=="Bayes") | any(param==TXT_bayesian_factors) ){
-        if(all(param!="param") & all(param!=TXT_param_tests)) Resultats$TXT_normality_tests<-.normalite(data=data, X=X, Y=Y)
+
+      if(any(param=="Bayes") | any(param==txt_bayesian_factors) ){
+        if(all(param!="param") & all(param!=txt_param_tests)) Resultats$txt_normality_tests<-.normalite(data=data, X=X, Y=Y)
         BF<-ttestBF(x=data[ which(data[ ,Y]==levels(data[ ,Y])[1]) ,X], y=data[ which(data[ ,Y]==levels(data[ ,Y])[2]) ,X] , paired=TRUE, rscale=rscale)
         BF<-extractBF(BF, onlybf=F)
-        BF<-data.frame(TXT_bayesian_factor=c(round(BF$bf,5), round((1/BF$bf),5)), "Erreur"=round(c( BF$error, BF$error),5))
-        dimnames(BF)[[1]]<-c(TXT_supports_alternative, TXT_supports_null)
-        Resultats$TXT_bayesian_factors<-BF
-        
+        BF<-data.frame(txt_bayesian_factor=c(round(BF$bf,5), round((1/BF$bf),5)), "Erreur"=round(c( BF$error, BF$error),5))
+        dimnames(BF)[[1]]<-c(txt_supports_alternative, txt_supports_null)
+        Resultats$txt_bayesian_factors<-BF
+
         samples<-ttestBF(x=data[ which(data[ ,Y]==levels(data[ ,Y])[1]) ,X], y=data[ which(data[ ,Y]==levels(data[ ,Y])[2]) ,X] , paired=TRUE, rscale=rscale, posterior=T, iterations = ifelse(is.null(n.boot), 1000, n.boot))
         plot(samples[,1:4])
-        
-        
+
+
         bfs<-c()
         for (i in 5:(length(data[,X])/2)) {
           bfm <- ttestBF(data[ which(data[ ,Y]==levels(data[ ,Y])[1]) ,X][1:i], data[ which(data[ ,Y]==levels(data[ ,Y])[2]) ,X][1:i] , paired=TRUE, rscale=0.707)
@@ -456,15 +456,15 @@ test.t <-
           bful <- ttestBF(data[ which(data[ ,Y]==levels(data[ ,Y])[1]) ,X][1:i], data[ which(data[ ,Y]==levels(data[ ,Y])[2]) ,X][1:i] , paired=TRUE,  rscale=1.41)
           bfs<-c(bfs, extractBF(bfm, onlybf=T), extractBF(bfl, onlybf=T), extractBF(bful, onlybf=T))
         }
-        
-        SBF<-data.frame("n"=rep(5:(length(data[,X])/2), each=3 ),"BF"= bfs, 
+
+        SBF<-data.frame("n"=rep(5:(length(data[,X])/2), each=3 ),"BF"= bfs,
                         "rscale"=factor(rep(c("moyen", "large", "ultra large"), length.out= 3*((length(data[,X])/2)-4) )))
         names(SBF)<-c("n", "BF", "rscale")
         reorder( c("moyen", "large", "ultra large"),levels(SBF$rscale))->levels(SBF$rscale)
-        Resultats$TXT_bayesian_factors_sequential<-.plotSBF(SBF)
-        
-        ##### Debut du graphique  Bayes Factor Robustness Check     
-        
+        Resultats$txt_bayesian_factors_sequential<-.plotSBF(SBF)
+
+        ##### Debut du graphique  Bayes Factor Robustness Check
+
         # what is the t-value for the data?
         tVal <-  t.test(data[,X]~data[,Y], paired = TRUE, conf.level = 0.95, alternative=alternative)$statistic
         # how many points in the prior should be explored?
@@ -473,19 +473,19 @@ test.t <-
         cauchyRates <- seq(from = 0.01, to = 1.5, length.out = 1000)
         # what effect sizes should be plotted?
         effSize <- seq(from = -2, to = 2, length.out = 1000)
-        
+
         # get the Bayes factor for each prior value
-        bayesFactors <- sapply(cauchyRates, function(x) 
+        bayesFactors <- sapply(cauchyRates, function(x)
           exp(ttest.tstat(t = tVal, n1 = length(data[,X]), rscale = x)[['bf']]))
-        
+
         exp(ttest.tstat(t = tVal, n1 = length(data[,X]), rscale = 0.707)[['bf']])->r1
         exp(ttest.tstat(t = tVal, n1 = length(data[,X]), rscale = 1)[['bf']])->r2
         exp(ttest.tstat(t = tVal, n1 = length(data[,X]), rscale = 1.41)[['bf']])->r3
         plotWidth <- round(seq(from = 1, to = nPoints, length.out = 1), 0)
         # do the Bayes factor plot
-        plot(cauchyRates, bayesFactors, type = "l", lwd = 2, col = "gray48", 
-             ylim = c(0, max(bayesFactors)), xaxt = "n", 
-             xlab = TXT_cauchy_prior_width, ylab = TXT_bayes_factor_10)
+        plot(cauchyRates, bayesFactors, type = "l", lwd = 2, col = "gray48",
+             ylim = c(0, max(bayesFactors)), xaxt = "n",
+             xlab = txt_cauchy_prior_width, ylab = txt_bayes_factor_10)
         abline(h = 0, lwd = 1)
         abline(h = 6, col = "black", lty = 2, lwd = 2)
         axis(1, at = seq(0, 1.5, 0.25))
@@ -497,51 +497,51 @@ test.t <-
         legend(x="topright", legend = c("r = 0.707 - medium", "r = 1 - wide ", "r = 1.41 - ultrawide"),
                pch = c(21, 21), lty = c(NA, NA), lwd = c(NA, NA), pt.cex = c(1, 1),
                col = c("black", "black"), pt.bg = c("black", "gray", "white"), bty = "n")
-        
+
       }
-      if(any(param=="non param")| any(param==TXT_non_parametric_test)) {
+      if(any(param=="non param")| any(param==txt_non_parametric_test)) {
         WT<-wilcox.test(as.formula(paste0(X, "~",Y)), paired=T,data=data, alternative=alternative, conf.int=T, conf.level=0.95)
         if(alternative!="two.sided")  abs(qnorm(WT$p.value))->z else abs(qnorm(WT$p.value/2))->z
         r<-z/(length(data[,X]))^0.5
         Resultats$Wilcoxon<- data.frame("Wilcoxon W"=WT$statistic, "valeur.p"=round(WT$p.value,4), "z"=round(z,4), "r"=round(r,4),
                                         "lim.inf.IC"=WT$conf.int[1],"lim.sup.IC"=WT$conf.int[2])
       }
-      
-      if(any(param==TXT_robusts| any(param==TXT_robusts_tests_with_bootstraps)) ){
+
+      if(any(param==txt_robusts| any(param==txt_robusts_tests_with_bootstraps)) ){
         try(WRS::yuend(data[ which(data[ ,Y]==levels(data[ ,Y])[1]) ,X], data[ which(data[ ,Y]==levels(data[ ,Y])[2]) ,X], tr=.2),silent=T)->moy.tr
         if(class(moy.tr)!="try-error"){
           round(unlist(moy.tr),3)->moy.tr
-          names(moy.tr)<-c("IC Inf","IC Sup", "valeur.p", TXT_mean1, TXT_mean2, TXT_difference,"se", "Stat", "n", "ddl") 
+          names(moy.tr)<-c("IC Inf","IC Sup", "valeur.p", txt_mean1, txt_mean2, txt_difference,"se", "Stat", "n", "ddl")
           if(n.boot>99){
             WRS::ydbt(data[ which(data[ ,Y]==levels(data[ ,Y])[1]) ,X], data[ which(data[ ,Y]==levels(data[ ,Y])[2]) ,X], tr=0.2, nboot=n.boot)->moy.tr.bt
-            moy.tr->Resultats$Robustes$TXT_comparison_on_truncated_means
-            round(unlist(moy.tr.bt),4)->Resultats$Robustes$TXT_student_bootstrap_on_truncated_means
+            moy.tr->Resultats$Robustes$txt_comparison_on_truncated_means
+            round(unlist(moy.tr.bt),4)->Resultats$Robustes$txt_student_bootstrap_on_truncated_means
             if(length(data[,1])>20) {
-              try({WRS::bootdpci(data[ which(data[ ,Y]==levels(data[ ,Y])[1]) ,X], data[ which(data[ ,Y]==levels(data[ ,Y])[2]) ,X], 
+              try({WRS::bootdpci(data[ which(data[ ,Y]==levels(data[ ,Y])[1]) ,X], data[ which(data[ ,Y]==levels(data[ ,Y])[2]) ,X],
                                                    nboot=n.boot, BA=T)$output[,2:6]->Mest
-                names(Mest)<-c(TXT_statistic, "valeur.p", "p.crit", "CI inf", "CI sup")
-              Mest->Resultats$Robustes$TXT_bca_bootstrap_on_m_estimator}
+                names(Mest)<-c(txt_statistic, "valeur.p", "p.crit", "CI inf", "CI sup")
+              Mest->Resultats$Robustes$txt_bca_bootstrap_on_m_estimator}
                 , silent=T)
-              }}} else Resultats$Robustes<-INFO_robusts_statistics_could_not_be_computed
+              }}} else Resultats$Robustes<-desc_robusts_statistics_could_not_be_computed
       }
-      
-      
-      
-      
-      
-      return(Resultats)                                                                               
-    }  
-    indpdts<-function(X, Y, data, param=c("param", "non param",TXT_robusts),alternative="two.sided", n.boot=NULL, rscale=0.707){
+
+
+
+
+
+      return(Resultats)
+    }
+    indpdts<-function(X, Y, data, param=c("param", "non param",txt_robusts),alternative="two.sided", n.boot=NULL, rscale=0.707){
       Resultats<-list()
       .e <- environment()
-      Resultats$TXT_descriptive_statistics<-.stat.desc.out(X=X, groupes=Y, data=data, tr=.1, type=3, plot=T)
+      Resultats$txt_descriptive_statistics<-.stat.desc.out(X=X, groupes=Y, data=data, tr=.1, type=3, plot=T)
       as.formula(paste0(X," ~ ",Y))->modele
-      if(any(param=="param") | any(param==TXT_param_tests)){
-        Resultats$TXT_normality_tests<-.normalite(data=data, X=X, Y=Y)
+      if(any(param=="param") | any(param==txt_param_tests)){
+        Resultats$txt_normality_tests<-.normalite(data=data, X=X, Y=Y)
         car::leveneTest(data[ ,X], data[ ,Y])->Levene # test de Levene pour homogeneite des variances
         round(unlist(Levene)[c(1,2,3,5)],3)->Levene
         names(Levene)<-c("ddl1","ddl2","F","valeur.p")
-        Levene->Resultats$TXT_levene_test_verifying_homogeneity_variances
+        Levene->Resultats$txt_levene_test_verifying_homogeneity_variances
         t.test(modele, data=data, alternative=alternative,  var.equal=TRUE, conf.level=0.95)->student
         round(student$statistic^2/(student$statistic^2+student$parameter),3)->R.deux
         d_cohen<-round(cohensD(modele , data=data, method = "pooled"),3)
@@ -552,32 +552,32 @@ test.t <-
         d_cohen.corr<-cohensD(modele , data=data, method = "unequal")
         data.frame(corrige[9], round(corrige$statistic,3), round(corrige$parameter,3), round(corrige$p.value,3), round(corrige$conf.int[1],4),
                    round(corrige$conf.int[2],4),  R.deux, d_cohen)->corrige
-        names(student)<-c("modele", "test t", "ddl", "valeur.p", "lim.inf.IC", "lim.sup.IC","R.carre",TXT_cohen_d)
-        names(corrige)<- c("modele", "test t", "ddl", "valeur.p", "lim.inf.IC", "lim.sup.IC","R.carre",TXT_cohen_d)
+        names(student)<-c("modele", "test t", "ddl", "valeur.p", "lim.inf.IC", "lim.sup.IC","R.carre",txt_cohen_d)
+        names(corrige)<- c("modele", "test t", "ddl", "valeur.p", "lim.inf.IC", "lim.sup.IC","R.carre",txt_cohen_d)
         student<-rbind(student, corrige)
-        dimnames(student)[[1]]<-c(TXT_without_welch_correction,TXT_with_welch_correction)
-        student->Resultats$TXT_student_t_independant
+        dimnames(student)[[1]]<-c(txt_without_welch_correction,txt_with_welch_correction)
+        student->Resultats$txt_student_t_independant
         p<-ggplot(data)
         p<-p+eval(parse(text=paste0("aes(x=", Y, ", y=", X,")")))
         p<-p+  stat_summary(fun.y=mean, geom="bar",fill="grey", colour="White")+stat_summary(fun.data="mean_sdl", geom="errorbar", position=position_dodge(width=0.90), width=0.2)
-        Resultats$TXT_graphic_mean_sd<-p
-        
+        Resultats$txt_graphic_mean_sd<-p
+
       }
-      if(any(param=="Bayes") | any(param==TXT_bayesian_factors) ){
-        if(all(param!="param") & all(param!=TXT_param_tests)) Resultats$TXT_normality_tests<-.normalite(data=data, X=X, Y=Y)
+      if(any(param=="Bayes") | any(param==txt_bayesian_factors) ){
+        if(all(param!="param") & all(param!=txt_param_tests)) Resultats$txt_normality_tests<-.normalite(data=data, X=X, Y=Y)
         BF<-ttestBF(formula=modele,data=data, paired=FALSE, rscale=rscale)
         BF<-extractBF(BF, onlybf=F)
-        BF<-data.frame(TXT_bayesian_factor=c(round(BF$bf,5), round((1/BF$bf),5)), "Erreur"=round(c( BF$error, BF$error),5))
-        dimnames(BF)[[1]]<-c(TXT_supports_alternative, TXT_supports_null)
-        Resultats$TXT_bayesian_factors<-BF
-        
+        BF<-data.frame(txt_bayesian_factor=c(round(BF$bf,5), round((1/BF$bf),5)), "Erreur"=round(c( BF$error, BF$error),5))
+        dimnames(BF)[[1]]<-c(txt_supports_alternative, txt_supports_null)
+        Resultats$txt_bayesian_factors<-BF
+
         samples<-ttestBF(formula=modele,data=data, paired=FALSE, rscale=rscale, posterior=T, iterations = ifelse(is.null(n.boot), 1000, n.boot))
         plot(samples[,1:4])
-        
-        
+
+
         bfs<-c()
         tab<-table(data[,Y])
-        data1<-data.frame(X=c(data[which(data[,Y]==levels(data[,Y])[1] ),X], data[which(data[,Y]==levels(data[,Y])[2] ),X]), id=c(1:tab[1],1:tab[2]), 
+        data1<-data.frame(X=c(data[which(data[,Y]==levels(data[,Y])[1] ),X], data[which(data[,Y]==levels(data[,Y])[2] ),X]), id=c(1:tab[1],1:tab[2]),
                           Y=c(rep(levels(data[,Y])[1], tab[1]), rep(levels(data[,Y])[2], tab[2])))
         data1<-data1[order(data1$id),]
         for (i in 5:length(data[,X])) {
@@ -586,15 +586,15 @@ test.t <-
           bful <- ttestBF(formula=X~Y,data=data1[1:i,] , paired=FALSE,  rscale=1.41)
           bfs<-c(bfs, extractBF(bfm, onlybf=T), extractBF(bfl, onlybf=T), extractBF(bful, onlybf=T))
         }
-        
-        SBF<-data.frame("n"=rep(5:(length(data[,X])), each=3 ),"BF"= bfs, 
+
+        SBF<-data.frame("n"=rep(5:(length(data[,X])), each=3 ),"BF"= bfs,
                         "rscale"=factor(rep(c("moyen", "large", "ultra large"), length.out= 3*(length(data[,X])-4) )))
         names(SBF)<-c("n", "BF", "rscale")
         reorder( c("moyen", "large", "ultra large"),levels(SBF$rscale))->levels(SBF$rscale)
-        Resultats$TXT_bayesian_factors_sequential<-.plotSBF(SBF)
-        
-        ##### Debut du graphique  Bayes Factor Robustness Check     
-        
+        Resultats$txt_bayesian_factors_sequential<-.plotSBF(SBF)
+
+        ##### Debut du graphique  Bayes Factor Robustness Check
+
         # what is the t-value for the data?
         tVal <-  t.test(formula=modele, data=data, paired = FALSE, conf.level = 0.95, alternative=alternative)$statistic
         # how many points in the prior should be explored?
@@ -603,20 +603,20 @@ test.t <-
         cauchyRates <- seq(from = 0.01, to = 1.5, length.out = 1000)
         # what effect sizes should be plotted?
         effSize <- seq(from = -2, to = 2, length.out = 1000)
-        
+
         # get the Bayes factor for each prior value
-        
-        bayesFactors <- sapply(cauchyRates, function(x) 
+
+        bayesFactors <- sapply(cauchyRates, function(x)
           exp(ttest.tstat(t = tVal, n1 = tab[1], n2=tab[2], rscale = x)[['bf']]))
-        
+
         exp(ttest.tstat(t = tVal, n1 = tab[1], n2=tab[2], rscale = 0.707)[['bf']])->r1
         exp(ttest.tstat(t = tVal, n1 = tab[1], n2=tab[2], rscale = 1)[['bf']])->r2
         exp(ttest.tstat(t = tVal, n1 = tab[1], n2=tab[2], rscale = 1.41)[['bf']])->r3
         plotWidth <- round(seq(from = 1, to = nPoints, length.out = 1), 0)
         # do the Bayes factor plot
-        plot(cauchyRates, bayesFactors, type = "l", lwd = 2, col = "gray48", 
-             ylim = c(0, max(bayesFactors)), xaxt = "n", 
-             xlab = TXT_cauchy_prior_width, ylab = TXT_bayes_factor_10)
+        plot(cauchyRates, bayesFactors, type = "l", lwd = 2, col = "gray48",
+             ylim = c(0, max(bayesFactors)), xaxt = "n",
+             xlab = txt_cauchy_prior_width, ylab = txt_bayes_factor_10)
         abline(h = 0, lwd = 1)
         abline(h = 6, col = "black", lty = 2, lwd = 2)
         axis(1, at = seq(0, 1.5, 0.25))
@@ -628,17 +628,17 @@ test.t <-
         legend(x="topright", legend = c("r = 0.707 - medium", "r = 1 - wide ", "r = 1.41 - ultrawide"),
                pch = c(21, 21), lty = c(NA, NA), lwd = c(NA, NA), pt.cex = c(1, 1),
                col = c("black", "black"), pt.bg = c("black", "gray", "white"), bty = "n")
-        
+
       }
-      if(any(param=="non param")| any(param==TXT_non_parametric_test)) {
+      if(any(param=="non param")| any(param==txt_non_parametric_test)) {
         WT<-wilcox.test(modele, paired=F,data=data, alternative=alternative, conf.int=T, conf.level=0.95)
         if(alternative!="two.sided")  abs(qnorm(WT$p.value))->z else abs(qnorm(WT$p.value/2))->z
         r<-z/(length(data[,X]))^0.5
-        Resultats$TXT_mann_whitney_test<- data.frame("Wilcoxon W"=WT$statistic, "valeur.p"=round(WT$p.value,4), "z"=round(z,4), "r"=round(r,4),
+        Resultats$txt_mann_whitney_test<- data.frame("Wilcoxon W"=WT$statistic, "valeur.p"=round(WT$p.value,4), "z"=round(z,4), "r"=round(r,4),
                                                                  "lim.inf.IC"=WT$conf.int[1],"lim.sup.IC"=WT$conf.int[2])
       }
-      
-      if(any(param==TXT_robusts| any(param==TXT_robusts_tests_with_bootstraps)) ){
+
+      if(any(param==txt_robusts| any(param==txt_robusts_tests_with_bootstraps)) ){
         data[which(data[,Y]==levels(data[,Y])[1]),]->g1 # on cree une base de Donnees avec le groupe 1 uniquement (sans valeur aberrantes)
         data[which(data[,Y]==levels(data[,Y])[2]),]->g2 # on cree une base de Donnees avec le groupe 2 uniquement (sans valeur aberrantes)
         try(WRS::yuen(g1[,X],g2[,X]), silent=T)->yuen.modele### fournit la probabilite associee a des moyennes tronquees.Par defaut, la troncature est de 0.20
@@ -646,38 +646,38 @@ test.t <-
           round(unlist(yuen.modele),4)->yuen.modele
           cbind(yuen.modele[1:2], yuen.modele[3:4])->yuen.desc
           dimnames(yuen.desc)[[1]]<-levels(data[,Y])
-          dimnames(yuen.desc)[[2]]<-c("n", TXT_truncated_means)
-          yuen.desc->Resultats$Robustes$TXT_descriptive_statistics
-          
+          dimnames(yuen.desc)[[2]]<-c("n", txt_truncated_means)
+          yuen.desc->Resultats$Robustes$txt_descriptive_statistics
+
           yuen.modele[c(5,6,8,9,10,11,12,7)]->yuen.modele
-          names(yuen.modele)<-c("lim.inf.IC", "lim.sup.IC", 
-                                TXT_difference,"Err-type","Stat", TXT_threshold, "ddl","valeur.p")
-          yuen.modele->Resultats$Robustes$TXT_analysis_on_truncated_means
+          names(yuen.modele)<-c("lim.inf.IC", "lim.sup.IC",
+                                txt_difference,"Err-type","Stat", txt_threshold, "ddl","valeur.p")
+          yuen.modele->Resultats$Robustes$txt_analysis_on_truncated_means
           if(n.boot>99){
             WRS2::yuenbt(modele, data= data, nboot=n.boot, side=T)->yuen.bt.modele ### fournit la probabilite associee a des moyennes tronquees apres un bootstrap.
-            yuen.bt.modele<-round(data.frame(test = yuen.bt.modele$test, 
+            yuen.bt.modele<-round(data.frame(test = yuen.bt.modele$test,
                                              ddl = yuen.bt.modele$df,
-                                             valeur.p = yuen.bt.modele$p.value, 
-                                             lim.inf.IC = yuen.bt.modele$conf.int[1], 
+                                             valeur.p = yuen.bt.modele$p.value,
+                                             lim.inf.IC = yuen.bt.modele$conf.int[1],
                                              lim.sup.IC = yuen.bt.modele$conf.int[2]),3)
-            yuen.bt.modele->Resultats$Robustes$TXT_bootstrap_t_method_on_truncated_means
-            WRS::pb2gen(g1[,X],g2[,X], nboot=n.boot)->pb2gen.modele### calcule le bootstrap sur le M-estimateur et fournit l intervalle de confiance. 
+            yuen.bt.modele->Resultats$Robustes$txt_bootstrap_t_method_on_truncated_means
+            WRS::pb2gen(g1[,X],g2[,X], nboot=n.boot)->pb2gen.modele### calcule le bootstrap sur le M-estimateur et fournit l intervalle de confiance.
             round(unlist(pb2gen.modele)[1:6],4)->pb2gen.modele
             names(pb2gen.modele)<-c("M.estimaror.G1", "M.estimator.G2", "diff", "lim.inf.IC", "lim.sup.IC", "valeur.p")
-            pb2gen.modele->Resultats$Robustes$TXT_percentile_bootstrap_on_m_estimators
-            Resultats$Robustes$Informations<-c(INFO_percentile_bootstrap_prefered_for_small_samples,
-                                               INFO_for_bigger_samples_bootstrap_t_prefered) 
+            pb2gen.modele->Resultats$Robustes$txt_percentile_bootstrap_on_m_estimators
+            Resultats$Robustes$Informations<-c(desc_percentile_bootstrap_prefered_for_small_samples,
+                                               desc_for_bigger_samples_bootstrap_t_prefered)
           }
-          
+
           WRS::ks(g1[,X],g2[,X],w=F,sig=T)->KS
           round(unlist(KS),4)->KS
           names(KS)<-c("KS", "Seuil.critique","valeur.p")
-          KS->Resultats$Robustes$TXT_kolmogorov_smirnov_comparing_two_distrib
-        }else Resultats$TXT_robusts_statistics<-INFO_robusts_statistics_could_not_be_computed_verify_WRS
-        
-        
+          KS->Resultats$Robustes$txt_kolmogorov_smirnov_comparing_two_distrib
+        }else Resultats$txt_robusts_statistics<-desc_robusts_statistics_could_not_be_computed_verify_WRS
+
+
       }
-      
+
       return(Resultats)
     }
     data_summary <- function(x) {
@@ -687,9 +687,9 @@ test.t <-
       return(c(y=m,ymin=ymin,ymax=ymax))
     }
     #### 5 fonctions qui seront appelees pour realiser l'analyse
-    options (warn=-1) 
+    options (warn=-1)
     # chargement des packages
-    packages<-c(TXT_bayes_factor, "svDialogs", "outliers", "nortest","psych", "lsr","ggplot2", "reshape2", "car", "plyr")
+    packages<-c(txt_bayes_factor, "svDialogs", "outliers", "nortest","psych", "lsr","ggplot2", "reshape2", "car", "plyr")
     try(lapply(packages, library, character.only=T), silent=T)->test2
     if(class(test2)== "try-error") return(ez.install())
     try(library("WRS"),silent=T)
@@ -697,11 +697,11 @@ test.t <-
     Resultats<-list()
     try( windows(record=T), silent=T)->win
     if(class(win)=="try-error") quartz()
-    if(!is.null(data) & class(data)!="character") deparse(substitute(data))->data 
-    test.t.options<-test.t.in(X=X, Y=Y, data=data, choix=choix, param=param, outlier=outlier, sauvegarde=sauvegarde, info=info, group=group,alternative=alternative, 
-                              formula=formula,n.boot=n.boot, rscale=rscale, mu=mu) 
+    if(!is.null(data) & class(data)!="character") deparse(substitute(data))->data
+    test.t.options<-test.t.in(X=X, Y=Y, data=data, choix=choix, param=param, outlier=outlier, sauvegarde=sauvegarde, info=info, group=group,alternative=alternative,
+                              formula=formula,n.boot=n.boot, rscale=rscale, mu=mu)
     if(is.null(test.t.options)) return(analyse())
-    
+
     choix<-test.t.options$choix
     X<-test.t.options$X
     Y<-test.t.options$Y
@@ -715,76 +715,76 @@ test.t <-
     n.boot<-test.t.options$options$n.boot
     sauvegarde<-test.t.options$options$sauvegarde
     outlier<-test.t.options$options$desires
-    
+
     for(i in 1 : length(X)) {
-      
-      
-      if(choix==TXT_two_paired_samples){
+
+
+      if(choix==txt_two_paired_samples){
         diffs<-data[which(is.na(data[,X])), "IDeasy"]
-        if(length(diffs)==0) data->data1 else data[which(data$IDeasy!=diffs), ]->data1 
+        if(length(diffs)==0) data->data1 else data[which(data$IDeasy!=diffs), ]->data1
       } else  {
         data1<-data[complete.cases(data[,c(Y,X[i])]),]
       }
-      
-      
-      
-      
+
+
+
+
       X1<-X[i]
       R1<-list()
-      if(any(outlier==  TXT_complete_dataset)){
-        switch(choix,  TXT_comparison_to_norm=  R1$TXT_complete_dataset<-norme(X=X1, mu=mu, data=data1, param=param, group=group, alternative=alternative, n.boot=n.boot, rscale=rscale), 
-               TXT_two_paired_samples=R1$TXT_complete_dataset<-apparies(X=X1, Y=Y, data=data1, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale),
-               TXT_two_independant_samples= R1$TXT_complete_dataset<-indpdts(X=X1, Y=Y, data=data1, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale))
+      if(any(outlier==  txt_complete_dataset)){
+        switch(choix,  txt_comparison_to_norm=  R1$txt_complete_dataset<-norme(X=X1, mu=mu, data=data1, param=param, group=group, alternative=alternative, n.boot=n.boot, rscale=rscale),
+               txt_two_paired_samples=R1$txt_complete_dataset<-apparies(X=X1, Y=Y, data=data1, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale),
+               txt_two_independant_samples= R1$txt_complete_dataset<-indpdts(X=X1, Y=Y, data=data1, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale))
       }
 
-      if(any(outlier==TXT_identifying_outliers)|any(outlier==TXT_without_outliers)){
-        if(choix==TXT_comparison_to_norm) {
+      if(any(outlier==txt_identifying_outliers)|any(outlier==txt_without_outliers)){
+        if(choix==txt_comparison_to_norm) {
           if(class(data1)!="data.frame"){data1<-data.frame(data1)
                                        names(data1)[1]<-X1}
           data1$residu<-data1[,X1]
                                              }else data1$residu<-unlist(tapply(data1[,X1], data1[,Y], scale, center=T, scale=F))
         critere<-ifelse(is.null(z), "Grubbs", "z")
-        valeurs.influentes(X=TXT_residual, critere=critere,z=z, data=data1)->influentes
+        valeurs.influentes(X=txt_residual, critere=critere,z=z, data=data1)->influentes
       }
-      if(any(outlier== TXT_identifying_outliers)){influentes->R1$TXT_outliers_values}
-      if(any(outlier== TXT_without_outliers)) {
-        if(length(influentes$TXT_outliers)!=0 | all(outlier!=TXT_complete_dataset)){
-          
-          if(choix==TXT_two_paired_samples){
-            setdiff(data$IDeasy,influentes$TXT_outliers$IDeasy)->diffs
+      if(any(outlier== txt_identifying_outliers)){influentes->R1$txt_outliers_values}
+      if(any(outlier== txt_without_outliers)) {
+        if(length(influentes$txt_outliers)!=0 | all(outlier!=txt_complete_dataset)){
+
+          if(choix==txt_two_paired_samples){
+            setdiff(data$IDeasy,influentes$txt_outliers$IDeasy)->diffs
             data[which(data$IDeasy%in%diffs), ]->nettoyees
           } else  get("nettoyees", envir=.GlobalEnv)->nettoyees
-          
+
           ### Regler le souci pour les echantillons apparies
-          switch(choix,  TXT_comparison_to_norm=  R1$TXT_without_outliers<-norme(X=X1, mu=mu, data=nettoyees, param=param, group=group, alternative=alternative, n.boot=n.boot, rscale=rscale), 
-                 TXT_two_paired_samples=R1$TXT_without_outliers<-apparies(X=X1, Y=Y, data=nettoyees, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale),
-                 TXT_two_independant_samples= R1$TXT_without_outliers<-indpdts(X=X1, Y=Y, data=nettoyees, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale))
+          switch(choix,  txt_comparison_to_norm=  R1$txt_without_outliers<-norme(X=X1, mu=mu, data=nettoyees, param=param, group=group, alternative=alternative, n.boot=n.boot, rscale=rscale),
+                 txt_two_paired_samples=R1$txt_without_outliers<-apparies(X=X1, Y=Y, data=nettoyees, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale),
+                 txt_two_independant_samples= R1$txt_without_outliers<-indpdts(X=X1, Y=Y, data=nettoyees, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale))
         }
       }
       Resultats[[i]]<-R1
     }
-    
-    names(Resultats)<-paste(TXT_analysis_on_variable, X)
-    
+
+    names(Resultats)<-paste(txt_analysis_on_variable, X)
+
     paste(unique(X), collapse="','", sep="")->X
     paste(outlier,  collapse="','", sep="")->outlier
     paste(param,  collapse="','", sep="")->param
     Resultats$Call<-paste0("test.t(X=c('", X,
-                           "'), Y=", ifelse(!is.null(Y),paste0("'",Y,"'"), "NULL"), 
-                           ",group=", ifelse(!is.null(group),paste0("'",group,"'"), "NULL"), 
-                           ", choix='", choix, 
+                           "'), Y=", ifelse(!is.null(Y),paste0("'",Y,"'"), "NULL"),
+                           ",group=", ifelse(!is.null(group),paste0("'",group,"'"), "NULL"),
+                           ", choix='", choix,
                            "', sauvegarde = ", sauvegarde, ",outlier=c('", outlier, "'),z=", ifelse(!is.null(z),z, "NULL"),
                            ", data=", test.t.options$nom, ",alternative='", alternative, "', mu=", ifelse(!is.null(mu),mu, "NULL"),
                            ",formula =NULL, n.boot=", ifelse(is.null(n.boot), "NULL", n.boot), ",param=c('", param, "'),info=T, rscale=", rscale, ")"
     )
     .add.history(data=data, command=Resultats$Call, nom=test.t.options$nom)
     .add.result(Resultats=Resultats, name =paste(choix, Sys.time() ))
-    
+
     if(sauvegarde){save(Resultats=Resultats ,choix =choix, env=.e)}
-    
-    ref1(packages)->Resultats$TXT_references
+
+    ref1(packages)->Resultats$txt_references
     if(html) ez.html(Resultats)
     ### Obtenir les Resultats
-    return(Resultats) 
-    
+    return(Resultats)
+
     }

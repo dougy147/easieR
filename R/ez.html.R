@@ -6,8 +6,8 @@ ez.html <-
       require(packages)}
     dir.create(path= paste0(tempdir(),"\\easieR") , showWarnings = FALSE)
 
-    outputb<-c("---",INFO_title,
-               INFO_author,
+    outputb<-c("---",desc_title,
+               desc_author,
                paste("date:","'", date(),"'"),
                if(html) {c("output:",
                            "  html_document:",
@@ -195,16 +195,22 @@ ez.html <-
 
     writeLines(enc2utf8(output), file.nameRmd, useBytes = TRUE)
     render(file.nameRmd, quiet=T, encoding="UTF-8")
-    # specify URL/file handler depending on OS
-    if (Sys.info()[[1]]=="Darwin") {
-    	options(browser="open")
-    } else if (Sys.info()[[1]]=="Linux") {
-    	options(browser="xdg-open")
-    }
     if(html){
+      if(Sys.info()[[1]]=="Windows"){
         browseURL(file.path("file:\\", tempdir(), "easieR\\Rapport.easieR.html"))
-    } else {
+      } else if (Sys.info()[[1]]=="Darwin") {
+        browseURL(file.path("file:/", tempdir(), "easieR/Rapport.easieR.html"), browser = "open")
+      } else if (Sys.info()[[1]]=="Linux") {
+        browseURL(file.path("file:/", tempdir(), "easieR/Rapport.easieR.html"), browser = "xdg-open")
+      }
+    }else {
+      if(Sys.info()[[1]]=="Windows"){
         browseURL(file.path("file:\\", tempdir(), "easieR\\Rapport.easieR.docx"))
+      } else if (Sys.info()[[1]]=="Darwin") {
+        browseURL(file.path("file:/", tempdir(), "easieR/Rapport.easieR.docx"), browser = "open")
+      } else if (Sys.info()[[1]]=="Linux") {
+        browseURL(file.path("file:/", tempdir(), "easieR/Rapport.easieR.docx"), browser = "xdg-open")
+      }
     }
 
 
