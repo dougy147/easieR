@@ -1,3 +1,8 @@
+| NOTE        |
+|:---------------------------|
+| Work in progress: English translation has been generated locally from French with [libretranslate](https://github.com/LibreTranslate/LibreTranslate). It is far from correct, and for testing purposes only. |
+
+
 Internationalization is the process of easing the use of different languages in a software <sup>[1](https://journal.r-project.org/articles/RN-2005-001/RN-2005-001.pdf)</sup>.
 
 To facilitate translating `easieR`, files in this folder contain *almost* every strings (work in progress) that are to be displayed to the users, associated to specific variables'.
@@ -18,7 +23,9 @@ Those categories are not well delimited, but it will be quite easy to modify the
 
 To continue coding on easieR *with* strings displayed in place of placeholders, one script will help switching between strings and placeholders.
 
-# Limitations (TODO)
+# Limitations
+
+## String interpolation 
 
 When messages need data interpolation, the current method shows limitations.
 For example in `chi.R`:
@@ -28,3 +35,15 @@ msg6 <- paste0("Les effectifs sont insuffisants pour le nombre de combinaisons e
 ```
 
 msg6 wraps two variables around. How to proceed ?
+
+# Bugs
+
+## Generating reports
+
+When generating reports, placeholders are displayed instead of the string
+
+## Switch case
+
+`switch` does not always allow to use variables for pattern matching.
+I have replace some of them, but more testing is necessary
+
