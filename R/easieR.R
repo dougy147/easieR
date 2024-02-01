@@ -2,8 +2,10 @@ if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())) {
 	print("French lang detected")
 	source("./R/i18n/lang_fr_FR.R")
 } else {
+	#source("./R/i18n/lang_fr_FR.R")
 	print("English lang (default)")
 	source("./R/i18n/lang_en_EN.R")
+	#print("not loaded for testing")
 }
 
 easieR <-
@@ -97,9 +99,7 @@ VI.multiples<-function(data, X){
   nvar<-length(X)
   try(psych::outlier(data[,X], bad=T, na.rm=T,plot=T),silent=T)->essai
   if(class(essai)=="try-error"){
-    msgBox("Votre matrice est singuliere, ce qui pose souci. Nous tentons de  de resoudre le souci.
-           Si possible, la distance de Mahalanobis sera alors calculee sur le maximum d information
-           tout en evitant la singularite.")
+    msgBox(desc_singular_matrix_mahalanobis_on_max_info)
     data2<-data
     rankifremoved <- sapply(1:ncol(data2), function (x) qr(data2[,-x])$rank)
     which(rankifremoved == max(rankifremoved))->rangs
@@ -141,10 +141,7 @@ VI.multiples<-function(data, X){
 
 
   if(pourcent!=0){
-    writeLines("Supprimer l'ensemble des outliers supprime l'ensemble des valeurs au-delà p(chi.deux)< 0.001.
-               Supprimer une observation à la fois permet de faire une analyse detaillee de chaque observation
-               consideree comme influente en partant de la valeur la plus extreme. La procedure s'arrete
-               quand plus aucune observation n'est consideree comme influente")
+    writeLines(desc_outliers_removal_implications)
 
     suppr<- dlgList(c(txt_suppress_all_outliers, txt_suppress_outliers_manually),
                     preselect=c(txt_suppress_all_outliers), multiple = FALSE, title=ask_how_to_remove)$res

@@ -1,17 +1,21 @@
 corr.complet <-
   function(X=NULL, Y=NULL, Z=NULL,data=NULL,  group=NULL, param=c(txt_param_test, txt_non_param_test,txt_robusts_tests_with_bootstraps, txt_bayesian_factors),
-           save=F, outlier=c("complete", "id", "removed"),  z=NULL, info=T, n.boot=NULL, rscale=0.353, html=T){options (warn=-1)
+           save=F, outlier=c("complete", "id", "removed"),  z=NULL, info=T, n.boot=NULL, rscale=0.353, html=T)
 
-
-    corr.complet.in<-function(X=NULL, Y=NULL,Z=NULL, data=NULL, group=NULL, param=NULL, outlier=NULL, save=NULL, info=T,n.boot=NULL, rscale=0.707){
-
+  {options (warn=-1)
+    corr.complet.in<-function(X=NULL, Y=NULL,Z=NULL, data=NULL, group=NULL, param=NULL, outlier=NULL, save=NULL, info=T,n.boot=NULL, rscale=0.707)
+    {
       Resultats<-list()
-      if(!is.null(X) & !is.null(data) & !is.null(Y)) {dial<-F
-      if(is.null(Z)) choix<-txt_correlations else choix<-txt_partial_and_semi_correlations
-      }  else {dial<-T
-      choix<-NULL}
+      if(!is.null(X) & !is.null(data) & !is.null(Y)) {
+	      dial<-F
+	      if(is.null(Z)) choix<-txt_correlations
+	      else choix<-txt_partial_and_semi_correlations
+      } else {
+	      dial<-T
+	      choix<-NULL
+      }
 
-      if(is.null(choix) ){
+      if(is.null(choix)){
         if(info) writeLines(ask_type_correlation)
         choix<-dlgList(c(txt_correlations, txt_partial_and_semi_correlations), preselect=txt_correlations, multiple = FALSE, title=ask_simple_or_partial_corr)$res
         if(length(choix)==0) return(NULL)
@@ -21,75 +25,69 @@ corr.complet <-
       nom<-data[[1]]
       data<-data[[2]]
 
-
       msg3<-ask_chose_variable_x_axis
       msg4<-ask_chose_variable_y_axis
 
       X<-.var.type(X=X, info=info, data=data, type="numeric", check.prod=F, message=msg3,  multiple=T, title=txt_x_axis_variables, out=NULL)
       if(is.null(X)) {
-        corr.complet.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, save=NULL, info=T, group=NULL,
-                        n.boot=NULL, rscale=0.707)->Resultats
-        return(Resultats)}
+        corr.complet.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, save=NULL, info=T, group=NULL,n.boot=NULL, rscale=0.707)->Resultats
+        return(Resultats)
+      }
       data<-X$data
       X1<-X$X
 
       Y<-.var.type(X=Y, info=info, data=data, type="numeric", check.prod=F, message=msg4,  multiple=T, title=txt_y_axis_variables, out=X1)
       if(is.null(Y)) {
-        corr.complet.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, save=NULL, info=T, group=NULL,
-                        n.boot=NULL, rscale=0.707)->Resultats
-        return(Resultats)}
+        corr.complet.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, save=NULL, info=T, group=NULL,n.boot=NULL, rscale=0.707)->Resultats
+        return(Resultats)
+      }
       data<-Y$data
       Y<-Y$X
-      if(choix==txt_partial_and_semi_correlations){
+      if(choix==txt_partial_and_semi_correlations) {
         msg6<-ask_control_variables
         Z<-.var.type(X=Z, info=info, data=data, type="numeric", check.prod=F, message=msg6,  multiple=T, title=txt_control_variables, out=c(X1,Y))
         if(is.null(Z)) {
-          corr.complet.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, save=NULL, info=T, group=NULL,
-                          n.boot=NULL, rscale=0.707)->Resultats
-          return(Resultats)}
+          corr.complet.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, save=NULL, info=T, group=NULL,n.boot=NULL, rscale=0.707)->Resultats
+          return(Resultats)
+	}
         data<-Z$data
         Z<-Z$X
       }
 
-
-      if(dial){
-
-        if(info==TRUE) writeLines("Si vous souhaitez realiser l'analyse pour differents sous-echantillons en fonction d'un critere categoriel (i.e; realiser une analyse par groupe)
-                                  \n choisissez oui. Dans ce cas, l'analyse est realisee sur l'echantillon complet et sur les sous-echantillons.
-                                  \n Si vous desirez l'analyse pour l'echantillon complet uniquement, chosissez non.
-                                  \n l'analyse par groupe ne s'appliquent pas aux statistiques robustes.")
+      if(dial) {
+        if(info==TRUE) writeLines(desc_corr_group_analysis_spec)
         dlgList(c(txt_yes, txt_no), preselect=txt_no, multiple = FALSE, title=ask_analysis_by_group)$res->par.groupe
         if(length(par.groupe)==0) {
-          corr.complet.in(X=NULL, Y=NULL, data=NULL,param=NULL, outlier=NULL, save=NULL, info=T, group=NULL,
-                          n.boot=NULL, rscale=0.707)->Resultats
+          corr.complet.in(X=NULL, Y=NULL, data=NULL,param=NULL, outlier=NULL, save=NULL, info=T, group=NULL,n.boot=NULL, rscale=0.707)->Resultats
           return(Resultats)
         }
+
         msg5<-ask_chose_ranking_categorial_factor
-        if(par.groupe==txt_yes){group<-.var.type(X=group, info=info, data=data, type="factor", check.prod=F, message=msg5,  multiple=TRUE, title=txt_variables, out=c(X1,Y,Z))
-        if(length(group)==0) {  corr.complet.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, save=NULL, info=T, group=NULL,
-                                                n.boot=NULL, rscale=0.707)->Resultats
-          return(Resultats)}
-        data<-group$data
-        group<-group$X
-        if(any(ftable(data[,group])<3)){
-          msgBox(desc_need_at_least_three_observation_by_combination)
-          corr.complet.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, save=NULL, info=T, group=NULL,
-                          n.boot=NULL, rscale=0.707)->Resultats
-          return(Resultats)
-        }
+        if(par.groupe==txt_yes) {
+		group<-.var.type(X=group, info=info, data=data, type="factor", check.prod=F, message=msg5,  multiple=TRUE, title=txt_variables, out=c(X1,Y,Z))
+		if(length(group)==0) {
+			corr.complet.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, save=NULL, info=T, group=NULL,n.boot=NULL, rscale=0.707)->Resultats
+			return(Resultats)
+		}
+        	data<-group$data
+        	group<-group$X
+        	if(any(ftable(data[,group])<3)) {
+        	  msgBox(desc_need_at_least_three_observation_by_combination)
+        	  corr.complet.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, save=NULL, info=T, group=NULL, n.boot=NULL, rscale=0.707)->Resultats
+        	  return(Resultats)
+        	}
         }
       }
 
       msg.options1<-desc_param_is_BP
       msg.options2<- desc_non_param_are_rho_and_tau
 
-      options<-.ez.options(options=c(txt_choice,"outlier"), n.boot=n.boot,param=T, non.param=T, robust=T, Bayes=T, msg.options1=msg.options1, msg.options2=msg.options2, info=info, dial=dial,
-                           choix=param,sauvegarde=save, outlier=outlier, rscale=rscale)
-      if(is.null(options)){
-        corr.complet.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, save=NULL, info=T, group=NULL,
-                        n.boot=NULL, rscale=0.707)->Resultats
+      options<-.ez.options(options=c(txt_choice,"outlier"), n.boot=n.boot,param=T, non.param=T, robust=T, Bayes=T, msg.options1=msg.options1, msg.options2=msg.options2, info=info, dial=dial, choix=param,sauvegarde=save, outlier=outlier, rscale=rscale)
+      if(is.null(options)) {
+        corr.complet.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, save=NULL, info=T, group=NULL, n.boot=NULL, rscale=0.707)->Resultats
         return(Resultats)
       }
+
       Resultats$choix<-choix
       Resultats$nom<- nom
       Resultats$data<-data
@@ -99,7 +97,9 @@ corr.complet <-
       if(exists("group")) Resultats$group<-group
       Resultats$options<-options
       return(Resultats)
-    }
+    } # end function corr.complet.in()
+
+
     corr.complet.out<-function(X=NULL, Y=NULL, Z=NULL, data=NULL, choix=NULL, group=NULL, param=NULL,n.boot=NULL, rscale=0.353) {
       boot_BP<-function(data,i)cor(data[ , X1][i], data[ , Y1][i], use="complete.obs", method="pearson")
       boot_Spearman<-function(data,i)cor(data[ ,X1][i], data[ , Y1][i], use="complete.obs", method="spearman")
@@ -107,8 +107,9 @@ corr.complet <-
       boot_SpearmanSP<-function(data,i)cor(data[ ,X][i], data[ , Y1][i], use="complete.obs", method="spearman")
       list()->Resultats
       Resultats$txt_descriptive_statistics<-.stat.desc.out(X=c(X,Y,Z), groupes=NULL, data=data, tr=.1, type=3, plot=T)
-      if(!is.null(group)) {Resultats$txt_descriptive_statistics_by_group<-.stat.desc.out(X=c(X,Y,Z), groupes=group, data=data, tr=.1, type=3, plot=T) }
-
+      if(!is.null(group)) {
+	      Resultats$txt_descriptive_statistics_by_group<-.stat.desc.out(X=c(X,Y,Z), groupes=group, data=data, tr=.1, type=3, plot=T)
+      }
 
       if(choix== txt_correlations) {
         title<-txt_BP_correlation
@@ -160,8 +161,8 @@ corr.complet <-
         }
         Resultats$txt_param_tests$Graphiques<-graphiques
       }
-      if(any(param=="param") | any(param==txt_param_tests)){
 
+      if(any(param=="param") | any(param==txt_param_tests)){
         if(choix!=txt_correlations) {
           cor.part<-rbind( pcor.test(data[,X], data[ ,Y], data[ , Z], method = "pearson")[1:3],
                            spcor.test(data[,X], data[ ,Y], data[ ,Z], method = "pearson")[1:3])
@@ -170,13 +171,10 @@ corr.complet <-
           cor.part$ddl<-(pcor.test(data[,X], data[ ,Y], data[ , Z], method = "pearson")$n-2-length(Z))
           dimnames(cor.part)<-list(c(txt_partial_corr_BP,txt_semi_BP), c("Correlation", "valeur.p", "test.t", "r.carre","ddl"))
           Resultats$txt_partial_semi_BP<-cor.part
-
         } else {
           BP<-cor.test(data[, X1], data[ ,Y1], method = "pearson")
-          Resultats$txt_param_tests$txt_BP_correlation<-round(data.frame("r"=BP$estimate,"r.deux"=BP$estimate^2, "IC lim inf"=BP$conf.int[1],"IC lim sup"=BP$conf.int[2], "t"=BP$statistic,
-                                                                                           "ddl"=BP$parameter, "valeur.p"=BP$p.value),4)
+          Resultats$txt_param_tests$txt_BP_correlation<-round(data.frame("r"=BP$estimate,"r.deux"=BP$estimate^2, "IC lim inf"=BP$conf.int[1],"IC lim sup"=BP$conf.int[2], "t"=BP$statistic, "ddl"=BP$parameter, "valeur.p"=BP$p.value),4)
         }
-
 
         if(!is.null(group)){
           if(choix==txt_correlations) {
@@ -199,15 +197,16 @@ corr.complet <-
           gr.l<-expand.grid(gr.l)
           }
 
-
           dimnames(BPgroup)[[2]]<- c("BP.r", "BP.ddl", "BP.t", "BP.p")
           BPgroup<-data.frame(gr.l,BPgroup )
-          if(choix!=txt_correlations) Resultats$txt_param_tests$txt_partial_corr_BP_by_group<-BPgroup else Resultats$txt_BP_correlation_by_group<-BPgroup
-
+          if(choix!=txt_correlations) {
+		  Resultats$txt_param_tests$txt_partial_corr_BP_by_group<-BPgroup
+	  } else {
+		  Resultats$txt_BP_correlation_by_group<-BPgroup
+	  }
         }
       }
       if(any(param=="non param")| any(param==txt_non_parametric_test)){
-
 
         graphiques<-list()
         p<-ggplot(data)
@@ -251,7 +250,6 @@ corr.complet <-
         Resultats$txt_non_parametric_test$txt_rho<-round(data.frame("rho"=Spear$estimate,"rho.deux"=Spear$estimate^2,"S"=Spear$statistic,"valeur.p"=Spear$p.value),4)
         round(data.frame("tau"=Kendall$estimate,"z"=Kendall$statistic,"valeur.p"=Kendall$p.value),4)->Resultats$txt_non_parametric_test$txt_kendall_tau}
 
-
         if(!is.null(group)){
           if(choix==txt_correlations) {corr.g<-function(X2){ return(data.frame(Sp.r= cor.test(X2[, X1], X2[ ,Y1], method = "spearman")$estimate,
                                                                              Sp.p= cor.test(X2[, X1], X2[ ,Y1], method = "spearman")$p.value,
@@ -262,26 +260,32 @@ corr.complet <-
                                                     Spearman.ddl= pcor.test(X2[, X], X2[ ,Y],X2[ ,Z],method="spearman")$n-2-length(Z),
                                                     Spearman.t= pcor.test(X2[, X], X2[ ,Y],X2[ ,Z], method = "spearman")$estimate,
                                                     Spearman.p= pcor.test(X2[, X], X2[ ,Y],X2[ ,Z], method = "spearman")$p.value))
-            }}
+            			}
+	}
 
-          BPgroup<-by(data=data, INDICES=data[,group], FUN=corr.g)
-          BPgroup<-round(matrix(unlist(BPgroup), ncol=4, byrow=T),4)
-          if(length(group)==1) {gr.l<-expand.grid(levels(data[,group]))
-          names(gr.l)<-group}else{ gr.l<-sapply(data[,group],levels)
-          gr.l<-data.frame(gr.l)
-          gr.l<-expand.grid(gr.l)
-          }
-          if(choix!=txt_correlations){
-            dimnames(BPgroup)[[2]]<- c("Spearman.rho", "Spearman.ddl", "Spearman.t", "Spearman.p")
-            BPgroup<-data.frame(gr.l,BPgroup )
-            Resultats$txt_non_parametric_test$txt_partial_spearman_by_group<-BPgroup
-          } else {dimnames(BPgroup)[[2]]<- c( "Spearman.r", "Spearman.p", "Tau.Kendall.r", "Tau.Kendall.p")
-          BPgroup<-data.frame(gr.l,BPgroup )
-          Resultats$txt_non_parametric_test$txt_spearman_kendall_corr_by_group<-BPgroup}
+        BPgroup<-by(data=data, INDICES=data[,group], FUN=corr.g)
+        BPgroup<-round(matrix(unlist(BPgroup), ncol=4, byrow=T),4)
+        if(length(group)==1) {
+		gr.l<-expand.grid(levels(data[,group]))
+        	names(gr.l)<-group
+	} else {
+		gr.l<-sapply(data[,group],levels)
+        	gr.l<-data.frame(gr.l)
+		gr.l<-expand.grid(gr.l)
         }
-      }
+        if(choix!=txt_correlations){
+          dimnames(BPgroup)[[2]]<- c("Spearman.rho", "Spearman.ddl", "Spearman.t", "Spearman.p")
+          BPgroup<-data.frame(gr.l,BPgroup )
+          Resultats$txt_non_parametric_test$txt_partial_spearman_by_group<-BPgroup
+        } else {
+		dimnames(BPgroup)[[2]]<- c( "Spearman.r", "Spearman.p", "Tau.Kendall.r", "Tau.Kendall.p")
+        	BPgroup<-data.frame(gr.l,BPgroup )
+        	Resultats$txt_non_parametric_test$txt_spearman_kendall_corr_by_group<-BPgroup
+	}
+       } # end if is non null group
+      } # end if non parametric test
 
-      if(any(param=="robust"| any(param==txt_robusts_tests_with_bootstraps))){
+      if(any(param=="robust"| any(param==txt_robusts_tests_with_bootstraps))) {
         boot_BP_results<-boot(data, boot_BP, n.boot)
         if(!is.null(Resultats$txt_param_tests$txt_BP_correlation)) {
           try(Resultats$txt_param_tests$txt_BP_correlation$"Bca lim inf"<-round( boot.ci(boot_BP_results)$bca[,4],4), silent=T)
@@ -306,7 +310,6 @@ corr.complet <-
 
         }
       }
-
 
       if(any(param=="Bayes") | any(param==txt_bayesian_factors) ){
 
@@ -355,8 +358,6 @@ corr.complet <-
           if(length(group)==1) {gr.l<-expand.grid(levels(data[,group]))
           names(gr.l)<-group}else gr.l<-expand.grid(sapply(data[,group],levels))
           BPgroup<-data.frame(gr.l,BPgroup )
-
-
 
           if( any(param=="non param")| any(param==txt_non_parametric_test)){
             BFgroupS<-by(data=data2, INDICES=data[,group], FUN=corr.g)
@@ -432,7 +433,7 @@ corr.complet <-
 
 
     # package supprime "plyr",
-    packages<-c(txt_bayes_factor, "boot", "ggplot2", "ppcor","outliers","psych",  "svDialogs")
+    packages<-c("BayesFactor", "boot", "ggplot2", "ppcor","outliers","psych",  "svDialogs")
 
     try(lapply(packages, library, character.only=T), silent=T)->test2
     if(class(test2)== "try-error") return(ez.install())
@@ -472,7 +473,7 @@ corr.complet <-
         if(!is.null(Z)){for(i in 1:length(Z))      modele<-update(modele, as.formula(paste0(".~.+",Z[i])))}
         data1$residu<-resid(lm(modele, data=data1))
         critere<-ifelse(is.null(z), "Grubbs", "z")
-        valeurs.influentes(X=txt_residual, critere=critere,z=z, data=data1)->influentes
+        valeurs.influentes(X=txt_residual, critere=critere,z=z, data=data1)->influentes # TODO translate...
       }
       if(any(outlier%in% c("id",txt_identifying_outliers))){influentes->R1$txt_outliers_values}
       if(any(outlier%in%c("removed", txt_without_outliers))) {

@@ -689,7 +689,7 @@ test.t <-
     #### 5 fonctions qui seront appelees pour realiser l'analyse
     options (warn=-1)
     # chargement des packages
-    packages<-c(txt_bayes_factor, "svDialogs", "outliers", "nortest","psych", "lsr","ggplot2", "reshape2", "car", "plyr")
+    packages<-c('BayesFactor', 'svDialogs', 'outliers', 'nortest','psych', 'lsr','ggplot2', 'reshape2', 'car', 'plyr')
     try(lapply(packages, library, character.only=T), silent=T)->test2
     if(class(test2)== "try-error") return(ez.install())
     try(library("WRS"),silent=T)

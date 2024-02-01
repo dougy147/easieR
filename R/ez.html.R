@@ -33,11 +33,20 @@ ez.html <-
       listes<-list()
       output<-c()
       for(i in 1:length(Resultats)){
-
+	## Tests printing variables values instead of names
+	#      print("here")
+	#print(Resultats[[i]])
+	#      print("up")
+        ##
         if(length(Resultats[[i]])!=0){
           names(Resultats)[[i]]->titres
           level<-paste0(rep("#", times=X+1), collapse="")
-          output<-c(output, " ",paste(level, titres) , " ")
+
+	  if (exists(titres)) {
+          	output<-c(output, " ",paste(level, get(titres)) , " ")
+	  } else {
+          	output<-c(output, " ",paste(level, titres) , " ")
+	  }
 
           if(any(class(Resultats[[i]])=="chr")|any(class(Resultats[[i]])=="character")) {
             output<-c(output, Resultats[[i]])
@@ -195,21 +204,23 @@ ez.html <-
 
     writeLines(enc2utf8(output), file.nameRmd, useBytes = TRUE)
     render(file.nameRmd, quiet=T, encoding="UTF-8")
+    if (Sys.info()[[1]]=="Darwin") {
+    	options(browser = "open")
+    } else if (Sys.info()[[1]]=="Linux") {
+    	options(browser = "xdg-open")
+    }
+
     if(html){
       if(Sys.info()[[1]]=="Windows"){
         browseURL(file.path("file:\\", tempdir(), "easieR\\Rapport.easieR.html"))
-      } else if (Sys.info()[[1]]=="Darwin") {
-        browseURL(file.path("file:/", tempdir(), "easieR/Rapport.easieR.html"), browser = "open")
-      } else if (Sys.info()[[1]]=="Linux") {
-        browseURL(file.path("file:/", tempdir(), "easieR/Rapport.easieR.html"), browser = "xdg-open")
+      } else {
+        browseURL(file.path("file:/", tempdir(), "easieR/Rapport.easieR.html"))
       }
-    }else {
-      if(Sys.info()[[1]]=="Windows"){
+    } else {
+      if(Sys.info()[[1]]=="Windows") {
         browseURL(file.path("file:\\", tempdir(), "easieR\\Rapport.easieR.docx"))
-      } else if (Sys.info()[[1]]=="Darwin") {
-        browseURL(file.path("file:/", tempdir(), "easieR/Rapport.easieR.docx"), browser = "open")
-      } else if (Sys.info()[[1]]=="Linux") {
-        browseURL(file.path("file:/", tempdir(), "easieR/Rapport.easieR.docx"), browser = "xdg-open")
+      } else {
+        browseURL(file.path("file:/", tempdir(), "easieR/Rapport.easieR.docx"))
       }
     }
 
