@@ -104,7 +104,7 @@ chi <-
       if(choix==txt_mcnemar_test) robust<-F else robust<-T
       if(choix==txt_chi_adjustement) Bayes<-F else Bayes<-T
       msg.options<-desc_in_that_case_non_parametric_is_classical_chi_squared
-      .ez.options(options=txt_choice, n.boot=n.boot,param=F, non.param=T, robust=robust, Bayes=Bayes, msg.options1=NULL, msg.options2=msg.options, info=T, dial=dial, choix=choix2)->Options
+      .ez.options(options='choix', n.boot=n.boot,param=F, non.param=T, robust=robust, Bayes=Bayes, msg.options1=NULL, msg.options2=msg.options, info=T, dial=dial, choix=choix2)->Options
       if(is.null(Options)){  chi.in(X=NULL, Y=NULL, Effectifs=NULL, p=NULL, choix=NULL, data=NULL, info=T, n.boot=NULL, SampleType=NULL, FM=NULL, choix2=NULL)->Resultats
         return(Resultats)}
       if(dial==T || any(SampleType %in% c("poisson", "jointMulti","hypergeom", "indepMulti"))==F || SampleType=="indepMulti" & any(fixedMargin %in% c("rows","cols"))==F){

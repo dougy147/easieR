@@ -1,5 +1,5 @@
 regressions <-
-  function(data=NULL, modele=NULL, Y=NULL, X_a=NULL, X_i=NULL, outlier='Donnees completes', inf=F, CV=F, select.m="none", method="p", step=NULL, group=NULL, criteria=0.15 , scale=T, dial=T, info=T,
+  function(data=NULL, modele=NULL, Y=NULL, X_a=NULL, X_i=NULL, outlier=txt_complete_dataset, inf=F, CV=F, select.m="none", method="p", step=NULL, group=NULL, criteria=0.15 , scale=T, dial=T, info=T,
            sauvegarde=F, n.boot=NULL, param="param", rscale=0.353, html=TRUE){
 
 
@@ -95,7 +95,7 @@ regressions <-
       data[complete.cases(data[,variables]),]->data
       msg.options1<-desc_param_test_is_classical_reg_robusts_are_m_estimator
 
-      options<-.ez.options(options=c(txt_choice,"outlier"), n.boot=n.boot,param=T, non.param=F, robust=T, Bayes=T, msg.options1=msg.options1, msg.options2=msg.options2, info=info, dial=dial,
+      options<-.ez.options(options=c('choix',"outlier"), n.boot=n.boot,param=T, non.param=F, robust=T, Bayes=T, msg.options1=msg.options1, msg.options2=msg.options2, info=info, dial=dial,
                            choix=param,sauvegarde=sauvegarde, outlier=outlier, rscale=rscale)
       if(is.null(options)) return(regressions.in())
 
@@ -144,7 +144,7 @@ regressions <-
       }
       assign("lm.r1",lm.r1, env= .GlobalEnv)
       resid(lm.r1)->dtrgeasieR$residu
-      Resultats$txt_normality_tests<-.normalite(data=dtrgeasieR, X=txt_residual, Y=NULL)
+      Resultats$txt_normality_tests<-.normalite(data=dtrgeasieR, X='residu', Y=NULL)
       if(length(pred)>1)  {
         cont<-variables[which(!sapply(dtrgeasieR[,variables],class)%in%c("factor","character"))]
         Resultats$txt_multivariate_normality<-.normalite(data=dtrgeasieR, X=cont, Y=NULL)

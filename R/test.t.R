@@ -208,7 +208,7 @@ test.t <-
       msg.options1<-desc_param_is_t_test
       msg.options2<- desc_non_param_is_wilcoxon_or_mann_withney
 
-      options<-.ez.options(options=c(txt_choice,"outlier"), n.boot=n.boot,param=T, non.param=T, robust=T, Bayes=T, msg.options1=msg.options1, msg.options2=msg.options2, info=info, dial=dial,
+      options<-.ez.options(options=c('choix',"outlier"), n.boot=n.boot,param=T, non.param=T, robust=T, Bayes=T, msg.options1=msg.options1, msg.options2=msg.options2, info=info, dial=dial,
                            choix=param,sauvegarde=sauvegarde, outlier=outlier, rscale=rscale)
       if(is.null(options)){
         test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
@@ -744,14 +744,14 @@ test.t <-
           data1$residu<-data1[,X1]
                                              }else data1$residu<-unlist(tapply(data1[,X1], data1[,Y], scale, center=T, scale=F))
         critere<-ifelse(is.null(z), "Grubbs", "z")
-        valeurs.influentes(X=txt_residual, critere=critere,z=z, data=data1)->influentes
+        valeurs.influentes(X='residu', critere=critere,z=z, data=data1)->influentes
       }
       if(any(outlier== txt_identifying_outliers)){influentes->R1$txt_outliers_values}
       if(any(outlier== txt_without_outliers)) {
-        if(length(influentes$txt_outliers)!=0 | all(outlier!=txt_complete_dataset)){
+        if(length(influentes$'observations influentes')!=0 | all(outlier!=txt_complete_dataset)){
 
           if(choix==txt_two_paired_samples){
-            setdiff(data$IDeasy,influentes$txt_outliers$IDeasy)->diffs
+            setdiff(data$IDeasy,influentes$'observations influentes'$IDeasy)->diffs
             data[which(data$IDeasy%in%diffs), ]->nettoyees
           } else  get("nettoyees", envir=.GlobalEnv)->nettoyees
 

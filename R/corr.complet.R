@@ -82,7 +82,7 @@ corr.complet <-
       msg.options1<-desc_param_is_BP
       msg.options2<- desc_non_param_are_rho_and_tau
 
-      options<-.ez.options(options=c(txt_choice,"outlier"), n.boot=n.boot,param=T, non.param=T, robust=T, Bayes=T, msg.options1=msg.options1, msg.options2=msg.options2, info=info, dial=dial, choix=param,sauvegarde=save, outlier=outlier, rscale=rscale)
+      options<-.ez.options(options=c('choix',"outlier"), n.boot=n.boot,param=T, non.param=T, robust=T, Bayes=T, msg.options1=msg.options1, msg.options2=msg.options2, info=info, dial=dial, choix=param,sauvegarde=save, outlier=outlier, rscale=rscale)
       if(is.null(options)) {
         corr.complet.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, save=NULL, info=T, group=NULL, n.boot=NULL, rscale=0.707)->Resultats
         return(Resultats)
@@ -126,17 +126,17 @@ corr.complet <-
           }
           lm.r1<-lm(modele1, data)
           lm.r2<-lm(modele2, data)
-          data$residus1<-lm.r1$residuals
-          data$residus2<-lm.r2$residuals
-          X1<-"residus1"
-          Y1<-"residus2"
+          data$'residus1'<-lm.r1$residuals
+          data$'residus2'<-lm.r2$residuals
+          X1<-'residus1'
+          Y1<-'residus2'
         }
       modele<-as.formula(paste0(X1,"~",Y1))
       lm.r<-lm(modele,na.action=na.exclude,data=data)
-      resid(lm.r)->data$residus # recuperation du residu sur le modele lineaire
+      resid(lm.r)->data$'residus' # recuperation du residu sur le modele lineaire
 
       if(any(param=="Bayes") | any(param==txt_bayesian_factors) | any(param=="param") | any(param==txt_param_tests))  {
-        Resultats$txt_normality_tests<-.normalite(data=data, X="residus", Y=NULL)
+        Resultats$txt_normality_tests<-.normalite(data=data, X='residus', Y=NULL)
         graphiques<-list()
         p<-ggplot(data)
         p<-p+ eval(parse(text=paste0("aes(x=", X,", y=", Y,")"))) + geom_point()
@@ -333,8 +333,8 @@ corr.complet <-
           if(choix!=txt_correlations){
             lm.r1<-lm(modele1, data2)
             lm.r2<-lm(modele2, data2)
-            data2$residus1<-lm.r1$residuals
-            data2$residus2<-lm.r2$residuals
+            data2$'residus1'<-lm.r1$'residuals'
+            data2$'residus2'<-lm.r2$'residuals'
           }
 
           BFS<-regressionBF(modele, data=data2, rscaleCont=rscale )
@@ -471,13 +471,13 @@ corr.complet <-
          any(outlier%in%c(txt_without_outliers, "removed"))){
         modele<-as.formula(paste0(X1,"~",Y1))
         if(!is.null(Z)){for(i in 1:length(Z))      modele<-update(modele, as.formula(paste0(".~.+",Z[i])))}
-        data1$residu<-resid(lm(modele, data=data1))
+        data1$'residu'<-resid(lm(modele, data=data1))
         critere<-ifelse(is.null(z), "Grubbs", "z")
-        valeurs.influentes(X=txt_residual, critere=critere,z=z, data=data1)->influentes # TODO translate...
+        valeurs.influentes(X='residu', critere=critere,z=z, data=data1)->influentes
       }
       if(any(outlier%in% c("id",txt_identifying_outliers))){influentes->R1$txt_outliers_values}
       if(any(outlier%in%c("removed", txt_without_outliers))) {
-        if(length(influentes$txt_outliers)!=0 |
+        if(length(influentes$'observations influentes')!=0 |
            ! any(outlier %in% c(txt_complete_dataset,"complete"))){
           get("nettoyees", envir=.GlobalEnv)->nettoyees
           R1$txt_without_outliers<-corr.complet.out(X=X1, Y=Y1,Z=Z, data=nettoyees, choix=choix, group=group, param=param, n.boot=n.boot, rscale=rscale)

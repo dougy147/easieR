@@ -19,6 +19,12 @@ At the moment, there are three types of placeholders :
 
 Those categories are not well delimited, but it will be quite easy to modify them in the future.
 
+# Hard coded strings
+
+Some strings needs to be hard coded and should probably stay like that, for example `choix` and `outlier` in `./R/easieR.R`.
+To avoid mistakes during translation, I replaced double quotes (`"`) by single quotes (`'`).
+Thsi way, double quotes would be reserved for placeholders while single for remaining strings.
+
 # For programmers
 
 To continue coding on easieR *with* strings displayed in place of placeholders, one script will help switching between strings and placeholders.

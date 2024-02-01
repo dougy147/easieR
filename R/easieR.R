@@ -2,10 +2,9 @@ if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())) {
 	print("French lang detected")
 	source("./R/i18n/lang_fr_FR.R")
 } else {
-	#source("./R/i18n/lang_fr_FR.R")
 	print("English lang (default)")
+	#source("./R/i18n/lang_fr_FR.R")
 	source("./R/i18n/lang_en_EN.R")
-	#print("not loaded for testing")
 }
 
 easieR <-
@@ -24,18 +23,13 @@ easieR <-
 
     choix <- dlgList(easieR.msg("2"), preselect=NULL, multiple = FALSE, title=easieR.msg("3"))$res
     if(length(choix)==0) return(writeLines(easieR.msg("4"))) else {
-      if(choix %in%c(txt_data_import_export_save,
-                     "Data - (Import, export, save)")) Resultats <- donnees()
-      if(choix %in% c(txt_hypothesis_analysis,
-                      "Analyses - Hypothesis tests")) Resultats <-analyse(html=html)
-      if(choix%in%c(txt_interface_objects_in_memory,
-                  txt_interface_objects_in_memory)) Resultats <- interfaceR()
-      if(choix%in% c(txt_preprocess_sort_select_operations,
-                     txt_preprocess_sort_select_operations)) Resultats<-preprocess()
-      if(choix%in% c(txt_teaching_material,"Teaching material")) return(teaching())
-      if(choix%in%c(txt_graphics,"Graphics")) return(graphiques())
+      if(choix %in%c(txt_data_import_export_save, txt_data_import_export_save)) Resultats <- donnees()
+      if(choix %in% c(txt_hypothesis_analysis, txt_hypothesis_analysis)) Resultats <-analyse(html=html)
+      if(choix%in%c(txt_interface_objects_in_memory, txt_interface_objects_in_memory)) Resultats <- interfaceR()
+      if(choix%in% c(txt_preprocess_sort_select_operations, txt_preprocess_sort_select_operations)) Resultats<-preprocess()
+      if(choix%in% c(txt_teaching_material, txt_teaching_material)) return(teaching())
+      if(choix%in%c(txt_graphics, txt_graphics)) return(graphiques())
       return(Resultats)
-
     }
   }
 
@@ -62,10 +56,14 @@ easieR.msg<-function(msg="1"){
    #
    # }
    if      (msg=="1") c(desc_for_easier_to_work) -> msg
-   else if (msg=="2") c(txt_data_import_export_save, txt_preprocess_sort_select_operations, txt_hypothesis_analysis, txt_graphics, txt_interface_objects_in_memory, txt_teaching_material) -> msg
+   else if (msg=="2") c(txt_data_import_export_save,
+			txt_preprocess_sort_select_operations,
+			txt_hypothesis_analysis,
+			txt_graphics,
+			txt_interface_objects_in_memory,
+			txt_teaching_material) -> msg
    else if (msg=="3") ask_what_do_you_want -> msg
    else if (msg=="4") txt_user_exited_easieR -> msg
-
 
   return(msg)
 }
@@ -336,9 +334,9 @@ VI.multiples<-function(data, X){
 }
 
 # save : logical. Should the output be saved in rtf and R file ?
-.ez.options<-function(options=txt_choice, n.boot=NULL,param=T, non.param=T, robust=T, Bayes=T, msg.options1=NULL, msg.options2=NULL, info=T, dial=T,
+.ez.options<-function(options='choix', n.boot=NULL,param=T, non.param=T, robust=T, Bayes=T, msg.options1=NULL, msg.options2=NULL, info=T, dial=T,
                       choix=NULL,sauvegarde=F, outlier=NULL, rscale=NULL){
-  # options : character or vector. List of options that must be used (txt_choice, "outlier")
+  # options : character or vector. List of options that must be used ('choix', "outlier")
   # n.boot : Positive integer. Number of bootstrap that must be performed. 1 for no bootstrap
   # param : Logical. Is the parametric analysis  an option ?
   # non.param : Logical. Is the non.parametric analysis  an option ?
@@ -351,7 +349,7 @@ VI.multiples<-function(data, X){
   # choix = character or list of analyses that must be done c("parametric", "non parametric", "robust" or/and "bayesian")
   # sauvegarde = Logical. Must the results be saved ?
   Resultats<-list()
-  if(any(options==txt_choice) & dial==T){
+  if(any(options=='choix') & dial==T){
     choix<-c()
     if(param==T){
       if(info) writeLines(msg.options1)
@@ -370,13 +368,12 @@ VI.multiples<-function(data, X){
       choix<-c(choix, txt_bayesian_factors)
     }
 
-    choix<- dlgList(choix, preselect=choix, multiple = TRUE, title="Quelle(s) analyses voulez-vous  ?")$res
+    choix<- dlgList(choix, preselect=choix, multiple = TRUE, title=ask_which_analysis)$res
     if(length(choix)==0) return(NULL)
   }
   Resultats$choix<-choix
 
-
-  if(exists(txt_choice) && any(choix== txt_robusts_tests_with_bootstraps) || !is.null(n.boot)){{
+  if(exists('choix') && any(choix== txt_robusts_tests_with_bootstraps) || !is.null(n.boot)){{
     if(!is.null(n.boot) && ((class(n.boot)!="numeric" & class(n.boot)!="integer") ||  n.boot%%1!=0 || n.boot<1)){
       msgBox(desc_bootstraps_number_must_be_positive)
       n.boot<-NULL

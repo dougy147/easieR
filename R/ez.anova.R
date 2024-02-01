@@ -66,13 +66,13 @@ ez.anova<-function(data=NULL, DV=NULL, between=NULL, within=NULL,id=NULL, cov=NU
     if(is.null(data$residu)) {
       Resultats[[.ez.anova.msg("title", 55)]]<-.ez.anova.msg("msg", 34)
       return(Resultats)}
-    valeurs.influentes(X=txt_residual, critere="Grubbs",z=3.26, data=data)->influentes
+    valeurs.influentes(X='residu', critere="Grubbs",z=3.26, data=data)->influentes
     
     if(any(outlier %in% c(txt_identifying_outliers,"id","Identification of outliers" ))) Resultats[[.ez.anova.msg("title", 13)]]<-influentes
     if(any(outlier %in% c( txt_without_outliers,  "Dataset with outliers removed","removed" ))){
       
-      if(!is.null(influentes$txt_outliers[,id])){
-        setdiff(data[,as.character(id)],influentes$txt_outliers[,as.character(id)])->diffs
+      if(!is.null(influentes$'observations influentes'[,id])){
+        setdiff(data[,as.character(id)],influentes$'observations influentes'[,as.character(id)])->diffs
         data[which(data[,id] %in% diffs), ]->nettoyees
         factor(nettoyees[,id])->nettoyees[,id]
         nett<-.ez.anova.out(data=nettoyees, DV=DV, between=between, within=within,id=id, cov=cov,  
@@ -721,7 +721,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
     residus<-data.frame(aov.out$lm$residuals)
     residus[,"match"] <-aov.out$data$wide[,id]
     if(!is.null(within)){ residus<-melt(residus, id.vars="match") 
-                         names(residus)[3]<-txt_residual
+                         names(residus)[3]<-'residu'
                           residus$match<-paste0(residus[,1], residus[,2])
                           data$match<-paste0(data[,id], data[,within[1]])
                           if(length(within)>1){
@@ -730,12 +730,12 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
                                                         }
                                                }
                           }else{
-      names(residus)<-c(txt_residual, "match")
+      names(residus)<-c('residu', "match")
       data$match<-data[,id]
       }
 
     data<-merge(x=data, y=residus, by="match")
-    Resultats[[.ez.anova.msg("title",31)]]<-.normalite(data=data, X=txt_residual, Y=NULL)
+    Resultats[[.ez.anova.msg("title",31)]]<-.normalite(data=data, X='residu', Y=NULL)
     
     if(!is.null(cov) & !is.null(between)){
       options(contrasts = c("contr.helmert", "contr.poly"))
