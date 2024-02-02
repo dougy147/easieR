@@ -57,13 +57,13 @@ ez.anova<-function(data=NULL, DV=NULL, between=NULL, within=NULL,id=NULL, cov=NU
   complet[["aov.plus.in"]]<-NULL
   
   
-  if(any(outlier %in% c("complete", txt_complete_dataset,"Complete dataset"))){
+  if(any(outlier %in% c("complete", txt_complete_dataset,txt_complete_dataset))){
     Resultats[[.ez.anova.msg("title", 12)]]<-complet
     aov.plus.in->aov.plus.list$txt_complete_dataset}
   
   if(any(outlier %in% c("id", "removed" , "Identification of outliers", "Dataset with outliers removed",
                         txt_identifying_outliers, txt_without_outliers))) { 
-    if(is.null(data$residu)) {
+    if(is.null(data$'residu')) {
       Resultats[[.ez.anova.msg("title", 55)]]<-.ez.anova.msg("msg", 34)
       return(Resultats)}
     valeurs.influentes(X='residu', critere="Grubbs",z=3.26, data=data)->influentes
@@ -71,8 +71,10 @@ ez.anova<-function(data=NULL, DV=NULL, between=NULL, within=NULL,id=NULL, cov=NU
     if(any(outlier %in% c(txt_identifying_outliers,"id","Identification of outliers" ))) Resultats[[.ez.anova.msg("title", 13)]]<-influentes
     if(any(outlier %in% c( txt_without_outliers,  "Dataset with outliers removed","removed" ))){
       
-      if(!is.null(influentes$txt_outliers[,id])){
-        setdiff(data[,as.character(id)],influentes$txt_outliers[,as.character(id)])->diffs
+      #if(!is.null(influentes$txt_outliers[,id])){
+        #setdiff(data[,as.character(id)],influentes$txt_outliers[,as.character(id)])->diffs
+      if(!is.null(influentes$'outliers'[,id])){
+        setdiff(data[,as.character(id)],influentes$'outliers'[,as.character(id)])->diffs
         data[which(data[,id] %in% diffs), ]->nettoyees
         factor(nettoyees[,id])->nettoyees[,id]
         nett<-.ez.anova.out(data=nettoyees, DV=DV, between=between, within=within,id=id, cov=cov,  
@@ -175,8 +177,8 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
     title<-c(ask_variables_type, txt_repeated_measures,txt_participants_id,txt_independant_group_variables,
              txt_dependant_variable, ask_covariables,
              txt_param_model, txt_non_param_model,txt_bayesian_factors, txt_robust_statistics,
-             "Quelle(s) analyses voulez-vous  ?",txt_complete_dataset,txt_identifying_outliers, txt_without_outliers,
-             ask_results_desired, "Quelle taille d effet voulez-vous  ?",ask_which_squared_sum,
+             ask_which_analysis,txt_complete_dataset,txt_identifying_outliers, txt_without_outliers,
+             ask_results_desired, ask_which_size_effect,ask_which_squared_sum,
              ask_save, txt_apriori,  txt_comparison_two_by_two, txt_none,ask_which_contrasts,
              txt_contrasts_for, txt_specify_contrasts,ask_which_baseline, txt_descriptive_statistics,txt_test_model,
              txt_variable_descriptive_statistics,txt_descriptive_statistics_of_interaction_between_x,txt_warning,
