@@ -71,8 +71,8 @@ ez.anova<-function(data=NULL, DV=NULL, between=NULL, within=NULL,id=NULL, cov=NU
     if(any(outlier %in% c(txt_identifying_outliers,"id","Identification of outliers" ))) Resultats[[.ez.anova.msg("title", 13)]]<-influentes
     if(any(outlier %in% c( txt_without_outliers,  "Dataset with outliers removed","removed" ))){
       
-      if(!is.null(influentes$'observations influentes'[,id])){
-        setdiff(data[,as.character(id)],influentes$'observations influentes'[,as.character(id)])->diffs
+      if(!is.null(influentes$txt_outliers[,id])){
+        setdiff(data[,as.character(id)],influentes$txt_outliers[,as.character(id)])->diffs
         data[which(data[,id] %in% diffs), ]->nettoyees
         factor(nettoyees[,id])->nettoyees[,id]
         nett<-.ez.anova.out(data=nettoyees, DV=DV, between=between, within=within,id=id, cov=cov,  

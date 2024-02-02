@@ -29,6 +29,24 @@ Thsi way, double quotes would be reserved for placeholders while single for rema
 
 To continue coding on easieR *with* strings displayed in place of placeholders, one script will help switching between strings and placeholders.
 
+# Did it break `easieR`?
+
+Testing same analysis on same dataset gave exact similar results for:
+
+- descriptive statistics
+- chi squared (adjustement, independance, McNemar)
+- correlations (detailed analysis,
+
+Not tested : everything else
+
+## easieR bugs?
+
+- Correlations (detailed analysis with all parameters) outputs an error when asking for `Bayesian Factors`.
+```
+# outputs this error (on both main and translation versions) :
+  invalid class “ddenseModelMatrix” object: superclass "xMatrix" not defined in the environment of the object's class
+```
+
 # Limitations
 
 ## String interpolation 
@@ -44,10 +62,6 @@ msg6 wraps two variables around. How to proceed ?
 
 # Bugs
 
-## Graphics not showing in reports
-
-There is some more tweaks to add in report generation functino to for importing graphics and some other elements
-
 ## Switch case do not work with placeholders
 
 `switch` does not always allow to use variables for pattern matching.
@@ -56,7 +70,7 @@ I have replace some of them, but more testing is necessary
 
 # Fixes
 
-## Reports displayed placeholders instead of strings
+## Reports
 
 When generating reports, placeholders were displayed instead of the string.
 This is because assignment with dollar operator `$` refers to its right operand as a string, never has a variable with a value.

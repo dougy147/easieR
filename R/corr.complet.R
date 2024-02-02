@@ -477,7 +477,8 @@ corr.complet <-
       }
       if(any(outlier%in% c("id",txt_identifying_outliers))){influentes->R1$txt_outliers_values}
       if(any(outlier%in%c("removed", txt_without_outliers))) {
-        if(length(influentes$'observations influentes')!=0 |
+        #if(length(influentes$'observations influentes')!=0 |
+        if(length(influentes$txt_outliers)!=0 |
            ! any(outlier %in% c(txt_complete_dataset,"complete"))){
           get("nettoyees", envir=.GlobalEnv)->nettoyees
           R1$txt_without_outliers<-corr.complet.out(X=X1, Y=Y1,Z=Z, data=nettoyees, choix=choix, group=group, param=param, n.boot=n.boot, rscale=rscale)

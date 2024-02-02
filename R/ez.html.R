@@ -6,26 +6,39 @@ ez.html <-
       require(packages)}
     dir.create(path= paste0(tempdir(),"\\easieR") , showWarnings = FALSE)
 
-    outputb<-c("---",desc_title,
+    outputb<-c("---",
+	       desc_title,
                desc_author,
                paste("date:","'", date(),"'"),
-               if(html) {c("output:",
+               if(html) {
+		       c("output:",
                            "  html_document:",
                            "    toc: true",
                            "    toc_float: true",
-                           "    toc_depth: 5")}else{
-                             "output: word_document"},
-               "---")
+                           "    toc_depth: 5")
+	       } else {
+			"output: word_document"
+	       },
+	       "---"
+    )
     a<-c("```{r global options, include = FALSE}",
          "knitr::opts_chunk$set(echo=FALSE, include=TRUE, warning=FALSE, message=FALSE)",
          "```")
 
-    im<-c("```{r, echo=F}","options(digits = 4)", "library('pander')","library('knitr')",
-          "library('bibtex')", "library('huxtable')","library('tibble')", "data.results<-dget('ez.results.txt')", "i<-0","```")
+    im<-c("```{r, echo=F}","options(digits = 4)",
+	  "library('pander')",
+	  "library('knitr')",
+          "library('bibtex')",
+	  "library('huxtable')",
+	  "library('tibble')",
+	  "data.results<-dget('ez.results.txt')",
+	  "i<-0",
+	  "```")
+
     round<-c("```{r, echo=F}",
              "round.ps<-function (x) { substr(as.character(ifelse(x < 0.0001, ' <.0001', ifelse(round(x, 2) == 1, ' >.99', formatC(x, digits = 4, format = 'f')))), 2, 7)}",
-             "myf<-function(x){which(x<0.05)}"
-             ,"```")
+             "myf<-function(x){which(x<0.05)}",
+             "```")
 
     outputb<-c(outputb,a, im,round)
 
@@ -38,10 +51,9 @@ ez.html <-
           level<-paste0(rep("#", times=X+1), collapse="")
 
 	  # Convert "titres" to its correct "string" in the report
-	  if (length(titres) == 0) {
-		  # Ignore if "titres" is empty
-		next
-	  } else {
+	  print("------TRANSLATION_START-------")
+	  print(titres)
+	  if (length(titres) != 0) {
 	  	if (exists(titres,inherits=FALSE)) {
 			# Should avoid conflicts between built-in functions/variables and user-defined variables
 			# https://stackoverflow.com/questions/9368900/how-to-check-if-object-variable-is-defined-in-r
@@ -60,6 +72,10 @@ ez.html <-
           		output<-c(output, " ",paste(level, titres) , " ")
 	  	}
 	  }
+
+	  print(Resultats[[i]])
+	  print(class(Resultats[[i]]))
+	  print("------TRANSLATION_END---------")
 
           if(any(class(Resultats[[i]])=="chr")|any(class(Resultats[[i]])=="character")) {
             output<-c(output, Resultats[[i]])

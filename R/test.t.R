@@ -748,10 +748,10 @@ test.t <-
       }
       if(any(outlier== txt_identifying_outliers)){influentes->R1$txt_outliers_values}
       if(any(outlier== txt_without_outliers)) {
-        if(length(influentes$'observations influentes')!=0 | all(outlier!=txt_complete_dataset)){
+        if(length(influentes$txt_outliers)!=0 | all(outlier!=txt_complete_dataset)){
 
           if(choix==txt_two_paired_samples){
-            setdiff(data$IDeasy,influentes$'observations influentes'$IDeasy)->diffs
+            setdiff(data$IDeasy,influentes$txt_outliers$IDeasy)->diffs
             data[which(data$IDeasy%in%diffs), ]->nettoyees
           } else  get("nettoyees", envir=.GlobalEnv)->nettoyees
 

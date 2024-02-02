@@ -37,8 +37,10 @@ valeurs.influentes <-
     round((n/i)*100,2)-> pourcentage_N # proportions d observations supprimees (nombre / taille de l echantillon)
     rbind(n, paste(pourcentage_N, "%"))->synthese_aberrant # on combine le nombre et le pourcentage.
     data.frame(information=c(desc_number_outliers_removed, desc_percentage_outliers), Synthese=synthese_aberrant)->synthese_aberrant # on cree un data.frame
-    if(all(dim( valeur.influentes)!=0))    Resultats.valeurs.influentes$'influential observations'<-valeur.influentes
-    Resultats.valeurs.influentes$'influential observations' <-synthese_aberrant
+    #if(all(dim( valeur.influentes)!=0))    Resultats.valeurs.influentes$'influential observations'<-valeur.influentes
+    #Resultats.valeurs.influentes$'influential observations' <-synthese_aberrant
+    if(all(dim( valeur.influentes)!=0))    Resultats.valeurs.influentes$txt_outliers<-valeur.influentes
+    Resultats.valeurs.influentes$txt_outliers_synthesis <-synthese_aberrant
     data->>nettoyees
     return(Resultats.valeurs.influentes)
   }
