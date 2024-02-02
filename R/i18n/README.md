@@ -44,6 +44,9 @@ msg6 wraps two variables around. How to proceed ?
 
 # Bugs
 
+## Graphics not showing in reports
+
+There is some more tweaks to add in report generation functino to for importing graphics and some other elements
 
 ## Switch case do not work with placeholders
 
