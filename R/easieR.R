@@ -513,7 +513,8 @@ VI.multiples<-function(data, X){
       n2$txt_normality_tests<-normalite}
 
 
-    p1<-ggplot(data, aes(x=res))+geom_histogram(aes(y=..density..))
+    #p1<-ggplot(data, aes(x=res))+geom_histogram(aes(y=..density..))
+    p1<-ggplot(data, aes(x=res))+geom_histogram(aes(y=after_stat(density))) # The dot-dot notation (`..density..`) was deprecated in ggplot2 3.4.0.
     p1<-p1+ stat_function(fun = dnorm, colour = "red",
                           args = list(mean = mean(data[,"res"], na.rm = TRUE),
                                       sd = sd(data[,"res"], na.rm = TRUE)))
