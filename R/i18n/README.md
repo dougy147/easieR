@@ -36,10 +36,11 @@ Testing same analysis on same dataset gave exact similar results for:
 - descriptive statistics
 - chi squared (adjustement, independance, McNemar)
 - correlations (detailed analysis, matrix correlation (except partial without outliers), two correlations)
+- t.tests (comparison to norm,
 
 
 Not working with:
-- t.tests
+- 
 
 Not tested :
 - correlations > matrix partial correlations removing outliers : just loading the scripts in current and official branch give "unused argument (X = c(X, Y, Z))" in VI.multiples
@@ -66,13 +67,14 @@ msg6 <- paste0("Les effectifs sont insuffisants pour le nombre de combinaisons e
 
 msg6 wraps two variables around. How to proceed ?
 
-# Bugs
-
 ## Switch case do not work with placeholders
 
-`switch` does not always allow to use variables for pattern matching.
-I have replace some of them, but more testing is necessary
+`switch` do not allow to use variables for pattern matching the first expression `EXPR`.
+I replaced them by `if..else` conditions.
 
+# Bugs
+
+Redundancy: t.tests always perform "without influent observations" even when none was found.
 
 # Fixes
 

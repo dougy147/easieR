@@ -316,19 +316,33 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
                              preselect=c("Helmert"), multiple = FALSE, title=paste(.ez.anova.msg("title", 23), betweenwithin[i],"?"))$res
         
         if(length(type.cont2)==0) return(contrastes.ez())
-        contrastes[[i]]<-switch(EXPR =type.cont2,
-                                "Helmert"= contr.helmert(nlevels(data[,betweenwithin[i]])), 
-                                "Helmert reversed"= apply(contr.helmert(nlevels(data[,betweenwithin[i]])), 2, rev), 
-                                "poly"= emmeans:::poly.emmc(1:nlevels(data[,betweenwithin[i]])),
-                                "Trait.vs.contr"= {
-                                  base<- dlgList(levels(data[, betweenwithin[i]]), preselect=levels(data[,betweenwithin[i]])[1],
-                                                 multiple = FALSE, title=.ez.anova.msg("title", 25))$res
-                                  which(levels(data[, betweenwithin[i]])==base)->base
-                                  emmeans:::trt.vs.ctrl1.emmc(1:nlevels(data[,betweenwithin[i]]), ref=base)
-                                }, 
-                                "Eff"=emmeans:::del.eff.emmc(1:nlevels(data[,betweenwithin[i]])), 
-                                "consec"= emmeans:::consec.emmc(1:nlevels(data[,betweenwithin[i]])), 
-                                "mean.change"= emmeans:::mean_chg.emmc(1:nlevels(data[,betweenwithin[i]]))) 
+	## With translation, switch case can cause trouble when using variables instead of literal strings.
+	## That's why I've been converting it here too.
+        #contrastes[[i]]<-switch(EXPR =type.cont2,
+        #                        "Helmert"= contr.helmert(nlevels(data[,betweenwithin[i]])), 
+        #                        "Helmert reversed"= apply(contr.helmert(nlevels(data[,betweenwithin[i]])), 2, rev), 
+        #                        "poly"= emmeans:::poly.emmc(1:nlevels(data[,betweenwithin[i]])),
+        #                        "Trait.vs.contr"= {
+        #                          base<- dlgList(levels(data[, betweenwithin[i]]), preselect=levels(data[,betweenwithin[i]])[1],
+        #                                         multiple = FALSE, title=.ez.anova.msg("title", 25))$res
+        #                          which(levels(data[, betweenwithin[i]])==base)->base
+        #                          emmeans:::trt.vs.ctrl1.emmc(1:nlevels(data[,betweenwithin[i]]), ref=base)
+        #                        }, 
+        #                        "Eff"=emmeans:::del.eff.emmc(1:nlevels(data[,betweenwithin[i]])), 
+        #                        "consec"= emmeans:::consec.emmc(1:nlevels(data[,betweenwithin[i]])), 
+        #                        "mean.change"= emmeans:::mean_chg.emmc(1:nlevels(data[,betweenwithin[i]]))) 
+	if (type.cont2=="Helmert") { contr.helmert(nlevels(data[,betweenwithin[i]])) -> contrastes[[i]] }
+        if (type.cont2=="Helmert reversed") { apply(contr.helmert(nlevels(data[,betweenwithin[i]])), 2, rev)  -> contrastes[[i]]}
+        if (type.cont2=="poly") { emmeans:::poly.emmc(1:nlevels(data[,betweenwithin[i]]))  -> contrastes[[i]]}
+        if (type.cont2=="Trait.vs.contr") {
+		{ base<- dlgList(levels(data[, betweenwithin[i]]), preselect=levels(data[,betweenwithin[i]])[1],
+                        multiple = FALSE, title=.ez.anova.msg("title", 25))$res
+                        which(levels(data[, betweenwithin[i]])==base)->base
+                        emmeans:::trt.vs.ctrl1.emmc(1:nlevels(data[,betweenwithin[i]]), ref=base)
+                      } -> contrastes[[i]]  }
+        if (type.cont2=="Eff") { emmeans:::del.eff.emmc(1:nlevels(data[,betweenwithin[i]]))  -> contrastes[[i]]}
+        if (type.cont2=="consec") { emmeans:::consec.emmc(1:nlevels(data[,betweenwithin[i]]))  -> contrastes[[i]]}
+        if (type.cont2=="mean.change") { emmeans:::mean_chg.emmc(1:nlevels(data[,betweenwithin[i]]))  -> contrastes[[i]]}
         
         if(type.cont2 %in% c(txt_specify_contrasts, "Choose your own contrasts")){
           ortho<-FALSE

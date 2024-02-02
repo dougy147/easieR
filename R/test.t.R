@@ -165,9 +165,11 @@ test.t <-
         if(class(mu) !="numeric") mu<-NA
         while(is.na(mu)){
           mu <- dlgInput(ask_norm_value, 0)$res
-          if(length(mu)==0) { test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
+          if(length(mu)==0) {
+		  test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
                                         formula=NULL,n.boot=NULL, rscale=NULL)->Resultats
-            return(Resultats)}
+		  return(Resultats)
+	  }
           strsplit(mu, ":")->mu
           tail(mu[[1]],n=1)->mu
           as.numeric(mu)->mu
@@ -178,12 +180,18 @@ test.t <-
 
           if(info==TRUE) writeLines("Une analyse bilaterale teste l'existence d'une difference. Le choix superieur teste si la moyenne est strictement superieure
                                     \n Le choix inferieur teste l'existence d'une difference strictement inferieure")
-          dlgList(c("Bilateral", txt_superior, txt_inferior), preselect=NULL, multiple = FALSE, title=txt_means_comparison)$res->alternative
+          dlgList(c(txt_bilateral, txt_superior, txt_inferior), preselect=NULL, multiple = FALSE, title=txt_means_comparison)$res->alternative
           if(length(alternative)==0) {
             test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
                       formula=NULL,n.boot=NULL, rscale=NULL)->Resultats
             return(Resultats)
-          } else car::recode(alternative, "'Bilateral'= 'two.sided';'Superieur'='greater'; 'Inferieur'='less'")->alternative
+          #} else car::recode(alternative, "'Bilateral'= 'two.sided';'Superieur'='greater'; 'Inferieur'='less'")->alternative # TODO check here for troubles translation
+          } else {
+		  if      (alternative == txt_bilateral) { 'two.sided' -> alternative }
+		  else if (alternative == txt_superior)  { 'greater' -> alternative }
+		  else if (alternative == txt_inferior)  { 'less' -> alternative }
+		  else { print('[ERROR] Unknown alternative (./test.t.R)') }
+	  }
 
           if(info==TRUE) writeLines("Si vous souhaitez realiser l'analyse pour differents sous-echantillons en fonction d'un critere categoriel (i.e; realiser une analyse par groupe)
                                     \n choisissez oui. Dans ce cas, l'analyse est realisee sur l'echantillon complet et sur les sous-echantillons.
@@ -197,7 +205,7 @@ test.t <-
           }
           msg5<-ask_chose_categorial_ranking_factor
           if(par.groupe==txt_yes){group<-.var.type(X=group, info=info, data=data, type="factor", check.prod=F, message=msg5,  multiple=FALSE, title=txt_variables, out=X1)
-          if(length(group)==0) { test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
+          if(length(group)==0) { test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative='two.sided',
                                            formula=NULL,n.boot=NULL, rscale=NULL)->Resultats
             return(Resultats)}
           data<-group$data
@@ -205,13 +213,13 @@ test.t <-
           }
         }
       }
-      msg.options1<-desc_param_is_t_test
+      msg.options1<- desc_param_is_t_test
       msg.options2<- desc_non_param_is_wilcoxon_or_mann_withney
 
       options<-.ez.options(options=c('choix',"outlier"), n.boot=n.boot,param=T, non.param=T, robust=T, Bayes=T, msg.options1=msg.options1, msg.options2=msg.options2, info=info, dial=dial,
                            choix=param,sauvegarde=sauvegarde, outlier=outlier, rscale=rscale)
       if(is.null(options)){
-        test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
+        test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative='two.sided',
                   formula=NULL,n.boot=NULL, rscale=NULL)->Resultats
         return(Resultats)
       }
@@ -227,7 +235,7 @@ test.t <-
       return(Resultats)
       }
 
-    norme<-function(X, mu, data, param=c("param", "non param", txt_robusts), group=NULL, alternative="two.sided", n.boot=NULL, rscale=0.707){
+      norme<-function(X, mu, data, param=c("param", "non param", txt_robusts), group=NULL, alternative='two.sided', n.boot=NULL, rscale=0.707){
       if(class(data)!="data.frame") {data<-data.frame(data)
                                      names(data)[1]<-X}
       Resultats<-list()
@@ -663,7 +671,8 @@ test.t <-
             yuen.bt.modele->Resultats$Robustes$txt_bootstrap_t_method_on_truncated_means
             WRS::pb2gen(g1[,X],g2[,X], nboot=n.boot)->pb2gen.modele### calcule le bootstrap sur le M-estimateur et fournit l intervalle de confiance.
             round(unlist(pb2gen.modele)[1:6],4)->pb2gen.modele
-            names(pb2gen.modele)<-c("M.estimaror.G1", "M.estimator.G2", "diff", "lim.inf.IC", "lim.sup.IC", "valeur.p")
+            #names(pb2gen.modele)<-c("M.estimaror.G1", "M.estimator.G2", "diff", "lim.inf.IC", "lim.sup.IC", "valeur.p")
+            names(pb2gen.modele)<-c("M.estimator.G1", "M.estimator.G2", "diff", "lim.inf.IC", "lim.sup.IC", "valeur.p")
             pb2gen.modele->Resultats$Robustes$txt_percentile_bootstrap_on_m_estimators
             Resultats$Robustes$Informations<-c(desc_percentile_bootstrap_prefered_for_small_samples,
                                                desc_for_bigger_samples_bootstrap_t_prefered)
@@ -732,9 +741,19 @@ test.t <-
       X1<-X[i]
       R1<-list()
       if(any(outlier==  txt_complete_dataset)){
-        switch(choix,  txt_comparison_to_norm=  R1$txt_complete_dataset<-norme(X=X1, mu=mu, data=data1, param=param, group=group, alternative=alternative, n.boot=n.boot, rscale=rscale),
-               txt_two_paired_samples=R1$txt_complete_dataset<-apparies(X=X1, Y=Y, data=data1, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale),
-               txt_two_independant_samples= R1$txt_complete_dataset<-indpdts(X=X1, Y=Y, data=data1, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale))
+        #switch(choix,
+	#       txt_comparison_to_norm=R1$txt_complete_dataset<-norme(X=X1, mu=mu, data=data1, param=param, group=group, alternative=alternative, n.boot=n.boot, rscale=rscale),
+        #       txt_two_paired_samples=R1$txt_complete_dataset<-apparies(X=X1, Y=Y, data=data1, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale),
+        #       txt_two_independant_samples= R1$txt_complete_dataset<-indpdts(X=X1, Y=Y, data=data1, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale))
+        if (choix==txt_comparison_to_norm) {
+		R1$txt_complete_dataset<-norme(X=X1, mu=mu, data=data1, param=param, group=group, alternative=alternative, n.boot=n.boot, rscale=rscale)
+	}
+        if (choix==txt_two_paired_samples) {
+		R1$txt_complete_dataset<-apparies(X=X1, Y=Y, data=data1, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale)
+	}
+        if (choix==txt_two_independant_samples)	{
+		R1$txt_complete_dataset<-indpdts(X=X1, Y=Y, data=data1, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale)
+	}
       }
 
       if(any(outlier==txt_identifying_outliers)|any(outlier==txt_without_outliers)){
@@ -756,9 +775,18 @@ test.t <-
           } else  get("nettoyees", envir=.GlobalEnv)->nettoyees
 
           ### Regler le souci pour les echantillons apparies
-          switch(choix,  txt_comparison_to_norm=  R1$txt_without_outliers<-norme(X=X1, mu=mu, data=nettoyees, param=param, group=group, alternative=alternative, n.boot=n.boot, rscale=rscale),
-                 txt_two_paired_samples=R1$txt_without_outliers<-apparies(X=X1, Y=Y, data=nettoyees, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale),
-                 txt_two_independant_samples= R1$txt_without_outliers<-indpdts(X=X1, Y=Y, data=nettoyees, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale))
+          #switch(choix,  txt_comparison_to_norm=  R1$txt_without_outliers<-norme(X=X1, mu=mu, data=nettoyees, param=param, group=group, alternative=alternative, n.boot=n.boot, rscale=rscale),
+          #       txt_two_paired_samples=R1$txt_without_outliers<-apparies(X=X1, Y=Y, data=nettoyees, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale),
+          #       txt_two_independant_samples= R1$txt_without_outliers<-indpdts(X=X1, Y=Y, data=nettoyees, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale))
+          if (choix==txt_comparison_to_norm) {
+		  R1$txt_without_outliers<-norme(X=X1, mu=mu, data=nettoyees, param=param, group=group, alternative=alternative, n.boot=n.boot, rscale=rscale)
+	  }
+	  if (choix==txt_two_paired_samples) {
+		  R1$txt_without_outliers<-apparies(X=X1, Y=Y, data=nettoyees, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale)
+	  }
+	  if (choix==txt_two_independant_samples) {
+		  R1$txt_without_outliers<-indpdts(X=X1, Y=Y, data=nettoyees, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale)
+	  }
         }
       }
       Resultats[[i]]<-R1
