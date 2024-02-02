@@ -51,8 +51,8 @@ ez.html <-
           level<-paste0(rep("#", times=X+1), collapse="")
 
 	  # Convert "titres" to its correct "string" in the report
-	  print("------TRANSLATION_START-------")
-	  print(titres)
+	  #print("------TRANSLATION_START-------")
+	  #print(titres)
 	  if (length(titres) != 0) {
 	  	if (exists(titres,inherits=FALSE)) {
 			# Should avoid conflicts between built-in functions/variables and user-defined variables
@@ -73,9 +73,9 @@ ez.html <-
 	  	}
 	  }
 
-	  print(Resultats[[i]])
-	  print(class(Resultats[[i]]))
-	  print("------TRANSLATION_END---------")
+	  #print(Resultats[[i]])
+	  #print(class(Resultats[[i]]))
+	  #print("------TRANSLATION_END---------")
 
           if(any(class(Resultats[[i]])=="chr")|any(class(Resultats[[i]])=="character")) {
             output<-c(output, Resultats[[i]])
