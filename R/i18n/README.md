@@ -45,21 +45,16 @@ msg6 wraps two variables around. How to proceed ?
 # Bugs
 
 
-## Reports display placeholders instead of strings (work in progress)
-
-When generating reports, placeholders are displayed instead of the string.
-This is because assignment with dollar operator `$` refers to its right operand as a string, never has a variable with a value.
-The fix is done in `ez.html.R` by checking if the variable to be displayed on the HTML page exists as a variable (it should always be the case when translation is over):
-
-```
-  if (exists(titres)) {
-      	output<-c(output, " ",paste(level, get(titres)) , " ")
-  } else {
-      	output<-c(output, " ",paste(level, titres) , " ")
-  }
-```
 ## Switch case do not work with placeholders
 
 `switch` does not always allow to use variables for pattern matching.
 I have replace some of them, but more testing is necessary
 
+
+# Fixes
+
+## Reports displayed placeholders instead of strings
+
+When generating reports, placeholders were displayed instead of the string.
+This is because assignment with dollar operator `$` refers to its right operand as a string, never has a variable with a value.
+This is fixed by checking the type of `titres` and adjust given it is or not refering to a string from de LANG dictionnary.

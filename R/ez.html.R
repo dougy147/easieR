@@ -33,19 +33,32 @@ ez.html <-
       listes<-list()
       output<-c()
       for(i in 1:length(Resultats)){
-	## Tests printing variables values instead of names
-	#      print("here")
-	#print(Resultats[[i]])
-	#      print("up")
-        ##
         if(length(Resultats[[i]])!=0){
           names(Resultats)[[i]]->titres
           level<-paste0(rep("#", times=X+1), collapse="")
 
-	  if (exists(titres)) {
-          	output<-c(output, " ",paste(level, get(titres)) , " ")
+	  # Convert "titres" to its correct "string" in the report
+	  if (length(titres) == 0) {
+		  # Ignore if "titres" is empty
+		next
 	  } else {
-          	output<-c(output, " ",paste(level, titres) , " ")
+	  	if (exists(titres,inherits=FALSE)) {
+			# Should avoid conflicts between built-in functions/variables and user-defined variables
+			# https://stackoverflow.com/questions/9368900/how-to-check-if-object-variable-is-defined-in-r
+          		output<-c(output, " ",paste(level, get(titres)) , " ")
+	  	} else if (exists(titres,inherits=TRUE)) {
+			# Check the type of the object contained inside "titres"
+			# If it is a string, extract it as the title (defined in translation file)
+			# else use its own identifier as the string to be displayed.
+			title_type <- typeof(eval(parse(text = titres)))
+			if (title_type == "character") {
+          			output<-c(output, " ",paste(level, get(titres)) , " ")
+			} else {
+          			output<-c(output, " ",paste(level, titres) , " ")
+			}
+		} else {
+          		output<-c(output, " ",paste(level, titres) , " ")
+	  	}
 	  }
 
           if(any(class(Resultats[[i]])=="chr")|any(class(Resultats[[i]])=="character")) {

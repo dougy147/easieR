@@ -1,3 +1,4 @@
+# class(ask_2x2_table) <- "easieRlang"
 ask_2x2_table <- "Table 2x2?"
 ask_2x2_table_value <- "Please specify the value for tables 2x2"
 ask_add_a_value_to_empty_cells <- "Does an empty cell value for polychoric correlations need to be added? To specify the values, choose TRUE, otherwise choose [default]"
