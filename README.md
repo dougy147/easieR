@@ -20,9 +20,10 @@ Most functions works quite well, and many new functions will be developed soon b
 
 easieR can be used either by the GUI and in command lines. For now, easieR is not a package available on CRAN. Thus, it requires  to follow several steps for the installation. 
 
-**Step 0** : (Linux only) install easieR and *devtools* prerequisites
+**Step 0** : (Linux only) install prerequisites
 
-For Linux users, ensure to have `tcl`, `tk` and `glpk` installed on your system. Refer to your distribution packages repositories to install them.
+For Linux users, ensure to have `tcl`, `tk` and `glpk` installed on your system. Refer to your distribution packages repositories to install them. 
+For some dialog boxes, you may also want to install `yad`.
 
 **Step 1** : open R and install *devtools*. 
 
@@ -121,6 +122,7 @@ easieR est un package qui peut être utilisé en boîte de dialogue (GUI) ou en 
 **Étape 0** : (Linux uniquement) installer les pré-requis à easieR et *devtools*
 
 Pour les utilisateurs Linux, assurez-vous que les paquets suivants soient installés sur votre système : `tcl`, `tk` et `glpk`. Référez-vous au gestionnaire de paquets de votre distribution.
+Pour l'affichage de certaines boîtes de dialogues, l'installation de `yad` peut-être nécessaire.
 
 **Etape 1** : tout d'abord, il faut  ouvrir R et installer le package *devtools* de la manière suivante. 
 
