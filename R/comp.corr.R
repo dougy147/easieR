@@ -29,27 +29,15 @@ comp.corr <-
       Resultats$txt_references<-ref1(packages)
       return(Resultats)
     } else{
-      type<- dlgList(c(txt_apparied_correlations, txt_independant_correlations), preselect=FALSE, multiple = TRUE, title=txt_compare_two_correlations)$res
+      type<- dlgList(c(txt_apparied_correlations, txt_independant_correlations), preselect=FALSE, multiple = FALSE, title=txt_compare_two_correlations)$res
       if(length(type)==0) return(choix.corr())
 
-
-
       if(type==txt_independant_correlations) {
-        #Form <- list(
-        #  txt_XY_NUM_correlation = 0,
-        #  txt_N_of_XY_NUM_corr   = 100,
-        #  txt_XZ_NUM_correlation = 0,
-        #  txt_N_of_XZ_NUM_corr   = 100)
-	name <- c(txt_XY_correlation, txt_N_of_XY_corr, txt_YZ_correlation, txt_N_of_XZ_corr)
+	name <- c(txt_XY_correlation, txt_N_of_XY_corr, txt_XZ_correlation, txt_N_of_XZ_corr)
 	vals <- c(0, 100, 0, 100)
 	Form <- setNames(as.list(vals), name)
 
       }else{
-        #Form <- list(
-        #  txt_XY_NUM_correlation = 0,
-        #  txt_XZ_NUM_correlation = 0,
-        #  txt_YZ_NUM_correlation = 0,
-        #  txt_sample_size_NUM = 100)
 	name <- c(txt_XY_correlation, txt_XZ_correlation, txt_YZ_correlation, txt_sample_size)
 	vals <- c(0, 0, 0, 100)
 	Form <- setNames(as.list(vals), name)
@@ -65,15 +53,11 @@ comp.corr <-
       xy<-value[[txt_XY_correlation]]
       xz<-value[[txt_XZ_correlation]]
       yz<-value[[txt_YZ_correlation]]
-      #xy<-value$txt_XY_correlation
-      #xz<-value$txt_XZ_correlation
-      #yz<-value$txt_YZ_correlation
-      #if(type==  txt_apparied_correlations){n<-value$txt_sample_size} else {
-      if(type==  txt_apparied_correlations){n<-value[[txt_sample_size]]} else {
-        #n<-value$txt_N_of_XY_corr
-        #n2<-value$txt_N_of_XZ_corr
-        n<-value[[txt_N_of_XY_corr]]
-        n2<-value[[txt_N_of_XZ_corr]]
+      if(type==txt_apparied_correlations) {
+	      n<-value[[txt_sample_size]]
+      } else {
+              n<-value[[txt_N_of_XY_corr]]
+              n2<-value[[txt_N_of_XZ_corr]]
       }
       comp.corr(xy=xy, xz=xz, yz=yz, n=n, n2=n2,twotailed=twotailed)->Resultats
       if(html) html<-FALSE

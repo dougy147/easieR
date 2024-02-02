@@ -35,9 +35,15 @@ Testing same analysis on same dataset gave exact similar results for:
 
 - descriptive statistics
 - chi squared (adjustement, independance, McNemar)
-- correlations (detailed analysis,
+- correlations (detailed analysis, matrix correlation (except partial without outliers), two correlations)
 
-Not tested : everything else
+
+Not working with:
+- t.tests
+
+Not tested :
+- correlations > matrix partial correlations removing outliers : just loading the scripts in current and official branch give "unused argument (X = c(X, Y, Z))" in VI.multiples
+- correlations > other correlations
 
 ## easieR bugs?
 

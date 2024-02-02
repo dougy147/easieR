@@ -2,11 +2,11 @@ if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())) {
 	print("French lang detected")
 	source("./R/i18n/lang_fr_FR.R")
 } else {
-	print("English lang (default)")
-	source("./R/i18n/lang_en_EN.R")
-	#print("(dummy) English lang (default)")
-	#source("./R/i18n/lang_fr_FR.R")
-	#print("[loaded french for testing purpose]")
+	#print("English lang (default)")
+	#source("./R/i18n/lang_en_EN.R")
+	print("(dummy) English lang (default)")
+	source("./R/i18n/lang_fr_FR.R")
+	print("[loaded french for testing purpose]")
 }
 
 easieR <-

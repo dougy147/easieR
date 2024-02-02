@@ -21,7 +21,8 @@ corr.matrice <-
       Resultats<-list()
       if(!is.null(X) & !is.null(data) & (is.null(Y) | is.null(Z))) {dial<-F
       if(is.null(Z)) choix<-txt_correlations else choix<-txt_partial_and_semi_correlations
-      if(!is.null(Y)) carre<-"rectangulaire" else carre<-txt_square
+      #if(!is.null(Y)) carre<-"rectangulaire" else carre<-txt_square
+      if(!is.null(Y)) carre<-txt_rectangular else carre<-txt_square
       }  else {dial<-T
       choix<-NULL}
 
@@ -39,7 +40,7 @@ corr.matrice <-
       if(choix==txt_correlations & dial==T){
         writeLines("Une matrice carree est une matrice avec toutes les Correlations 2 a 2.
                    Une matrice rectangulaire est une matrice dans laquelle un premier ensemble de variables est mis en correlations avec un second jeu de variables")
-        carre<-dlgList(c(txt_square, "rectangulaire"), multiple = FALSE, title=txt_matrix_type)$res
+        carre<-dlgList(c(txt_square, txt_rectangular), multiple = FALSE, title=txt_matrix_type)$res
         if(length(carre)==0){Resultats<-corr.matrice.in()
         return(Resultats)}
       } else carre<-txt_square
@@ -54,7 +55,7 @@ corr.matrice <-
         return(Resultats)}
       data<-X$data
       X1<-X$X
-      if(carre=="rectangulaire"){
+      if(carre==txt_rectangular){
         msg4<-ask_second_variables_set
         Y<-.var.type(X=Y, info=info, data=data, type="numeric", check.prod=F, message=msg4,  multiple=T, title=txt_second_variables_set, out=X1)
         if(is.null(Y)) {
@@ -329,6 +330,11 @@ corr.matrice <-
     n.boot<-corr.options$n.boot
 
     if(outlier==txt_without_outliers){
+	    # When matrix correlations > partial > without outliers  => missing Y value causes crash (VI.multiples no Y argumlent)
+	    #print(corr.options)
+	    #print(X)
+	    #print(Y) # <- missing
+	    #print(Z)
       inf<-VI.multiples(data, X=c(X,Y,Z))
       Resultats$txt_labeled_outliers<-inf$txt_labeled_outliers
       data<-inf$data
