@@ -72,9 +72,9 @@ ez.anova<-function(data=NULL, DV=NULL, between=NULL, within=NULL,id=NULL, cov=NU
     if(any(outlier %in% c( txt_without_outliers,  txt_without_outliers,"removed" ))){
       
       #if(!is.null(influentes$txt_outliers[,id])){
-        #setdiff(data[,as.character(id)],influentes$txt_outliers[,as.character(id)])->diffs
-      if(!is.null(influentes$'outliers'[,id])){
-        setdiff(data[,as.character(id)],influentes$'outliers'[,as.character(id)])->diffs
+      #  setdiff(data[,as.character(id)],influentes$txt_outliers[,as.character(id)])->diffs
+      if(influentes$txt_outliers_synthesis$Synthese[1]!=0){
+        setdiff(data[,as.character(id)],influentes$txt_outliers[,as.character(id)])->diffs
         data[which(data[,id] %in% diffs), ]->nettoyees
         factor(nettoyees[,id])->nettoyees[,id]
         nett<-.ez.anova.out(data=nettoyees, DV=DV, between=between, within=within,id=id, cov=cov,  

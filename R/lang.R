@@ -1,6 +1,6 @@
 load_language <- function(lang='auto') {
   if (lang=='auto') {
-    if(grep('=fr_',Sys.getlocale())) {
+    if(grepl('=fr_',Sys.getlocale()) | grepl('French',Sys.getlocale())) {
 	    load_fr_FR()
             print('[INFO] Version française chargée.')
     } else {

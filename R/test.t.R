@@ -754,17 +754,21 @@ test.t <-
 
       if(any(outlier==txt_identifying_outliers)|any(outlier==txt_without_outliers)){
         if(choix==txt_comparison_to_norm) {
-          if(class(data1)!="data.frame"){data1<-data.frame(data1)
-                                       names(data1)[1]<-X1}
+          if(class(data1)!="data.frame"){
+		  data1<-data.frame(data1)
+                  names(data1)[1]<-X1
+	  }
           data1$residu<-data1[,X1]
-                                             }else data1$residu<-unlist(tapply(data1[,X1], data1[,Y], scale, center=T, scale=F))
+	} else {
+		data1$residu<-unlist(tapply(data1[,X1], data1[,Y], scale, center=T, scale=F))
+	}
         critere<-ifelse(is.null(z), "Grubbs", "z")
         valeurs.influentes(X='residu', critere=critere,z=z, data=data1)->influentes
       }
       if(any(outlier== txt_identifying_outliers)){influentes->R1$txt_outliers_values}
       if(any(outlier== txt_without_outliers)) {
-        if(length(influentes$txt_outliers)!=0 | all(outlier!=txt_complete_dataset)){
-
+        #if(length(influentes$txt_outliers)!=0 | all(outlier!=txt_complete_dataset)){
+        if(influentes$txt_outliers_synthesis$Synthese[1]!=0 | all(outlier!=txt_complete_dataset)){
           if(choix==txt_two_paired_samples){
             setdiff(data$IDeasy,influentes$txt_outliers$IDeasy)->diffs
             data[which(data$IDeasy%in%diffs), ]->nettoyees

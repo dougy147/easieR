@@ -950,7 +950,7 @@ load_fr_FR <- function() {
   txt_factor <<- "facteur."
   txt_friedman_anova <<- "Anova de Friedman"
   txt_import_results <<- "importer des resultats"
-  txt_interface_objects_in_memory <<- "Interface - objects in memory, clean memory, working directory"
+  txt_interface_objects_in_memory <<- "Interface - objets en memoire, nettoyer la memoire, repertoire de travail, langue"
   txt_intraclass_correlation <<- "Correlation intra-classe"
   txt_kruskal_wallis_pairwise <<- "Test de Kruskal-Wallis - Comparaison deux a deux"
   txt_kruskal_wallis_test <<- "Test de Kruskal-Wallis"
