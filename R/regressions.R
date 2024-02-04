@@ -17,8 +17,7 @@ regressions <-
 
 
       if(dial && is.null(modele)){
-        if(info) writeLines("Veuillez choisir le(s) type(s) de relations entre les variables. Les effets additifs prennent la forme de
-                            y=X1+X2 tandis que les effets d'interaction prennent la forme de Y=X1+X2+X1:X2")
+        if(info) writeLines(ask_chose_relation_between_vars_regressions_log)
         dlgList(c(txt_additive_effects, txt_interaction_effects, txt_specify_model), preselect=txt_regressions, multiple = TRUE, title=ask_which_regression_type)$res->link
         if(length(link)==0) return(NULL) } else link<-"none"
 
@@ -86,7 +85,7 @@ regressions <-
 
 
       model.test<-try(model.matrix(modele, data), silent=T)
-      if(any(class(model.test)=="try-error")) {
+      if(any(class(model.test)=='try-error')) {
         msgBox(desc_incorrect_model)
         return(regressions.in())
       }
@@ -236,7 +235,7 @@ regressions <-
 
         if(any(param=="Bayes")|any(param==txt_bayesian_factors)){
           BF.out<-try(regressionBF(modele, data=dtrgeasieR,progress=F, rscaleCont=rscale), silent=T)
-          if(class(BF.out)!="try-error") {
+          if(class(BF.out)!='try-error') {
             try(plot(BF.out) , silent=T)
             BF.out<-extractBF(BF.out)
             BF.out<-head(BF.out[order(BF.out[,1], decreasing=T), ])
@@ -342,7 +341,7 @@ regressions <-
         table->Resultats$txt_beta_table
         if(length(pred)>1){
           ols.corr<-try(ols_correlations(lm.r1), silent=T)
-          if(any(class(ols.corr)!="try-error")){
+          if(any(class(ols.corr)!='try-error')){
           Resultats$txt_variables_contribution_to_model<-ols.corr
           Resultats$txt_added_variables_graph <-ols_plot_added_variable(lm.r1)}
         }
@@ -404,10 +403,10 @@ regressions <-
     .e <- environment()
     c('MASS','BayesFactor','boot','car','ggplot2','gsl', 'MBESS','olsrr','nortest','psych','svDialogs')->packages
     try(lapply(packages, library, character.only=T), silent=T)->test2
-    if(class(test2)== "try-error") return(ez.install())
+    if(class(test2)== 'try-error') return(ez.install())
     Resultats<-list()
     try( windows(record=T), silent=T)->win
-    if(any(class(win)=="try-error")) quartz()
+    if(any(class(win)=='try-error')) quartz()
     if(class(data)=="data.frame") deparse(substitute(data))->data
     reg.in.output<-regressions.in(data=data, modele=modele, Y=Y, X_a=X_a, X_i=X_i, outlier=outlier, inf=inf,
                                   CV=CV, select.m=select.m, method=method, step=step, group=group, criteria=criteria , scale=scale, info=info,
@@ -597,12 +596,7 @@ regressions <-
   }
   Resultats$scale<-scale
   if(dial || !is.logical(inf) || !is.logical(CV)) {
-    writeLines("Voulez-vous preciser d'autres options ? Vous pouvez en selectionner plusieurs.
-               Les methodes de selection permettent de selectionner le meilleur modele sur la base de criteres statistiques.
-               Les modeles hierarchiques permettent de comparer plusieurs modeles.
-               Les validations croisees permettent de verifier si un modele n'est pas dependant des donnees. Cette option est a utiliser notamment
-               avec les methodes de selection. L'analyse par groupe permet de realiser la meme regression pour des sous-groupes.
-               Les mesures d'influences sont les autres mesures habituellement utilisees pour identifier les valeurs influentes.")
+    writeLines(ask_specify_other_options_regressions)
     autres.options<-c(txt_cross_validation,txt_influence_method,  txt_none)
     if(dim(model.matrix(modele, data))[2]>2) autres.options<-c(txt_selection_methods, txt_hierarchical_models, autres.options)
     if(length(step2)<length(data))  autres.options<-c(txt_groups_analysis,autres.options)

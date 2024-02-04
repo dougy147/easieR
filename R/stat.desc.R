@@ -23,7 +23,7 @@ stat.desc <-
       X1$X->x
       setdiff(names(data), x)->diff
       if(length(diff)==0 & !is.null(groupes)) {
-        msgBox("Vous ne pouvez pas avoir de variable *groupes* etant donne que toutes les variables doivent etre decrites")
+        msgBox(desc_cannot_group_variables_because_not_described)
         groupes<-NULL
       }
 
@@ -58,7 +58,7 @@ stat.desc <-
         if(options==txt_yes) {opts2<-NA
         while(any(is.na(opts2))){
           #dlgForm(list(txt_troncature_num=0.1, "Type de skew et kurtosis, doit se situer entre 1 et 3:NUM"=3),  ask_troncature_threshold)$res->opts2
-	  name <- c(txt_troncature_num,"Type de skew et kurtosis, doit se situer entre 1 et 3:TXT")
+	  name <- c(txt_troncature_num,desc_skew_and_kurtosis_between_1_and_3)
 	  vals <- c(0.1, 3)
 	  Form <- setNames(as.list(vals), name)
           dlgForm(Form,  ask_troncature_threshold)$res->opts2
@@ -82,12 +82,12 @@ stat.desc <-
 
 
     options (warn=-1)
-    c( "ggplot2", "psych", "svDialogs")->packages
+    c( 'ggplot2', 'psych', 'svDialogs')->packages
     lapply(packages, require, character.only=T)
     list()->Resultats
     .e <- environment()
     try( windows(record=T), silent=T)->win
-    if(class(win)=="try-error") quartz()
+    if(class(win)=='try-error') quartz()
     if(!is.null(data) & class(data)!="character") deparse(substitute(data))->data
 
     stat.desc.in(x=X, groupes=groupes, data=data, tr=tr, type=type,save=save)->data.in

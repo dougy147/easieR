@@ -1,12 +1,12 @@
 if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())) {
-	print("French lang detected")
-	source("./R/i18n/lang_fr_FR.R")
+       print("French lang detected")
+       source("./R/i18n/lang_fr_FR.R")
 } else {
-	print("English lang (default)")
-	source("./R/i18n/lang_en_EN.R")
-	#print("(dummy) English lang (default)")
-	#source("./R/i18n/lang_fr_FR.R")
-	#print("[loaded french for testing purpose]")
+       print("English lang (default)")
+       source("./R/i18n/lang_en_EN.R")
+       #print("(dummy) English lang (default)")
+       #source("./R/i18n/lang_fr_FR.R")
+       #print("[loaded french for testing purpose]")
 }
 
 easieR <-
@@ -15,7 +15,7 @@ easieR <-
     options (warn=1)
     options(scipen=999)
     test<-try(library(svDialogs), silent=T)
-    if(class(test)== "try-error") return(ez.install())
+    if(class(test)== 'try-error') return(ez.install())
 
 
     library(rmarkdown)
@@ -93,12 +93,12 @@ easieR.msg<-function(msg="1"){
 VI.multiples<-function(data, X){
   # data =data.frame
   # X = variable names to include in the analysis
-  require("pych")
+  require('pych')
   Resultats<-list()
   data$ideasy<- 1:NROW(data)
   nvar<-length(X)
   try(psych::outlier(data[,X], bad=T, na.rm=T,plot=T),silent=T)->essai
-  if(class(essai)=="try-error"){
+  if(class(essai)=='try-error'){
     msgBox(desc_singular_matrix_mahalanobis_on_max_info)
     data2<-data
     rankifremoved <- sapply(1:ncol(data2), function (x) qr(data2[,-x])$rank)
@@ -115,7 +115,7 @@ VI.multiples<-function(data, X){
       }
     }
     try(psych::outlier(data2[,X]), silent=T)->essai
-    if(class(essai)=="try-error") {
+    if(class(essai)=='try-error') {
       corr.test(data2[,X])$r->matrice
       if(any(abs(matrice)==1)) {
         msgBox(desc_perfectly_correlated_variables_in_matrix_trying_to_solve)
@@ -123,7 +123,7 @@ VI.multiples<-function(data, X){
         un<-un[-which(un[,1]==un[,2]),]
         data2[,-un[,2]]->data2
         try(psych::outlier(data2), silent=T)->essai
-        if(class(essai)=="try-error") {
+        if(class(essai)=='try-error') {
           writeLines(desc_cannot_compute_mahalanobis)
           0->data$D.Mahalanobis  }
       }else{essai-> data$D.Mahalanobis}
@@ -312,7 +312,7 @@ VI.multiples<-function(data, X){
   }
   if(!is.null(type) && type=="integer"){
     if((any(data[,X]%%1==0) %in% c(FALSE, NA)) || min(data[,X])<0) {
-      okCancelBox("la variable doit etre un entier *integer* positif")
+      okCancelBox(desc_variable_must_be_positive_int)
       X<-NULL
       .var.type(X=NULL, info=info, data=data, type=type,message=message, multiple=multiple, title=title, out=out)->Resultats
       return(Resultats)
@@ -402,7 +402,7 @@ VI.multiples<-function(data, X){
   if(!is.null(rscale)){
     if(dial & any(choix==txt_bayesian_factors)|| (is.numeric(rscale) & (rscale<0.1 | rscale>2)) || (!is.numeric(rscale) & rscale%in% c("moyen", "large", "ultralarge")==F)) {
       if(info) writeLines(ask_cauchy_apriori_distribution)
-      rscale<-dlgList(c("moyen", "large", "ultralarge"), preselect="moyen", multiple = F, title="Quelle distribution voulez-vous  ?")$res
+      rscale<-dlgList(c("moyen", "large", "ultralarge"), preselect="moyen", multiple = F, title=ask_distribution_type)$res
       if(length(rscale)==0) {
         .ez.options(options=options, n.boot=NULL,param=param, non.param=non.param, robust=robust,
                     Bayes=Bayes, msg.options1=msg.options1, msg.options2=msg.options2, info=T, dial=T,
@@ -422,10 +422,7 @@ VI.multiples<-function(data, X){
     if(dial || is.null(outlier)||
        (dial==F & any(outlier %in%c(txt_complete_dataset, txt_identifying_outliers,txt_without_outliers,
                                    "complete", "id", "removed"))==F)) {
-      if(info==TRUE) writeLines("les donnees completes representent l'analyse classique sur toutes les donnees utilisables, l'identification des valeurs influentes
-                                permet d'identifier les observations qui sont considerees statistiquement comme influencant les resultats.
-                                les analyses sur les donnees sans les valeurs influentes realise l'analyse apres suppression des valeurs influentes.
-                                Cette option stocke dans la memoire de R une nouvelle base de donnees sans valeur influente dans un objet portant le nom *nettoyees*")
+      if(info==TRUE) writeLines(desc_complete_dataset_vs_identification_outliers_vs_without_outliers)
       Resultats$desires<- dlgList(c(txt_complete_dataset, txt_identifying_outliers,txt_without_outliers),
                                   preselect=c(txt_complete_dataset,txt_identifying_outliers, txt_without_outliers),
                                   multiple = TRUE, title=ask_which_analysis)$res
@@ -451,7 +448,7 @@ VI.multiples<-function(data, X){
 .add.history<-function(data, command, nom){
   require(dplyr)
   try(get("ez.history", envir=.GlobalEnv),silent=T)->ez.history
-  if(class(ez.history)=="try-error") {ez.history<-list()
+  if(class(ez.history)=='try-error') {ez.history<-list()
   ez.history$Analyse[[1]]<-data
   names(ez.history)[length(ez.history)]<-paste(txt_analysis_on,nom)
   names(ez.history[[length(ez.history)]])[1]<-nom
@@ -479,7 +476,7 @@ VI.multiples<-function(data, X){
 .add.result<-function(Resultats, name){
 
   try(get("ez.results", envir=.GlobalEnv),silent=T)->ez.results
-  if(class(ez.results)=="try-error") {ez.results<-list()
+  if(class(ez.results)=='try-error') {ez.results<-list()
   ez.results[[1]]<-Resultats
   }else{
     ez.results[[length(ez.results)+1]]<-Resultats
@@ -494,7 +491,7 @@ VI.multiples<-function(data, X){
   # data : dataframe in which data are stored
   # X : character. Name or list of the variables for the numerical values.Multinormality is prefered if X>1
   # Y : character. Name or list of the variabes which are used as groups.
-  packages<-c("outliers", "nortest","psych","ggplot2")
+  packages<-c('outliers', 'nortest','psych','ggplot2')
   try(lapply(packages, library, character.only=T), silent=T)->test2
   if(length(X)==1){
     if(is.null(Y)){
@@ -509,7 +506,7 @@ VI.multiples<-function(data, X){
       shapiro.test(data[,"res"])->Shapiro_Wilk # realise le Shapiro-Wilk
       lillie.test(data[,"res"])->Lilliefors  # realise le Lilliefors
       round(data.frame(Shapiro_Wilk$statistic,Shapiro_Wilk$p.value, Lilliefors$statistic, Lilliefors$p.value),4)->normalite
-      names(normalite)<-c(txt_shapiro_wilk, "valeur.p SW", txt_lilliefors_d, "valeur.p Llfrs")
+      names(normalite)<-c(txt_shapiro_wilk, "valeur.p SW", txt_lilliefors_d, "valeur.p Llfrs") # TODO translation
       dimnames(normalite)[1]<-" "
 #      format(normalite, width = max(sapply(names(normalite), nchar)), justify = "centre")->normalite
       n2$txt_normality_tests<-normalite}
@@ -537,7 +534,7 @@ VI.multiples<-function(data, X){
                  "kurtosis"=mardia.results$kurtosis,"p.kurtosis"=mardia.results$p.kurt )->n2
     } else {
       msgBox(desc_matrix_is_singular_mardia_cannot_be_performed)
-       n2<-data.frame(txt_shapiro_wilk=NULL, "valeur.p SW"=NULL, txt_lilliefors_d=NULL, "valeur.p Llfrs"=NULL)
+       n2<-data.frame(txt_shapiro_wilk=NULL, "valeur.p SW"=NULL, txt_lilliefors_d=NULL, "valeur.p Llfrs"=NULL) # TODO translation
       for(i in 1:length(X)){
         X[i]->Z
         .normalite(data=data, X=Z,Y=Y)->nor1
@@ -570,14 +567,15 @@ VI.multiples<-function(data, X){
     if(is.null(groupes)) NULL->groupes2 else data.frame(data[,groupes])->groupes2
     try(  psych::describeBy(data[,X], group=groupes2,mat=(!is.null(groupes)),type=type,digits=4, check=FALSE,skew = TRUE,
                             ranges = TRUE,trim=tr, fast=FALSE), silent=T)->psych.desc
-    if(any(class(psych.desc)=="try-error")) {
+    if(any(class(psych.desc)=='try-error')) {
       psych::describeBy(data[,X], group=groupes2,mat=F,type=type,digits=15, check=FALSE,skew = TRUE,
                         ranges = TRUE,trim=tr)->psych.desc
       expand.grid(sapply(groupes2, levels))->modalites
       for(i in 1:length(modalites[,1])) {
         if(is.null(psych.desc[[i]])) paste(desc_no_obs_for_combination, paste(unlist(modalites[i,]), collapse=" & "))->Resultats[[i]] else   psych.desc[[i]]->Resultats[[i]]
         paste(unlist(modalites[i,]), collapse=" & ")->names(Resultats)[i]}
-    } else psych.desc-> Resultats$'Variables numeriques'
+    #} else psych.desc-> Resultats$'Variables numeriques' # TODO translation ?
+    } else psych.desc-> Resultats$txt_numeric_variables # TODO translation ?
 
 
 
@@ -631,7 +629,7 @@ VI.multiples<-function(data, X){
   }
   if(!is.null(categ)) {
     for(i in 1:length(categ)) {
-      Resultats$'Variables categorielles'[[categ[i]]] <-ftable(data[, c(categ[i], groupes)])
+      Resultats$'Variables categorielles'[[categ[i]]] <-ftable(data[, c(categ[i], groupes)]) # TODO translation?
     }
   }
 
@@ -642,8 +640,8 @@ VI.multiples<-function(data, X){
 
 ref1 <-
   function(packages){
-    require("bibtex")
-    c("base", packages, "bibtex")->packages
+    require('bibtex')
+    c('base', packages, 'bibtex')->packages
      if(Sys.info()[[1]]=="Windows"){
     file.nametxt<-paste0(tempdir(), "\\references.bib")
       } else {
@@ -660,15 +658,16 @@ ref1 <-
 
 .onAttach <- function(libname, pkgname) {
   textVersion =
-         paste("Pour citer easieR dans vos publication / to cite easieR in you publications use :\n  Stefaniak, N. (2020). ",
+         paste(desc_how_to_cite_easier,
                desc_easier_metapackage,
                sep = "")
 
-  packageStartupMessage("##############\n Welcome in easieR -  For more information, please visit :https://theeasierproject.wordpress.com/")
-  packageStartupMessage(" If you are using easieR for the first time, please use the function ez.install in order to ensure that easieR will work properly.\n Si vous utilisez easieR pour la 1e fois, veuillez utiliser la fonction ez.install pour vous assurer de bon fonctionnement de easieR.")
+  packageStartupMessage("##############")
+  packageStartupMessage(desc_welcome_in_easieR)
+  packageStartupMessage(desc_first_time_easier)
   packageStartupMessage(desc_special_characters_have_been_removed)
   packageStartupMessage(textVersion)
-  packageStartupMessage("Last update 06/05/2023")
+  packageStartupMessage("Last update 06/05/2023") # TODO
   packageStartupMessage("##############")
 
 }

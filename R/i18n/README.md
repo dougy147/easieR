@@ -15,9 +15,9 @@ Any number of dictionnaries can be created for different languages.
 To avoid collision with future or already existing variables' names in easieR scripts, placeholders must have unique name identifiers.  
 I chose to make them start with recognizable patterns, and at the moment, there are three types of placeholders :
 
-- Interactive : start with `ASK_`. They are asking the user to do something.
-- Informative : start with `DESC_`. They describe/indicate something (titles, windows names, how X works, etc.)
-- Uncategorized : start with `TXT_`. TODO.
+- Interactive : start with `ask_`. They are asking the user to do something.
+- Informative : start with `desc_`. They describe/indicate something (titles, windows names, how X works, etc.)
+- Uncategorized : start with `txt_`. TODO.
 
 Those categories are not well delimited, but it will be quite easy to modify them in the future.
 

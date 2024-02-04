@@ -1,45 +1,45 @@
 maths <-
   function(info=TRUE){
-    options (warn=-1) 
-    packages<-c("svDialogs")
+    options (warn=-1)
+    packages<-c('svDialogs')
     #faire l analyse par groupe # regler le probleme des noms
-    if(any(lapply(packages, require, character.only=T))==FALSE)  {install.packages(packages) 
+    if(any(lapply(packages, require, character.only=T))==FALSE)  {install.packages(packages)
       require(packages)}
     list()->Resultats
-    
+
     choix.data(nom=TRUE)->data1
     if(length(data1)==0) {return(preprocess())}
     data1[[1]]->nom1
     data1[[2]]->data
-    if(info=="TRUE") writeLines("Veuillez  choisir l'operation mathematique que vous desirez realiser ")
-    dlgList(c(txt_additions,txt_multiplication, "division", txt_substraction,txt_col_mean, txt_exponant_or_root, 
+    if(info=="TRUE") writeLines(ask_which_mathematical_operation)
+    dlgList(c(txt_additions,txt_multiplication, txt_division, txt_substraction,txt_col_mean, txt_exponant_or_root,
               txt_logarithm, txt_exponential,txt_absolute_value,txt_complex_model), preselect=txt_additions, multiple = FALSE, title=ask_which_operation)$res->choix
     if(length(choix)==0) return(preprocess())
-    
+
     variable<-function(multiple=TRUE){
       X<-dlgList(c(names(data), txt_cancel), multiple = multiple, title=txt_variables)$res
       if(any(sapply(data[,X], class)=="factor")) {writeLines(desc_at_least_one_var_is_not_num)
         writeLines(str(data))
         return(maths())}
       return(X)}
-    
+
     valeur<-function(info=TRUE, out=NULL){
       # info : logique pour determiner les informations relatives aux parametres doivent s'afficher dans la console
       # out : valeur renvoyee si valeur non numerique ou annulation
       if(info) writeLines(ask_value_for_operation)
       msg<-"no"
       while(msg=="no" ){
-        valeur1 <- dlgInput(ask_which_value_for_operation, out)$res 
+        valeur1 <- dlgInput(ask_which_value_for_operation, out)$res
         if(length(valeur1)!=0){
           strsplit(valeur1, ":")->valeur1
           if(class(valeur1)=="list") {  tail(valeur1[[1]],n=1)->valeur1}
           if(grepl("/",valeur1)) apply(sapply(strsplit(valeur1, split = "/"), as.numeric), 2, function(x) x[1] / x[2])->valeur1
           if(valeur1=="e") valeur1<-exp(1)
           as.numeric(valeur1)->valeur1
-          msg<-"yes"} else return(out) 
+          msg<-"yes"} else return(out)
         if(is.na(valeur1) ) { dlgMessage(ask_cancel_entered_value_not_num, "yesno")$res->msg
           if(msg=="yes") return(out)}
-        
+
       }
       return(valeur1)
     }
@@ -53,17 +53,15 @@ maths <-
       writeLines(desc_unauthorized_char_replaced)
       gsub("[^[:alnum:]]", ".", variable)->variable
 }
-      
-      
+
+
       names(data)<-c(names(data)[1:(length(data)-1)], variable)
       assign(nom1, data, envir=.GlobalEnv)
       Resultats<-paste(desc_the_variable_upper, variable, desc_has_been_added_to, nom1)
       return(Resultats)}
-    
+
     if(choix==txt_additions) {
-      if(info=="TRUE") writeLines("Si vous selectionnez les deux options en meme temps, la valeur specifiee sera ajoutee a l'ensemble des colonnes choisies 
-                                  et ensuite les colonnes choisies seront additionnees. Pour additionner une valeur specifique au total,
-                                  veuillez choisir l'option addition de colonnes uniquement.")
+      if(info=="TRUE") writeLines(desc_if_you_select_both_operations_value_will_be_added_to_chose_cols)
       dlgList(c(txt_add_of_cols,txt_add_of_specific_value), preselect=txt_add_of_cols, multiple = TRUE, title=ask_which_operation)$res->choix2
       if(length(choix2)==0) return(maths())
       if(any(choix2== txt_add_of_specific_value)){
@@ -76,7 +74,7 @@ maths <-
         assign(nom1, data, envir=.GlobalEnv)
         paste(valeur1, desc_has_been_added_to_variable, X)->Resultats
       }
-      
+
       if(any(choix2== txt_add_of_cols)) {
         if(info=="TRUE") writeLines(ask_variables_to_add)
         variable()->X
@@ -87,7 +85,7 @@ maths <-
         while(length(X1)!=0){paste(X2,"+",X1[1])->X2
           X1[-1]->X1}
         rowSums(data[,X])->data$nouvelle_variable
-        if(info=="TRUE") writeLines(desc_you_can_still_add)    
+        if(info=="TRUE") writeLines(desc_you_can_still_add)
         valeur(info=info, out=0)->valeur1
         if(valeur1!=0) {data$nouvelle_variable+valeur1->data$nouvelle_variable
           paste(X2, "+", valeur1)->X2}
@@ -96,11 +94,9 @@ maths <-
         nom(data=data, info=info,nom1=nom1)->Resultats
       }
     }
-    
+
     if(choix==txt_multiplication){
-      if(info=="TRUE") writeLines("Si vous selectionnez les deux options en meme temps, la valeur specifiee sera multipliee a l'ensemble des colonnes choisies 
-                                  et ensuite les colonnes choisies seront multipliees entre elles. Pour multiplier une valeur specifique au total,
-                                  veuillez choisir l'option multipication de colonnes uniquement.")
+      if(info=="TRUE") writeLines(desc_if_you_select_both_operations_value_will_be_multiplied_to_chose_cols)
       dlgList(c(txt_cols_multiplication,txt_specific_val_multiplication), preselect=txt_cols_multiplication, multiple = TRUE, title=ask_which_operation)$res->choix2
       if(length(choix2)==0) return(maths())
       if(any(choix2== txt_specific_val_multiplication)){
@@ -114,11 +110,11 @@ maths <-
         assign(nom1, data, envir=.GlobalEnv)
         paste(valeur1, desc_has_multiplied_variables, X)->Resultats
       }
-      
+
       if(any(choix2== txt_cols_multiplication)) {
         variable()->X
         if(length(X)==0|| any(X==txt_cancel)) return(maths())
-        
+
         X->X1
         X2<-X1[1]
         X1[-1]->X1
@@ -127,8 +123,8 @@ maths <-
         1*data[,X[1]]->nouvelle
         for(i in 1:(length(X)-1)) nouvelle*data[,X[i+1]]->nouvelle
         data.frame(data, nouvelle)->data
-        
-        if(info=="TRUE") writeLines(desc_you_can_still_multiply)    
+
+        if(info=="TRUE") writeLines(desc_you_can_still_multiply)
         valeur(info=info, out=1)->valeur1
         if(valeur1!=1) {data$nouvelle*valeur1->data$nouvelle
           paste(X2, "*", valeur1)->X2}
@@ -136,7 +132,7 @@ maths <-
         nom(data=data, info=info,nom1=nom1)->Resultats
       }
     }
-    if(choix=="division"){
+    if(choix==txt_division){
       if(info=="TRUE") writeLines(ask_numerator_variable_or_value)
       numer<-dlgList(c(txt_value, txt_variable), multiple = FALSE, title=txt_numerator)$res
       if(length(numer)==0) return(maths())
@@ -146,7 +142,7 @@ maths <-
         if(length(X)==0|| any(X==txt_cancel)) return(maths())
         data[,X]->X
       }
-      
+
       if(info=="TRUE") writeLines(ask_denominator_variable_or_value)
       denom<-dlgList(c(txt_value, txt_variable), multiple = FALSE, title=txt_denominator)$res
       if(length(denom)==0) return(maths())
@@ -160,10 +156,9 @@ maths <-
       X/Y->data$nouvelle_variable
       nom(data=data, info=info,nom1=nom1)->Resultats
     }
-    
+
     if(choix==txt_substraction) {
-      if(info=="TRUE") writeLines("Veuillez selectionner les valeurs situees a gauche du symbole *moins*. Si plusieurs variables sont selectionnees, 
-                                  les regles du calcul matriciel sont appliques.")
+      if(info=="TRUE") writeLines(ask_chose_values_on_left_of_minus_symbol)
       if(info=="TRUE") writeLines(ask_positive_val_variable_or_value)
       numer<-dlgList(c(txt_value, txt_variable), multiple = FALSE, title=txt_positive_values)$res
       if(length(numer)==0) return(maths())
@@ -174,21 +169,20 @@ maths <-
         data[,X]->X1
         data.frame(X1)->X1
       }
-      
-      if(info=="TRUE") writeLines("Les valeurs a droite du symbole *moins* sont-elles une/des variable(s) ou une valeur  ? ")
+
+      if(info=="TRUE") writeLines(ask_minus_left_hand_variables)
       denom<-dlgList(c(txt_value, txt_variable), multiple = FALSE, title=txt_negative_values)$res
       if(length(denom)==0) return(maths())
       if(denom==txt_value) valeur(info=info, out=0)->Y else{
-        if(info=="TRUE") writeLines("Veuillez selectionner la -les- variable(s) a droite du symbole *moins*.")
+        if(info=="TRUE") writeLines(ask_minus_right_hand_variables)
         Y<-NULL
         while(is.null(Y)){
           variable(multiple=TRUE)->Y
           if(length(Y)==0|| any(Y==txt_cancel)) return(maths())
           data[,Y]->Y1
-          data.frame(Y1)->Y1 
+          data.frame(Y1)->Y1
           if(length(X1)!=1 & length(Y1)!=1 & length(X1)!=length(Y1)) {
-            writeLines("Il ne doit y avoir qu'une colonne ou le nombre de colonnes a droite du symbole *moins* doit etre egal 
-                       au nombre de colonnes a gauche du symbole *moins*")
+            writeLines(desc_one_or_same_number_cols_on_both_sides_only)
             Y<-NULL} else Y<-Y
         }
         }
@@ -199,7 +193,7 @@ maths <-
       #nom(data=data, info=info,nom1=nom1)->Resultats
       Resultats<-desc_operation_succesful
       }
-    
+
     if(choix==txt_col_mean)  {
       if(info=="TRUE") writeLines(ask_variables_to_mean)
       X<-variable()
@@ -211,8 +205,7 @@ maths <-
       if(info=="TRUE") writeLines(ask_variables_to_exp)
       variable(multiple=TRUE)->X
       if(length(X)==0|| any(X==txt_cancel)) return(maths())
-      if(info=="TRUE") writeLines("Veuillez preciser la valeur de l'exposant. 
-                                  NOTE : Pour les racines, l'exposant est l'inverse la valeur. Par exemple, La racine carree vaut 1/2, la racine cubique 1/3... ")
+      if(info=="TRUE") writeLines(ask_specify_exponant_value)
       valeur(info=info)->Y
       if(class(Y)!="numeric") {writeLines(desc_entered_value_not_num)
         return(maths())}
@@ -220,7 +213,7 @@ maths <-
       names(data)[(length(data)-(length(X)-1)):length(data)]<-paste(X, txt_exponant, Y, sep=".")
       assign(nom1, data, envir=.GlobalEnv)
       paste(desc_the_variable_lower, X, desc_has_been_put_to_the_power_of, Y)->Resultats
-      
+
     }
     if(choix== txt_logarithm){
       if(info=="TRUE") writeLines(ask_variables_to_log)
@@ -256,20 +249,19 @@ maths <-
       paste(desc_abs_val_applied_to_var, X)->Resultats
     }
     if(choix== txt_complex_model){
-      writeLines("L'expression doit etre correcte. Vous pouvez utiliser directement le nom des variables
-                 les operateurs sont +,-,*,/,^,(,). Une expression correcte serait :")
+      writeLines(desc_expression_must_be_correct_example)
       print(paste(names(data)[1],"^2+5"), quote=FALSE)
       print(names(data))
-      valeur1 <- dlgInput(ask_model)$res 
+      valeur1 <- dlgInput(ask_model)$res
       if(length(valeur1)==0) return(maths())
       strsplit(valeur1, ":")->valeur1
       tail(valeur1[[1]],n=1)->valeur1
       try(eval(parse(text=valeur1), envir=data), silent=TRUE)->nouvelle
-      if(class(nouvelle)=="try-error") {writeLines(desc_model_contains_error)
+      if(class(nouvelle)=='try-error') {writeLines(desc_model_contains_error)
         return(maths())} else nouvelle->data$nouvelle
-      
+
       nom(data=data,info=info, nom1=nom1)->Resultats
-      
+
     }
     View(data)
     return(Resultats)

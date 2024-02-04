@@ -143,7 +143,7 @@ test.t <-
           if( length(unique(table(data[,Y])))!=1) {
             msgBox(desc_non_equal_independant_variable_modalities_occurrence)
             msg4<-ask_id_variable
-            ID<-.var.type(X=NULL, info=info, data=data, type=type, check.prod=F, message=msg4,  multiple=multiple, title="Variable *Identifiant*", out=c(X1,Y))
+            ID<-.var.type(X=NULL, info=info, data=data, type=type, check.prod=F, message=msg4,  multiple=multiple, title=txt_id_variable, out=c(X1,Y))
             if(is.null(ID)) {
               test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
                         formula=NULL,n.boot=NULL, rscale=NULL)->Resultats
@@ -178,8 +178,7 @@ test.t <-
         if(dial){
 
 
-          if(info==TRUE) writeLines("Une analyse bilaterale teste l'existence d'une difference. Le choix superieur teste si la moyenne est strictement superieure
-                                    \n Le choix inferieur teste l'existence d'une difference strictement inferieure")
+          if(info==TRUE) writeLines(desc_bilateral_superior_inferior_test_t)
           dlgList(c(txt_bilateral, txt_superior, txt_inferior), preselect=NULL, multiple = FALSE, title=txt_means_comparison)$res->alternative
           if(length(alternative)==0) {
             test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
@@ -193,10 +192,7 @@ test.t <-
 		  else { print('[ERROR] Unknown alternative (./test.t.R)') }
 	  }
 
-          if(info==TRUE) writeLines("Si vous souhaitez realiser l'analyse pour differents sous-echantillons en fonction d'un critere categoriel (i.e; realiser une analyse par groupe)
-                                    \n choisissez oui. Dans ce cas, l'analyse est realisee sur l'echantillon complet et sur les sous-echantillons.
-                                    \n Si vous desirez l'analyse pour l'echantillon complet uniquement, chosissez non.
-                                    \n l'analyse par groupe ne s'appliquent pas aux statistiques robustes.")
+          if(info==TRUE) writeLines(desc_corr_group_analysis_spec)
           dlgList(c(txt_yes, txt_no), preselect=txt_no, multiple = FALSE, title=ask_analysis_by_group)$res->par.groupe
           if(length(par.groupe)==0) {
             test.t.in(X=NULL, Y=NULL, data=NULL, choix=NULL, param=NULL, outlier=NULL, sauvegarde=NULL, info=T, group=NULL,alternative="two.sided",
@@ -380,7 +376,7 @@ test.t <-
 
       if(any(param==txt_robusts| any(param==txt_robusts_tests_with_bootstraps))){
         try( round(unlist(WRS::trimci(data[,X],tr=.2,alpha=.05, null.value=mu)),4), silent=T)->m.tr
-        if(any(m.tr!="try-error")){
+        if(any(m.tr!='try-error')){
           names(m.tr)<-c("lim.inf.IC","lim.sup.IC", "M.tronquee","test.t", "se","valeur.p","n")
           m.tr->Resultats$'Test sur la moyenne tronquee a 0.2'
           data[,X]->x
@@ -388,11 +384,11 @@ test.t <-
           try(WRS::mestci(x,alpha=.05,nboot=n.boot,bend=1.28,os=F),silent=T)->M.estimator
           try(WRS:: momci(x,alpha=.05,nboot=n.boot),silent=T)->MoM
           IC.robustes<-data.frame()
-          if(class(trimci)!="try-error") {IC.robustes<-rbind(IC.robustes,trimci)
+          if(class(trimci)!='try-error') {IC.robustes<-rbind(IC.robustes,trimci)
           dimnames(IC.robustes)[[1]][1]<-txt_bootstrap_t_method}
-          if(class(M.estimator)!="try-error") {IC.robustes<-rbind(IC.robustes,M.estimator$ci)
+          if(class(M.estimator)!='try-error') {IC.robustes<-rbind(IC.robustes,M.estimator$ci)
           dimnames(IC.robustes)[[1]][length(IC.robustes[,1])]<-"M-estimator"}
-          if(class(MoM)!="try-error") {IC.robustes<-rbind(IC.robustes,MoM$ci)
+          if(class(MoM)!='try-error') {IC.robustes<-rbind(IC.robustes,MoM$ci)
           dimnames(IC.robustes)[[1]][length(IC.robustes[,1])]<-"M-estimator modifie"}
           if(all(dim(IC.robustes)!=0)) names(IC.robustes )<-c("lim.inf.IC", "lim.sup.IC")
           Resultats$Robustes<-IC.robustes
@@ -517,7 +513,7 @@ test.t <-
 
       if(any(param==txt_robusts| any(param==txt_robusts_tests_with_bootstraps)) ){
         try(WRS::yuend(data[ which(data[ ,Y]==levels(data[ ,Y])[1]) ,X], data[ which(data[ ,Y]==levels(data[ ,Y])[2]) ,X], tr=.2),silent=T)->moy.tr
-        if(class(moy.tr)!="try-error"){
+        if(class(moy.tr)!='try-error'){
           round(unlist(moy.tr),3)->moy.tr
           names(moy.tr)<-c("IC Inf","IC Sup", "valeur.p", txt_mean1, txt_mean2, txt_difference,"se", "Stat", "n", "ddl")
           if(n.boot>99){
@@ -650,7 +646,7 @@ test.t <-
         data[which(data[,Y]==levels(data[,Y])[1]),]->g1 # on cree une base de Donnees avec le groupe 1 uniquement (sans valeur aberrantes)
         data[which(data[,Y]==levels(data[,Y])[2]),]->g2 # on cree une base de Donnees avec le groupe 2 uniquement (sans valeur aberrantes)
         try(WRS::yuen(g1[,X],g2[,X]), silent=T)->yuen.modele### fournit la probabilite associee a des moyennes tronquees.Par defaut, la troncature est de 0.20
-        if(class(yuen.modele)!="try-error"){
+        if(class(yuen.modele)!='try-error'){
           round(unlist(yuen.modele),4)->yuen.modele
           cbind(yuen.modele[1:2], yuen.modele[3:4])->yuen.desc
           dimnames(yuen.desc)[[1]]<-levels(data[,Y])
@@ -700,12 +696,12 @@ test.t <-
     # chargement des packages
     packages<-c('BayesFactor', 'svDialogs', 'outliers', 'nortest','psych', 'lsr','ggplot2', 'reshape2', 'car', 'plyr')
     try(lapply(packages, library, character.only=T), silent=T)->test2
-    if(class(test2)== "try-error") return(ez.install())
+    if(class(test2)== 'try-error') return(ez.install())
     try(library("WRS"),silent=T)
     .e <- environment()
     Resultats<-list()
     try( windows(record=T), silent=T)->win
-    if(class(win)=="try-error") quartz()
+    if(class(win)=='try-error') quartz()
     if(!is.null(data) & class(data)!="character") deparse(substitute(data))->data
     test.t.options<-test.t.in(X=X, Y=Y, data=data, choix=choix, param=param, outlier=outlier, sauvegarde=sauvegarde, info=info, group=group,alternative=alternative,
                               formula=formula,n.boot=n.boot, rscale=rscale, mu=mu)

@@ -8,7 +8,7 @@ valeurs.influentes <-
     if(class(data[,X])=="integer") as.numeric(data[,X])->data[,X]
     if(class(data[,X])!="numeric") return(desc_non_numeric_variable)
     if(critere=="z" && class(z)!="numeric") return(desc_z_must_be_a_number)
-    if(any(match(c("Grubbs","z"), critere))==FALSE) return("Les valeurs admises pour critere sont  z  et  Grubbs ")
+    if(any(match(c("Grubbs","z"), critere))==FALSE) return(desc_accepted_values_are_z_and_grubbs)
     length(data[,1])->i
     if(critere=="Grubbs"){
       grubbs.test(data[,X], type = 10, opposite = FALSE, two.sided = FALSE)->outliers # test de Grubbs permettant de savoir s il y a des valeurs aberrantes

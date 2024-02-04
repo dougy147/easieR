@@ -23,7 +23,7 @@ ez.cfa <-
       # modele : lavaan modele
       if(!is.null(modele)){
         semPlot.modele<-try(semPlotModel_lavaanModel(modele))
-        if(class(semPlot.modele)=="try-error"){
+        if(class(semPlot.modele)=='try-error'){
           msgBox(desc_model_seems_incorrect_could_not_be_created)
           return(NULL)
         }
@@ -88,16 +88,16 @@ ez.cfa <-
 
       if(dial){
         if(opt.list$mimic=="default"){
-          options2<-c(txt_exogenous_fixed_variables, "information [information=default]", "correction de continuite [zero.keep.margins=default]",
+          options2<-c(txt_exogenous_fixed_variables, txt_cfa_information_default, txt_cfa_continuity_correction_zero_keep_margins_default,
                       txt_likelihood_only_for_estimator)
         } else options2<-c()
-        options<-c("estimateur [estimator=ml])", "groupes [group=NULL]", "test [test=standard]", "erreur standard [se=standard]", "standardisation des variables observees [std.ov=T]",
+        options<-c(txt_cfa_estimator_ml_default, txt_cfa_groups_null_default, txt_cfa_test_standard_default, txt_cfa_standard_error_default, txt_cfa_observed_variabes_standardization_true_default,
                    txt_factors_ortho, txt_link_only_for_estimator,
                    txt_observed_variables_intercept, txt_latent_variables_intercept, txt_exogenous_fixed_variables,
-                   "Estimation des indicateurs des variables latentes [std.lv=FALSE]", options2)
+                   txt_cfa_latent_variables_indicators_estimates_true_default, options2)
 
         if(info) writeLines(ask_which_options_to_specify)
-        options<-dlgList(c(txt_keep_default_values, options), preselect=c("estimateur [estimator=ml])","test [test=standard]", "erreur standard [se=standard]"), multiple = TRUE, title=ask_which_options)$res
+        options<-dlgList(c(txt_keep_default_values, options), preselect=c(txt_cfa_estimator_ml_default,txt_cfa_test_standard_default, txt_cfa_standard_error_default), multiple = TRUE, title=ask_which_options)$res
         if(length(options)==0) return(NULL)
         if(options==txt_keep_default_values) return(list(mimic="default", fixed.x="default", missing="default",information="default", zero.keep.margins="default",zero.add=c(0.5,0),
                                                                  estimator="ml",group=NULL, test="standard",se="standard",std.ov=T, orthogonal=F, likelihood="default",
@@ -108,11 +108,10 @@ ez.cfa <-
 
 
 
-      if(any(options=="estimateur [estimator=ml])")|is.null(opt.list$estimator) || length(opt.list$estimator)!=1||
+      if(any(options==txt_cfa_estimator_ml_default)|is.null(opt.list$estimator) || length(opt.list$estimator)!=1||
          try(opt.list$estimator %in%c("ML","GLS", "WLS", "ULS", "DWLS", "MLM","MLMV","MLMVS","MLF", "MLR", "WLSM","WLSMV", "ULSM", "ULSMV" ),silent=T)!=T){
-        if(info){  writeLines("[WLS] correspond a [ADF]. Les estimateurs avec les extensions [M],[MV],[MVSF],[R]
-                              sont des versions robustes des estimateurs classiques [MV],[WLS], [DWLS], [ULS]")
-          abb<-data.frame(abb=c("ML","GLS", "WLS", "ULS", "DWLS"), nom=c(txt_max_likelihood,txt_less_square_generalized,txt_less_square_pondered,txt_less_square_not_pondered,"moindre carre  pondere diagonalement"))
+        if(info){  writeLines(desc_wls_corresponds_to_adf_plus_explaination_other_estimators)
+          abb<-data.frame(abb=c("ML","GLS", "WLS", "ULS", "DWLS"), nom=c(txt_max_likelihood,txt_less_square_generalized,txt_less_square_pondered,txt_less_square_not_pondered,txt_less_square_diagonally_pondered))
           print(abb)    }
         opt.list$estimator<-dlgList(c("ML","GLS", "WLS", "ULS", "DWLS", "MLM","MLMV","MLMVS","MLF", "MLR", "WLSM","WLSMV", "ULSM", "ULSMV" ), multiple = FALSE, title=ask_which_estimator)$res
         if(length(opt.list$estimator)==0) {Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
@@ -120,7 +119,7 @@ ez.cfa <-
       }
 
 
-      if(any(options=="test [test=standard]") || length(opt.list$test)!=1 || !opt.list$test%in% c("standard", "Satorra.Bentler", "Yuan.Bentler", "mean.var.adjusted",
+      if(any(options==txt_cfa_test_standard_default) || length(opt.list$test)!=1 || !opt.list$test%in% c("standard", "Satorra.Bentler", "Yuan.Bentler", "mean.var.adjusted",
                                                                                                   "scaled.shifted", "bootstrap","Bollen.Stine")){
         if(info) writeLines(ask_which_test)
         opt.list$test<-dlgList(c("standard", "Satorra.Bentler", "Yuan.Bentler", "mean.var.adjusted","scaled.shifted", "bootstrap","Bollen.Stine"), multiple = FALSE, title=ask_which_estimator)$res
@@ -152,14 +151,15 @@ ez.cfa <-
       if( any(is.na(data[,X])) & opt.list$estimator=="ml" & opt.list$mimic=="default") opt.list$missing<-"fiml" else opt.list$missing<-"default"
 
       if(opt.list$test%in%c("boot","bootstrap","Bollen.Stine")) se1<-c("standard","first.order", "robust", "bootstrap","none" ) else se1<-c("standard","first.order", "robust", "none" )
-      if(any(options=="erreur standard [se]") || is.null(opt.list$se) || !opt.list$se%in%se1)  {
+      #if(any(options=="erreur standard [se]") || is.null(opt.list$se) || !opt.list$se%in%se1)  { # problem here with original version? erreur standard [se] is not defined elsewhere
+      if(any(options==txt_cfa_standard_error_default) || is.null(opt.list$se) || !opt.list$se%in%se1)  {
         if(info) writeLines(ask_how_standard_error_must_be_estimated)
         opt.list$se<-dlgList(se1, multiple = FALSE, title=ask_standard_error)$res
         if(length(opt.list$se)==0) {Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
         return(Resultats)}
       }
 
-      if(any(options=="groupes [group=NULL]") || !is.null(opt.list$group)){
+      if(any(options==txt_cfa_groups_null_default) || !is.null(opt.list$group)){
         msg2<-ask_chose_defining_groups
         .var.type(X=opt.list$group, info=T, data=data, type="factor", message=msg2,multiple=T, title=ask_group_variable, out=X)->group
         if(is.null(group)){
@@ -184,7 +184,7 @@ ez.cfa <-
         }
       }
       ### zero.keep.margins
-      if(any(options=="correction de continuite [zero.keep.margins]") || is.null(opt.list$zero.keep.margins)||(!is.logical(opt.list$zero.keep.margins) & opt.list$zero.keep.margins!="default")){
+      if(any(options==txt_cfa_continuity_correction_zero_keep_margins_default) || is.null(opt.list$zero.keep.margins)||(!is.logical(opt.list$zero.keep.margins) & opt.list$zero.keep.margins!="default")){
         if(info) writeLines(ask_add_a_value_to_empty_cells)
         opt.list$zero.keep.margins<-dlgList(c(TRUE, FALSE,"default"), preselect="default", multiple = FALSE, title=ask_empty_cells)$res
         if(length(opt.list$zero.keep.margins)==0) {
@@ -210,7 +210,8 @@ ez.cfa <-
             msgBox(desc_value_must_be_between_zero_and_one)
             opt.list$zero.add<-NA} else{
               writeLines(ask_bigger_tables_value)
-              zero.add2<-dlgInput("tableau > 2x2 ?", 0)$res
+              #zero.add2<-dlgInput("tableau > 2x2 ?", 0)$res
+              zero.add2<-dlgInput(ask_2x2_table, 0)$res
               if(length(zero.add2)==0) {Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
               return(Resultats)}
               strsplit(zero.add2, ":")->zero.add2
@@ -242,7 +243,7 @@ ez.cfa <-
       }
 
 
-      if(any(options=="information [information=default]") ||is.null(opt.list$information) || try(opt.list$information%in%c("expected","observed", "default" ),silent=T)!=T ){
+      if(any(options==txt_cfa_information_default) ||is.null(opt.list$information) || try(opt.list$information%in%c("expected","observed", "default" ),silent=T)!=T ){
         if(info) writeLines(ask_which_information_matrix_for_standard_error_estimation)
         opt.list$information<-dlgList(c("expected","observed", "default" ), multiple=F, preselect=FALSE, title=ask_information_matrix)$res
         if(length(opt.list$information)==0) {Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
@@ -263,7 +264,7 @@ ez.cfa <-
         return(Resultats)}
       }
 
-      if(any(options=="standardisation des variables observees [std.ov=T]") ||length(opt.list$std.ov)!=1 || !is.logical(opt.list$std.ov) ){
+      if(any(options==txt_cfa_observed_variabes_standardization_true_default) ||length(opt.list$std.ov)!=1 || !is.logical(opt.list$std.ov) ){
         if(info) writeLines(ask_standardize_obs_variables_before)
         opt.list$std.ov<-dlgList(c(TRUE, FALSE ), multiple=F, preselect=FALSE, title=ask_standardization)$res
         if(length(opt.list$std.ov)==0) {Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
@@ -273,7 +274,7 @@ ez.cfa <-
       #####
       if(any(options==txt_observed_variables_intercept) ||length(opt.list$int.ov.free)!=1 || !is.logical(opt.list$int.ov.free) ){
         if(info) writeLines(ask_should_intercept_of_obs_variables_be_fixed_to_zero)
-        opt.list$int.ov.free<-dlgList(c(TRUE, FALSE ), multiple=F, preselect=FALSE, title="Intercept VO=0 ?")$res
+        opt.list$int.ov.free<-dlgList(c(TRUE, FALSE ), multiple=F, preselect=FALSE, title=ask_observed_variables_intercept_zero)$res
         if(length(opt.list$int.ov.free)==0) {Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
         return(Resultats)}
       }
@@ -281,14 +282,14 @@ ez.cfa <-
 
       if(any(options==txt_latent_variables_intercept) ||length(opt.list$int.lv.free)!=1 || !is.logical(opt.list$int.lv.free) ){
         if(info) writeLines(ask_should_intercept_of_latent_variable_be_fixed_to_zero)
-        opt.list$int.lv.free<-dlgList(c(TRUE, FALSE ), multiple=F, preselect=FALSE, title="Intercept VL=0 ?")$res
+        opt.list$int.lv.free<-dlgList(c(TRUE, FALSE ), multiple=F, preselect=FALSE, title=ask_latent_variables_intercept_zero)$res
         if(length(opt.list$int.lv.free)==0) {Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
         return(Resultats)}
       }
 
 
 
-      if(any(options=="Estimation des indicateurs des variables latentes [std.lv=FALSE]") ||length(opt.list$std.lv)!=1 || !is.logical(opt.list$std.lv) ){
+      if(any(options==txt_cfa_latent_variables_indicators_estimates_true_default) ||length(opt.list$std.lv)!=1 || !is.logical(opt.list$std.lv) ){
         if(info) writeLines(desc_if_true_latent_residuals_one)
         opt.list$std.lv<-dlgList(c(TRUE, FALSE ), multiple=F, preselect=FALSE, title=ask_standardization_vl)$res
         if(length(opt.list$std.lv)==0) {Resultats<-.ez.lavaan.options(X=X, data=data, opt.list=opt.list)
@@ -471,7 +472,7 @@ ez.cfa <-
                             group.w.free= group.w.free,fixed.x=fixed.x,information=information,se=se,std.ov=as.logical(std.ov),
                             orthogonal=as.logical(orthogonal),likelihood=likelihood, link=link, int.ov.free=as.logical(int.ov.free),
                             int.lv.free=as.logical(int.lv.free),std.lv=as.logical(std.lv),zero.add=zero.add, zero.keep.margins=zero.keep.margins), silent=T)
-      if(class(fit)=="try-error") {msgBox(ask_could_not_finish_analysis_respecify_parameters)
+      if(class(fit)=='try-error') {msgBox(ask_could_not_finish_analysis_respecify_parameters)
         return(ez.cfa())}
 
       if(any(output== "default") | any(output== txt_default_outputs))  {
@@ -501,11 +502,11 @@ ez.cfa <-
 
     }
 
-    packages<-c("svDialogs", "psych","lavaan","semPlot")
+    packages<-c('svDialogs', 'psych','lavaan','semPlot')
     try(lapply(packages, library, character.only=T), silent=T)->test2
-    if(class(test2)== "try-error") return(ez.install())
+    if(class(test2)== 'try-error') return(ez.install())
     try( windows(record=T), silent=T)->win
-    if(class(win)=="try-error") quartz()
+    if(class(win)=='try-error') quartz()
 
     Resultats<-list()
     opt.list<-list(mimic=mimic,fixed.x=fixed.x,missing=missing,information=information,zero.keep.margins=zero.keep.margins,zero.add=zero.add,

@@ -1,16 +1,14 @@
 contrastes.ez <-
   function(longdata, inter=NULL, intra=NULL){
     Resultats<-list()
-    writeLines("Les contrastes a priori correspondent aux contrastes sans correction de la probabilite en suivant les regles de contrastes.
-               Les contrastes 2 a 2 permettent de faire toutes les comparaisons 2 a 2 en appliquant ou non une correction a la probabilite")
+    writeLines(desc_all_contrasts_description)
     type.cont<- dlgList(c(txt_apriori,  txt_comparison_two_by_two, txt_none), preselect=txt_apriori,multiple = FALSE, title=ask_which_contrasts)$res
     if(length(type.cont)==0) return(NULL)
     Resultats$type.cont<-type.cont
     c(inter, unlist(intra))->interintra
     if(type.cont==txt_apriori) {
       contrastes<-list()
-      writeLines("Vous pouvez choisir les contrastes que vous souhaitez. Neanmoins les regles concernant l'application des contrastes doivent etre respectees.
-                 Les contrastes peuvent etre specifies manuellement. Dans ce cas, veuillez choisir specifier les contrastes")
+      writeLines(desc_you_can_choose_contrasts_you_want)
       cont.exemple<-list()
       contr.helmert(3)->cont.exemple$Orthogonaux
       apply(contr.helmert(3), 2, rev)->cont.exemple$Orthogonaux.inverses

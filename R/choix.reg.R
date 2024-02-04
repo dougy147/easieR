@@ -1,7 +1,7 @@
 choix.reg <-
   function(html=T){
     try(library(svDialogs), silent=T)->test2
-    if(class(test2)== "try-error") return(ez.install())
+    if(class(test2)== 'try-error') return(ez.install())
 
     dlgList(c(txt_regressions,
               txt_mediation_effect,

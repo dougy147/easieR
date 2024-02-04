@@ -38,8 +38,7 @@ corr.matrice <-
       data<-data[[2]]
 
       if(choix==txt_correlations & dial==T){
-        writeLines("Une matrice carree est une matrice avec toutes les Correlations 2 a 2.
-                   Une matrice rectangulaire est une matrice dans laquelle un premier ensemble de variables est mis en correlations avec un second jeu de variables")
+        writeLines(desc_square_matrix_rectangular_matrix)
         carre<-dlgList(c(txt_square, txt_rectangular), multiple = FALSE, title=txt_matrix_type)$res
         if(length(carre)==0){Resultats<-corr.matrice.in()
         return(Resultats)}
@@ -80,9 +79,7 @@ corr.matrice <-
 
       if(dial){
 
-        if(info==TRUE) writeLines("Si vous souhaitez realiser l'analyse pour differents sous-echantillons en fonction d'un critere categoriel (i.e., realiser une analyse par groupe)
-                                  \n choisissez oui. Dans ce cas, l'analyse est realisee sur l'echantillon complet et sur les sous-echantillons.
-                                  \n Si vous desirez l'analyse pour l'echantillon complet uniquement, chosissez non.")
+        if(info==TRUE) writeLines(desc_corr_group_analysis_spec)
         dlgList(c(txt_yes, txt_no), preselect=txt_no, multiple = FALSE, title=ask_analysis_by_group)$res->par.groupe
         if(length(par.groupe)==0) {
           corr.matrice.in(X=NULL, Y=NULL, data=NULL,method=NULL, param=NULL, outlier=NULL, save=NULL, info=T, group=NULL,
@@ -155,7 +152,7 @@ corr.matrice <-
         if(any(param==txt_bayesian_factors) | any(param=="FB")){
           if(info) writeLines(ask_cauchy_apriori_distribution)
 
-          rscale<-dlgList(c("moyen", "large", "ultralarge"), preselect="moyen", multiple = F, title="Quelle distribution voulez-vous  ?")$res
+          rscale<-dlgList(c("moyen", "large", "ultralarge"), preselect="moyen", multiple = F, title=ask_distribution_type)$res
           if(length(rscale)==0) {
             Resultats<-corr.matrice.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, save=NULL, info=T, group=NULL,
                                        n.boot=NULL, rscale=0.353)
@@ -253,7 +250,7 @@ corr.matrice <-
         		round(matrice$p,3)->r2}else{
 		r2<-round(matrice$p.adj,3)
 	}
-        class(r2)<-c("matrix", "p.value")
+        class(r2)<-c("matrix", "p.value") # TODO translation?
         Resultats$txt_probability_matrix<-r2
         dimnames(r2)[[1]]<-paste0(dimnames(r2)[[1]], ".p")
         if(is.null(Y)) r2[which(lower.tri(r2, diag = T))]<-NA
@@ -279,7 +276,7 @@ corr.matrice <-
       }
       class(r2)<-"matrix"
       if(is.null(Y)) r2[which(lower.tri(r2, diag = T))]<-"-"
-      Resultats$"matrice des r.deux" <-as.data.frame(r2)
+      Resultats$"matrice des r.deux" <-as.data.frame(r2) # TODO translation
       dimnames(r2)[[1]]<-paste(dimnames(r2)[[1]], "r^2")
       r1<-rbind(r1, r2)
       r1<-data.frame(r1)
@@ -295,7 +292,7 @@ corr.matrice <-
 
 
       if(is.null(Y) & is.null(Z) & (!is.null(n.boot) && n.boot > 100)) round(cor.ci(data[,X], n.iter=n.boot, plot=FALSE)$ci,4)->Resultats$txt_confidence_interval_estimated_by_bootstrap else  round(matrice$ci,4)->Resultats$txt_confidence_interval
-      names(Resultats[[length(Resultats)]])<-c("lim.inf","r","lim.sup","valeur.p")
+      names(Resultats[[length(Resultats)]])<-c("lim.inf","r","lim.sup","valeur.p") # TODO translation
 
       return(Resultats)
 
@@ -305,11 +302,11 @@ corr.matrice <-
     packages<-c('BayesFactor','nortest', 'psych', 'svDialogs', 'ggplot2')
 
     try(lapply(packages, library, character.only=T), silent=T)->test2
-    if(class(test2)== "try-error") return(ez.install())
+    if(class(test2)== 'try-error') return(ez.install())
     .e <- environment()
     Resultats<-list()
     try( windows(record=T), silent=T)->win
-    if(class(win)=="try-error") quartz()
+    if(class(win)=='try-error') quartz()
     if(!is.null(data) & class(data)!="character") deparse(substitute(data))->data
 
     corr.options<-corr.matrice.in(X=X, Y=Y, Z=Z, data=data, group=group,p.adjust=p.adjust, param=param, outlier=outlier, save=save, info=T,  rscale=rscale, n.boot=n.boot)

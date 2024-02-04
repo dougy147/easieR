@@ -7,7 +7,7 @@ comp.corr <-
     # n2 : sample size for the correlation xz.
     # twotailed : logical. Should the estimation of p be one(FALSE) or twotailed (TRUE).
 
-    c("psych", "svDialogs")->packages
+    c('psych', 'svDialogs')->packages
     if(any(lapply(packages, require, character.only=T))==FALSE)  {install.packages(packages)
       require(packages)}
     list()->Resultats # cree une liste appelee Resultats dans laquelle on va stocker les Resultats
@@ -16,8 +16,7 @@ comp.corr <-
        all(c(n,n2)>0) & all(c(n,n2)%%1==0)) {
       paired.r(xy=xy, xz=xz, yz=yz, n=n, n2=n2,twotailed=twotailed)->r
     } else {
-      msgBox("Les valeurs des correlations doivent etre comprises entre -1 et 1/n
-             et les effectifs doivent etre des entiers positifs")
+      msgBox(desc_corr_values_must_be_between_min_1_and_1)
     }
 
     if(exists("r") && length(r$p)!=0 && !is.na(r$p)) {

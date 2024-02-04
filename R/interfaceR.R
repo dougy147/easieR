@@ -1,7 +1,7 @@
 interfaceR <-
   function(){
     options (warn=-1)
-    packages <- c("svDialogs")
+    packages <- c('svDialogs')
     lapply(packages, require,character.only=T)
     Resultats <- list()
 
@@ -66,8 +66,7 @@ interfaceR <-
            }
            if (choix==txt_search_for_new_function) {
              require(sos)
-             writeLines("Pour trouver une nouvelle analyse, il est necessaire de faire votre recherche en anglais. Vous pouvez utiliser plusieurs mots dans la recherche.
-Une page html reprenant l'ensemble des packages faisant reference a l'analyse recherchee va s'ouvrir.")
+             writeLines(desc_to_find_new_analysis_search_in_english)
              critere <- dlgInput(ask_which_analysis_you_looking_for, desc_search_here)$res
              if(length(critere)==0) return(easieR())
              critere <- strsplit(critere, ":")

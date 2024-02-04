@@ -1,13 +1,13 @@
 SelectionV <-
   function(data=NULL,info=TRUE){options (warn=-1)
-    packages<-c("svDialogs")
-    if(any(lapply(packages, require, character.only=T))==FALSE)  {install.packages(packages) 
+    packages<-c('svDialogs')
+    if(any(lapply(packages, require, character.only=T))==FALSE)  {install.packages(packages)
       require(packages)}
     list()->Resultats
     choix.data()->data
     if(length(data)==0) return(preprocess())
     if(info==TRUE) print(ask_variables)
-    X<-dlgList(c(paste(names(data), "(format :", sapply(data, class), ")", sep=" "), txt_other_data), multiple = TRUE, 
+    X<-dlgList(c(paste(names(data), "(format :", sapply(data, class), ")", sep=" "), txt_other_data), multiple = TRUE,
                title=txt_variable)$res
     if(length(X)==0) return(preprocess())
     if( X== txt_other_data) return(SelectionV())

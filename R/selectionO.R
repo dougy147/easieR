@@ -1,33 +1,31 @@
 selectionO <-
   function(data=NULL, info=TRUE){options (warn=-1)
     packages<-c("svDialogs")
-    if(any(lapply(packages, require, character.only=T))==FALSE)  {install.packages(packages) 
+    if(any(lapply(packages, require, character.only=T))==FALSE)  {install.packages(packages)
       require(packages)}
     list()->Resultats
     choix.data()->data
     if(length(data)==0) {return(preprocess())}
-    if(info==TRUE) writeLines("Il est possible d'appliquer plusieurs criteres de selection simultanement, impliquant ou non plusieurs variables. 
-                              Veuillez preciser le nombre de variables sur lesquelles vous desirez appliquer un ou plusieurs criteres de selection. 
-                              Veuillez choisir les variables sur lesquelles vous deirez appliquer une selection") 
-    X<-dlgList(c(paste(names(data), "(format :", sapply(data, class), ")", sep=" "), txt_other_data), multiple = TRUE, 
+    if(info==TRUE) writeLines(desc_possible_apply_multiple_selection_criterion)
+    X<-dlgList(c(paste(names(data), "(format :", sapply(data, class), ")", sep=" "), txt_other_data), multiple = TRUE,
                title=txt_variable)$res
     if(length(X)==0 ) return(preprocess())
     listes<-data.frame(paste(names(data), "(format :", sapply(data, class), ")", sep=" "), 1:length(data))
     subset(listes, listes[,1] %in% X)[,2]->X
-    
-    for(i in 1:length(X)) {  
+
+    for(i in 1:length(X)) {
       if(class(data[,X[i]])=="factor"){
         if(info==TRUE) {writeLines(ask_modalities_to_keep)
           writeLines(paste(ask_modalities_for_variable, names(data[,X])[i],"?" ))}
-        Y<-dlgList(levels(data[,X[i]]), multiple = TRUE, 
+        Y<-dlgList(levels(data[,X[i]]), multiple = TRUE,
                    title=paste(ask_modalities_for_variable, names(data[,X])[i],"?" ))$res
         if(length(Y)==0) return(selectionO())
         data[data[,X[i]]%in% Y,]->data
         factor(data[,X[i]])->data[,X [i]]}else{
           if(info==TRUE) {print(ask_criterion_for_obs_to_keep)
             writeLines(paste(ask_criterion_for_variable, names(data[,X])[i], "?"))}
-          dlgList(c(txt_superior_to,txt_superior_or_equal_to, txt_inferior_to, txt_inferior_or_equal_to, txt_equals_to, txt_is_different_from, txt_between, 
-                    desc_beyond_with_lower_and_upper), 
+          dlgList(c(txt_superior_to,txt_superior_or_equal_to, txt_inferior_to, txt_inferior_or_equal_to, txt_equals_to, txt_is_different_from, txt_between,
+                    desc_beyond_with_lower_and_upper),
                   preselect=NULL, multiple = FALSE, title=paste(ask_criterion_for_variable, names(data[,X])[i], "?"))$res->choix
           if(length(choix)==0) return(selectionO())
           if(choix==txt_superior_to|choix==txt_inferior_to|choix==txt_equals_to|choix==txt_superior_or_equal_to|
@@ -63,7 +61,7 @@ selectionO <-
           if(choix==desc_beyond_with_lower_and_upper){data[data[,X[i]]<seuil.inf & data[,X[i]]>seuil.sup,]->data}
         }
     }
-    
+
     fichier<- dlgInput(ask_filename, txt_selection)$res
     if(length(fichier)==0) return(selectionO())
     strsplit(fichier, ":")->fichier

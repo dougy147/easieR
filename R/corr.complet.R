@@ -169,11 +169,11 @@ corr.complet <-
           cor.part$estimate^2->cor.part$r.carre
           round(cor.part, 4)->cor.part
           cor.part$ddl<-(pcor.test(data[,X], data[ ,Y], data[ , Z], method = "pearson")$n-2-length(Z))
-          dimnames(cor.part)<-list(c(txt_partial_corr_BP,txt_semi_BP), c("Correlation", "valeur.p", "test.t", "r.carre","ddl"))
+          dimnames(cor.part)<-list(c(txt_partial_corr_BP,txt_semi_BP), c("Correlation", "valeur.p", "test.t", "r.carre","ddl")) # TODO translation
           Resultats$txt_partial_semi_BP<-cor.part
         } else {
           BP<-cor.test(data[, X1], data[ ,Y1], method = "pearson")
-          Resultats$txt_param_tests$txt_BP_correlation<-round(data.frame("r"=BP$estimate,"r.deux"=BP$estimate^2, "IC lim inf"=BP$conf.int[1],"IC lim sup"=BP$conf.int[2], "t"=BP$statistic, "ddl"=BP$parameter, "valeur.p"=BP$p.value),4)
+          Resultats$txt_param_tests$txt_BP_correlation<-round(data.frame("r"=BP$estimate,"r.deux"=BP$estimate^2, "IC lim inf"=BP$conf.int[1],"IC lim sup"=BP$conf.int[2], "t"=BP$statistic, "ddl"=BP$parameter, "valeur.p"=BP$p.value),4) # TODO translation
         }
 
         if(!is.null(group)){
@@ -240,10 +240,10 @@ corr.complet <-
           tau<-round(tau,4)
           spear$estimate^2->spear$r.carre
           round(spear, 4)->cor.part
-          dimnames(spear)<-list(c(txt_partial_rho,txt_semi_partial_rho), c("rho", "valeur.p", "t", "r.carre"))
+          dimnames(spear)<-list(c(txt_partial_rho,txt_semi_partial_rho), c("rho", "valeur.p", "t", "r.carre")) # TODO translation
           Resultats$txt_non_parametric_test$txt_partial_semi_partial_rho<-spear
           tau<-round(tau,4)
-          dimnames(tau)<-list(c(txt_kendall_partial_tau,txt_kendall_semipartial_tau), c("tau", "valeur.p", "z"))
+          dimnames(tau)<-list(c(txt_kendall_partial_tau,txt_kendall_semipartial_tau), c("tau", "valeur.p", "z")) # TODO translation
           Resultats$txt_non_parametric_test$txt_kendall_partial_semipartial_tau<-tau
         } else { Spear<-cor.test(data[,X1], data[ ,Y1], method = "spearman", exact=T, continuity=T)
         cor.test(data[,X1], data[ ,Y1], method = "kendall")->Kendall
@@ -274,16 +274,16 @@ corr.complet <-
 		gr.l<-expand.grid(gr.l)
         }
         if(choix!=txt_correlations){
-          dimnames(BPgroup)[[2]]<- c("Spearman.rho", "Spearman.ddl", "Spearman.t", "Spearman.p")
+          dimnames(BPgroup)[[2]]<- c("Spearman.rho", "Spearman.ddl", "Spearman.t", "Spearman.p") #TODO translation
           BPgroup<-data.frame(gr.l,BPgroup )
           Resultats$txt_non_parametric_test$txt_partial_spearman_by_group<-BPgroup
         } else {
-		dimnames(BPgroup)[[2]]<- c( "Spearman.r", "Spearman.p", "Tau.Kendall.r", "Tau.Kendall.p")
+		dimnames(BPgroup)[[2]]<- c( "Spearman.r", "Spearman.p", "Tau.Kendall.r", "Tau.Kendall.p") # TODO translation
         	BPgroup<-data.frame(gr.l,BPgroup )
         	Resultats$txt_non_parametric_test$txt_spearman_kendall_corr_by_group<-BPgroup
 	}
-       } # end if is non null group
-      } # end if non parametric test
+       }
+      }
 
       if(any(param=="robust"| any(param==txt_robusts_tests_with_bootstraps))) {
         boot_BP_results<-boot(data, boot_BP, n.boot)
@@ -378,7 +378,7 @@ corr.complet <-
         }
 
         SBF<-data.frame("n"=rep(5:length(data[,X]), each=3 ),"BF"= bfs,
-                        "rscale"=as.factor(rep(c("moyen - 0.353", "large - 0.5", "ultra large - 0.707"), length.out= 3*(length(data[,X])-4) )))
+                        "rscale"=as.factor(rep(c("moyen - 0.353", "large - 0.5", "ultra large - 0.707"), length.out= 3*(length(data[,X])-4) ))) # TODO translation
         SBF$rscale<-relevel(SBF$rscale, ref=2)
         Resultats$txt_bayesian_factors_sequential<-.plotSBF(SBF)
 
@@ -433,14 +433,14 @@ corr.complet <-
 
 
     # package supprime "plyr",
-    packages<-c("BayesFactor", "boot", "ggplot2", "ppcor","outliers","psych",  "svDialogs")
+    packages<-c('BayesFactor', 'boot', 'ggplot2', 'ppcor', 'outliers', 'psych', 'svDialogs')
 
     try(lapply(packages, library, character.only=T), silent=T)->test2
-    if(class(test2)== "try-error") return(ez.install())
+    if(class(test2)== 'try-error') return(ez.install())
     .e <- environment()
     Resultats<-list()
     try( windows(record=T), silent=T)->win
-    if(class(win)=="try-error") quartz()
+    if(class(win)=='try-error') quartz()
     if(!is.null(data) & class(data)!="character") deparse(substitute(data))->data
 
     corr.options<-corr.complet.in(X=X, Y=Y,Z=Z, data=data, group=group, param=param, outlier=outlier, save=save, info=T, n.boot=n.boot, rscale=rscale)

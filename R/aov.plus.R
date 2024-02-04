@@ -1,7 +1,7 @@
 aov.plus <-
   function(aov.plus.list=NULL, info=T, html=T){
     options (warn=-1)
-    packages<-c("svDialogs","emmeans")
+    packages<-c('svDialogs','emmeans')
     if(any(lapply(packages, require, character.only=T))==FALSE)  {install.packages(packages)
       require(packages)}
       .e <- environment()
@@ -9,11 +9,10 @@ aov.plus <-
     if(is.null(aov.plus.list)){
       Filter( function(x) 'aovplus' %in% class( get(x) ), ls(envir=.GlobalEnv))->nom1
       if(length(nom1)==0) {
-        writeLines("il n'y a pas d'objet compatible avec aov.plus dans la memoire de R.
-                   Vous devez realiser une analyse de variance au prealable")
+        writeLines(desc_no_compatible_object_in_mem_for_aov)
         return(ez.anova())}
       if(length(nom1)==1)  aov.plus.list<-get(nom1) else{
-        if(info=="TRUE") writeLines(ask_wanted_model)
+        if(info=='TRUE') writeLines(ask_wanted_model)
         nom1 <- dlgList(nom1, multiple = FALSE, title=ask_model)$res
         if(length(nom1)==0) {nom1<-NULL
         aov.plus.list<-NULL}
@@ -31,8 +30,7 @@ aov.plus <-
     }else aov.plus.list[[2]]->aov.plus.list
 
 
-    writeLines("Cette fonction permet de fournir les moyennes et erreurs-types ajustees ainsi que le graphique correspondant.
-               Avec le choix post hoc sur les interactions, vous pouvez tester les effets d'interaction 2 a 2 et les effet simples.")
+    writeLines(desc_this_function_means_and_sd_adjusted_interaction_effect_possible)
     choix<-dlgList(c(txt_means_adjusted_standard_errors,txt_contrasts),
                    multiple = TRUE, title=ask_which_data_to_analyse)$res
     if(length(choix)==0) return(analyse())
@@ -44,10 +42,10 @@ aov.plus <-
       writeLines(ask_which_factors_combination_for_adjust_means)
       facteurs<-dlgList(noms, multiple = TRUE, title=ask_what_to_print)$res
       if(length(facteurs)==0) return(aov.plus())
-      formula<-paste0("~",facteurs[[1]])
+      formula<-paste0('~',facteurs[[1]])
     if(length(facteurs)>1){
       for(i in 2:length(facteurs)){
-        formula<-paste(formula, "+", facteurs[i])
+        formula<-paste(formula, '+', facteurs[i])
       }}
       recordPlot()->graphe
       Resultats$txt_adjusted_means_graph<-emmip(object= aov.plus.in$txt_complete_dataset$em.out,as.formula(formula) , CIs=T)
@@ -72,13 +70,13 @@ aov.plus <-
         emm.out<-contrast(aov.plus.in$txt_complete_dataset$em.out,
                                                 method= list(cont.data[, which(sapply(cont.data, class)=="numeric")]), adjust=p.adjust)
         emm.out<-data.frame(emm.out)
-        names(emm.out)[6]<-"valeur.p"
+        names(emm.out)[6]<-"valeur.p" # TODO translation
 
         emm.out$contrast<-names(cont.data)[which(sapply(cont.data, class)=="numeric")]
         Resultats$Contrates$contrastes<-emm.out
         }
         ref1(packages)->Resultats$desc_references
-        .add.result(Resultats=Resultats, name =paste("Anova plus", Sys.time() ))
+        .add.result(Resultats=Resultats, name =paste(txt_anova_plus, Sys.time() ))
 #    if(sauvegarde==T) save(Resultats=Resultats ,choix ="Resultats.aov.plus", env=.e)
      if(html) ez.html(Resultats)
       return(Resultats)

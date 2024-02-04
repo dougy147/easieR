@@ -94,8 +94,7 @@ chi <-
           dlgForm(setNames(as.list(rep(1/nlevels(data[,X]),times=nlevels(data[,X]))), levels(data[,X])), desc_probabilities_vector_please_no_fraction)$res->niveaux
           stack(niveaux)[,1]->p
           if(sum(p)!=1 ||length(p)!=nlevels(data[,X]) | any(p)>1 | any(p)<0){
-            if( dlgMessage("La somme des probabilites est differente de 1 ou le nombre de probabilites ne correspond pas au nombre de modalites de la variable.
-                           Veuillez entrer un vecteur de probabilites valide","okcancel")$res=="cancel") {
+            if( dlgMessage(desc_proba_sum_is_not_one_or_not_enough_proba,"okcancel")$res=="cancel") {
               chi.in(X=NULL, Y=NULL, Effectifs=NULL, p=NULL, choix=NULL, data=NULL, info=T, n.boot=NULL, SampleType=NULL, FM=NULL, choix2=NULL)->Resultats
               return(Resultats)} else return(NULL)
         }
@@ -111,20 +110,17 @@ chi <-
 
         if(any(Options$choix==txt_bayesian_factors) && choix== txt_chi_independance ){
           if(info==T) {
-            writeLines("Quel type d'echantillonnage  avez-vous realise pour votre analyse ?")
-            cat("Si l'effectif total est non fixe, on fait l'hypothese que les observations surviennent en respectant une loi de poisson.
-                La repartition sur les niveaux d'un facteur surviennent avec une probabilite fixe. La distribution est une distribution poisson")
+            writeLines(ask_sampling_type)
+            cat(desc_if_non_fixed_sample_poisson_law)
             print(matrix(c(100,50,200,100), nrow=2, ncol=2, dimnames=list(c("A.1", "A.2"), c("B.1", "B.2")) ))
 
-            writeLines("L'option *Effectif total fixe* doit etre choisi si on fait l'hypohese nulle que la repartition dans chacune des cellules du tableau est fixee.
-                       La distribution est une distribution multinomiale jointe")
+            writeLines(desc_distribution_is_joint_multinomial)
             print(matrix(c(100,100,100,100), nrow=2, ncol=2, dimnames=list(c("A.1", "A.2"), c("B.1", "B.2")) ))
 
-            writeLines("L'option Effectif total fixe pour les lignes* doit etre choisi si les effectifs pour chaque ligne est identique,
-                       comme lorsqu'on veut s'assurer d'un appariement entre groupes. La distribution est une distribution multinomiale independante")
+            writeLines(desc_distribution_is_independant_multinomial)
             print(matrix(c(15,40,55, 85,60,145, 100,100,200), nrow=3, ncol=3, dimnames=list(c("A.1", "A.2", "total"), c("B.1", "B.2", "total")) ))
-            writeLines("L'option Effectif total fixe pour les colonnes* est identique a la precedente pour les colonnes")
-            writeLines("L'option *Effectif total fixe pour les lignes et les colonnes* lorsque les totaux pour les lignes et les colonnes sont fixes.La distribution est hypergeometrique")
+            writeLines(desc_identical_option_total_sample)
+            writeLines(desc_distribution_is_hypergeometric_when)
             print(matrix(c(15,85,100, 85,15,100, 100,100,200), nrow=3, ncol=3, dimnames=list(c("A.1", "A.2", "total"), c("B.1", "B.2", "total")) ))
           }
           SampleType<-c()
@@ -134,7 +130,7 @@ chi <-
             if(nlevels(data[,as.character(comb[i,1])])==2 && nlevels(data[,as.character(comb[i,2])])==2) possible<- c(txt_poisson_total_not_fixed_sample, txt_jointmulti_total_fixed_sample,
                                                                                                                       paste(txt_indepmulti_total_fixed_rows_cols, comb[i,1]),
                                                                                                                       paste(txt_indepmulti_fixed_sample_rows_cols, comb[i,2]),
-                                                                                                                      "hypergeom -  Effectif total fixe pour les lignes et les colonnes") else {
+                                                                                                                      txt_hypergeom_total_sample_fixed_rows_cols) else {
                                                                                                                         possible<- c(txt_poisson_total_not_fixed_sample, txt_jointmulti_total_fixed_sample,
                                                                                                                                      paste(txt_indepmulti_total_fixed_rows_cols, comb[i,1]),
                                                                                                                                      paste(txt_indepmulti_fixed_sample_rows_cols, comb[i,2]))
@@ -150,7 +146,7 @@ chi <-
             #            "hypergeom -  Effectif total fixe pour les lignes et les colonnes"= "hypergeom")
 	    if (SampleType1==txt_poisson_total_not_fixed_sample) "poisson"->ST
 	    if (SampleType1==txt_jointmulti_total_fixed_sample) "jointMulti"->ST
-	    if (SampleType1=="hypergeom -  Effectif total fixe pour les lignes et les colonnes") "hypergeom"->ST
+	    if (SampleType1==txt_hypergeom_total_sample_fixed_rows_cols) "hypergeom"->ST
             if(SampleType1==paste(txt_indepmulti_total_fixed_rows_cols, comb[i,1])) ST<-"indepMulti"
             if(SampleType1==paste(txt_indepmulti_fixed_sample_rows_cols, comb[i,2])) ST<-"indepMulti"
             SampleType<-c(SampleType, ST)
@@ -178,7 +174,7 @@ chi <-
       dims<-dim(chi.r$expected)
       V<-round((x/((min(dims)-1)*n))^0.5,3)
       V.sq<-round(V^2,3)
-      resultats<-data.frame("V"=V, "V.carre"=V.sq)
+      resultats<-data.frame("V"=V, "V.carre"=V.sq) # TODO translation
       return(resultats)}
     chi.out<-function(data=NULL, X=NULL, Y=NULL, p=NULL, choix=NULL, Effectifs=NULL, n.boot=NULL, SampleType=NULL,
                       fixedMargin=NULL, choix2=NULL, rscale=2^0.5/2,priorConcentration=1){
@@ -192,7 +188,7 @@ chi <-
         dimnames(Distribution)[[1]]<-c(txt_observed, txt_probabilities,txt_expected)
         Resultats$txt_synthesis_table<-Distribution
         chi<-chisq.test(tab, p=p, B=n.boot)
-        Resultats$"chi.deux d'ajustement"<-data.frame(chi.deux=round(chi$statistic,3), ddl=chi$parameter)
+        Resultats$"chi.deux d'ajustement"<-data.frame(chi.deux=round(chi$statistic,3), ddl=chi$parameter) # TODO translation !
         if(any(choix2== txt_non_parametric_test)) Resultats$"chi.deux d'ajustement"$valeur.p<-round(chi$p.value,4)
         if(!is.null(n.boot) && n.boot>1){
           Resultats$"chi.deux d'ajustement"$txt_p_estimation_with_monter_carlo<-round(chisq.test(tab, B=n.boot, simulate.p.value=T, correct=F)$p.value,4)}
@@ -212,11 +208,11 @@ chi <-
           mon.chi<-chisq.test(tab, B=n.boot, correct=F)
           mon.chi$expected->Resultats$txt_expected_sample
           if(any(choix2 %in% c(txt_non_parametric_test,txt_robusts_tests_with_bootstraps)))    {
-            SY<-data.frame( "chi.deux"=round(mon.chi$statistic,4),
+            SY<-data.frame( "chi.deux"=round(mon.chi$statistic,4), # TODO translation
                             "ddl"=mon.chi$parameter, Cramer(mon.chi))
             if(any(choix2==txt_non_parametric_test)) SY$valeur.p<-round(mon.chi$p.value,4)
             try(fisher.test(tab),silent=T)->fisher
-            if(class(fisher)!="try-error") SY$Fisher.Exact.Test=round(fisher$p.value,4)
+            if(class(fisher)!='try-error') SY$Fisher.Exact.Test=round(fisher$p.value,4)
             if(all(dim(tab)==2)){
               mon.chi<-chisq.test(tab, B=n.boot, correct=T)
               AY<-data.frame("chi.deux"=round(mon.chi$statistic,4),"ddl"=mon.chi$parameter,   Cramer(mon.chi),valeur.p=round(mon.chi$p.value,4) ,Fisher.Exact.Test="" )
@@ -295,16 +291,20 @@ chi <-
             Resultats$txt_bayesian_factors<-bf
           }
 
-          if( all(dimnames(tab)[[1]]==dimnames(tab)[[2]])) Resultats$Avertissement<-"Les cellules utilisees pour le calcul du McNemar  sont celles de la 1e ligne 2e colonne et de la 2e ligne 1e colonne" else
-            Resultats$Avertissement<-ask_mcnemar_repeated_measure}
+          if( all(dimnames(tab)[[1]]==dimnames(tab)[[2]])) {
+		  Resultats$Avertissement<- desc_cells_for_mcnemar
+	  } else {
+		  Resultats$Avertissement<-ask_mcnemar_repeated_measure
+	  }
+	}
 
       }
       return(Resultats)
     }
 
-    c("svDialogs", "epitools", txt_bayes_factor, "ggplot2")->packages
+    c('svDialogs', 'epitools', 'BayesFactor', 'ggplot2')->packages
     try(lapply(packages, library, character.only=T), silent=T)->test2
-    if(class(test2)== "try-error") return(ez.install())
+    if(class(test2)== 'try-error') return(ez.install())
     .e <- environment()
     Resultats<-list()
 
@@ -315,7 +315,7 @@ chi <-
     if(is.null(chi.options)) return(analyse())
     if(chi.options$analyse!=txt_chi_adjustement){
       try( windows(record=T), silent=T)->win
-      if(class(win)=="try-error") quartz()
+      if(class(win)=='try-error') quartz()
     }
 
 
@@ -335,9 +335,9 @@ chi <-
       Resultats[[i]]<-chi.results
       if(chi.options$analyse==txt_chi_adjustement) nom<-paste(desc_chi_squared_adjustment_on_variable_x, X, sep =" ")
       if(chi.options$analyse==txt_chi_independance) nom<-paste(txt_chi_results_between_var_x, Xi,
-                                                         " et la variable", Yi,sep=" ")
+                                                         desc_and_variable_y, Yi,sep=" ")
       if(chi.options$analyse==txt_mcnemar_test) nom<-paste(txt_mcnemar_results_between_var_x, Xi,
-                                                            " et la variable", Yi,sep=" ")
+                                                            desc_and_variable_y, Yi,sep=" ")
       names(Resultats)[i]<-nom
     }
 
@@ -348,7 +348,7 @@ chi <-
     if(!is.null(chi.options$SampleType)) paste(chi.options$SampleType, collapse="','", sep="")->SampleType
     paste(chi.options$fixedMargin, collapse="','", sep="")->FM
     paste0("chi(X=c('", X,ifelse(!is.null(Y), paste0("'),Y=c('", Y, "')"), "'), Y=NULL"),
-           ifelse(is.null(chi.options$Effectifs),",Effectifs=NULL", paste0(",Effectifs='", chi.options$Effectifs, "'")),
+           ifelse(is.null(chi.options$Effectifs),",Effectifs=NULL", paste0(",Effectifs='", chi.options$Effectifs, "'")), # TODO translation
            ifelse(!is.null(Y), ", p=NULL", paste0(", p=c(", p,")")),
            ", choix='", chi.options$analyse, "',data=", chi.options$nom.data, ",info=", info, ",n.boot=", ifelse(is.null(chi.options$n.boot), "NULL",chi.options$n.boot) ,
            ",priorConcentration =" ,priorConcentration, ",SampleType=", ifelse(is.null(chi.options$SampleType), 'NULL', paste0("c('",SampleType,"')")),

@@ -1,6 +1,6 @@
 exporterD <-
   function(data=NULL, nom=NULL){options (warn=-1)
-    packages<-c("svDialogs")
+    packages<-c('svDialogs')
     if(any(lapply(packages, require, character.only=T))==FALSE)  {install.packages(packages)
       require(packages)}
     list()->Resultats

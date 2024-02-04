@@ -9,9 +9,9 @@ teaching <-
       }
     }
 
-    c("psych", "svDialogs", "TeachingDemos", "tkrplot")->packages
+    c('psych', 'svDialogs', 'TeachingDemos', 'tkrplot')->packages
     try(lapply(packages, library, character.only=T), silent=T)->test2
-    if(class(test2)== "try-error") return(ez.install())
+    if(class(test2)== 'try-error') return(ez.install())
 
     choix <- dlgList(c(txt_understanding_confidance_interval, txt_understanding_alpha_and_power,
                        txt_understanding_corr,
@@ -56,8 +56,7 @@ teaching <-
            if (choix==txt_understanding_alpha_and_power) run.power.examp(hscale=1.5, vscale=1.5, wait=FALSE)
            if (choix==txt_understanding_corr) put.points.demo()
            if (choix==txt_understanding_heterogenous_variance_effects) {
-             writeLines("Avec deux moyennes egales, ou pratiquement egales, le taux d'erreurs doit etre de 5%.
-                        Modifiez progressivement l'ecart entre les ecart-types et voyez comment le taux d'erreur alpha va etre modifie")
+             writeLines(desc_with_two_equal_means_ratio_must_be_5_percent)
              run.Pvalue.norm.sim()
            }
            if (choix==txt_understanding_prev_sens_specificity_2) roc.demo()
@@ -66,7 +65,7 @@ teaching <-
              for(i in seq(1,11,2)) {
                SensSpec.demo(sens=0.95, spec=0.99, prev=0.01, step=i) # on peut modifier sensibilite et specificite
                if( interactive() ) {
-                 readline("Press Enter to continue")
+                 readline(ask_press_enter_to_continue)
                }
              }
            }

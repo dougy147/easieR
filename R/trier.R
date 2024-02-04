@@ -1,8 +1,8 @@
 trier <-
-  function(X, data=NULL, info=TRUE){options (warn=-1) 
-    packages<-c("svDialogs")
+  function(X, data=NULL, info=TRUE){options (warn=-1)
+    packages<-c('svDialogs')
     # faire en sorte que les donnees triees portent le nom initial des donnees
-    if(any(lapply(packages, require, character.only=T))==FALSE)  {install.packages(packages) 
+    if(any(lapply(packages, require, character.only=T))==FALSE)  {install.packages(packages)
       require(packages)}
     list()->Resultats
     choix.data(info=TRUE,nom=TRUE)->data

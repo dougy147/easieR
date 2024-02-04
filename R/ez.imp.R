@@ -6,9 +6,9 @@ ez.imp <-
     # id : if imp is amelia, names of id variables
     # noms : if imp is amelia, names of nominal variables
 
-    packages<-c("Amelia",  "svDialogs")
+    packages<-c('Amelia',  'svDialogs')
     try(lapply(packages, library, character.only=T), silent=T)->test2
-    if(class(test2)== "try-error") return(ez.install())
+    if(class(test2)== 'try-error') return(ez.install())
     .e <- environment()
     if(is.null(data)) { dial<-T
     data<-choix.data(data=data, info=info, nom=T)

@@ -1,66 +1,66 @@
 factor.an <-
   function(data=NULL, X=NULL, nF=NULL, rotation="none", methode="ml", sat=0.3, outlier=c(txt_complete_dataset),
            imp=NULL, ord=NULL, sauvegarde=FALSE, scor.fac=FALSE,n.boot=1, hier=F, nfact2=1, choix="afe",info=T, html=T){
-    
+
     # data : dataframe
     # X : character. Vector of variable names
     # nF : number of factors
     # rotation : character. One among c("none", "varimax", "quartimax", "bentlerT", "equamax", "varimin", "geominT","bifactor",
     # "promax",  "oblimin",  "simplimax","bentlerQ", "geominQ","biquartimin", "cluster")
     # methode : character. One among c("ml", "minres" "minchi", "wls","gls","pa")
-    # sat : numeric. Level of loading below which loading is not printed. 
+    # sat : numeric. Level of loading below which loading is not printed.
     # outlier : one among txt_complete_dataset or txt_without_outliers
     # imp : character. How should missing values be treated ? One among "mean" (use mean), "median" (use median), "amelia", "rm" (remove)
     # ord : character vector. Which variables among X are ordinal ? (or dichotomous)
-    # sauvegarde : logical. Should result be saved in rtf ? 
-    # n.boot : integer. Number of iterations for bootstrap. 
-    # hier : Logical. Should hierarchical factor analysis be done. Possible only if nF>1, methode is not "pa" and rotation is oblique. 
-    # nfact2 : number of factors for hierarchical level. Must be inferior to nF/2 
+    # sauvegarde : logical. Should result be saved in rtf ?
+    # n.boot : integer. Number of iterations for bootstrap.
+    # hier : Logical. Should hierarchical factor analysis be done. Possible only if nF>1, methode is not "pa" and rotation is oblique.
+    # nfact2 : number of factors for hierarchical level. Must be inferior to nF/2
     # choix : character. One among "afe" and "acp". If afc is choosen, open dialog box for confirmatory factor analysis
-    # info : Logical. Should information be printed in the console when using dialog boxes. 
-    
-    
-    fa.in<-function(data=NULL, choix=NULL, X=NULL, imp=NULL, ord=NULL, nF=NULL, rotation="none", methode="minres", sat=NULL, 
+    # info : Logical. Should information be printed in the console when using dialog boxes.
+
+
+    fa.in<-function(data=NULL, choix=NULL, X=NULL, imp=NULL, ord=NULL, nF=NULL, rotation="none", methode="minres", sat=NULL,
                     scor.fac=FALSE,n.boot=NULL, info=T, outlier=NULL,hier=NULL, nfact2=1, sauvegarde=F){
-      
+
       Resultats<-list()
       if(is.null(data) | is.null(X))  {dial<-TRUE}else dial<-F
       if(dial || is.null(choix) || length(choix)!=1 ||choix %in% c(txt_factorial_exploratory_analysis,"afe",
                                                                    "afc","acp",txt_confirmatory_factorial_analysis,txt_principal_component_analysis)==FALSE){
-        dial<-T  
+        dial<-T
         if(info) writeLines(ask_chose_analysis)
-        dlgList(c(txt_factorial_exploratory_analysis, 
+        dlgList(c(txt_factorial_exploratory_analysis,
                   txt_confirmatory_factorial_analysis,
                   txt_principal_component_analysis), preselect=NULL, multiple = FALSE, title=ask_which_analysis)$res->choix
         if(length(choix)==0) return(NULL)
         if(choix==txt_confirmatory_factorial_analysis) return(ez.cfa())
         try( windows(record=T), silent=T)->win
-        if(class(win)=="try-error") quartz()
-        
+        if(class(win)=='try-error') quartz()
+
       }
-      
-      
+
+
       if(dial || class(data)!="data.frame"){
         data<-choix.data(data=data, info=info, nom=T)
-        if(length(data)==0) return(NULL) 
+        if(length(data)==0) return(NULL)
         nom<-data[[1]]
-        data<-data[[2]]  
+        data<-data[[2]]
       }else{
-        deparse(substitute(data))->nom  
+        deparse(substitute(data))->nom
       }
       if(choix=="fa" | choix==txt_factorial_exploratory_analysis) msg3<-ask_chose_variables_at_least_five else{
         msg3<-ask_chose_variables_at_least_three
       }
-      
+
       X<-.var.type(X=X, info=info, data=data, type="numeric", check.prod=F, message=msg3,  multiple=T, title=txt_variables, out=NULL)
       data<-X$data
       X<-X$X
       if(is.null(X) || length(X)<3) {
         Resultats<-fa.in()
         return(Resultats)}
-      
-      
-      
+
+
+
       if(dial || length(outlier)>1 || outlier %in% c(txt_complete_dataset, txt_without_outliers) ==FALSE){
         if(info) writeLines(ask_analysis_on_complete_data_or_remove_outliers)
         if(info) writeLines(desc_outliers_identified_on_mahalanobis)
@@ -68,34 +68,34 @@ factor.an <-
         if(length(outlier)==0) { Resultats<-fa.in()
         return(Resultats)}
       }
-      
+
       if(outlier==txt_without_outliers){
         inf<-VI.multiples(data,X)
         Resultats$txt_labeled_outliers<-inf$txt_labeled_outliers
         data<-inf$data
       }
-      
-      
-      
+
+
+
       if(dial){
         if(info) writeLines(ask_variables_type_correlations)
         if(length(unique(unlist(data[,X])))<9) {type<-dlgList(c(txt_dichotomic_ordinal,"continues", "mixte"), preselect=NULL, multiple = FALSE, title=ask_variables_type)$res}else {
-          type<-dlgList(c("continues", "mixte"), preselect=NULL, multiple = FALSE, title=ask_variables_type)$res 
+          type<-dlgList(c("continues", "mixte"), preselect=NULL, multiple = FALSE, title=ask_variables_type)$res
         }
-        
+
         if(length(type)==0) {Resultats<-fa.in()
         return(Resultats)}
       } else{if(is.null(ord)) type<-"continues" else type<-txt_dichotomic_ordinal
       }
-      
-      
+
+
       if(type=="continues"){ methode<-c("ml")
       cor<-"cor"
       Matrice<-corr.test(data[,X], method="pearson")$r }else {
         cor<-"poly"
         methode<-c("minres")
         if(type=="mixte") {cor<-"mixed"
-        if(info) writeLines(ask_ordinal_variables) 
+        if(info) writeLines(ask_ordinal_variables)
         ord<-dlgList(X, multiple = TRUE, title=ask_ordinal_variables)$res
         if(length(ord)==0) {Resultats<-fa.in()
         return(Resultats)}
@@ -104,11 +104,11 @@ factor.an <-
         if(all(class(Matrice)!="matrix")) {
           sortie<-dlgMessage(ask_correlation_matrix_could_not_be_computed, type="yesno")$res
           if(sortie=="yes") return(NULL) else Matrice<-try(tetrapoly(data=data[,X],X=X,info=T, ord=ord,group=NULL,estimator='two.step',output='cor', imp="rm")[[1]],silent=T)
-          if(class(Matrix)=="try-error")  {Matrice<-corr.test(data[,X], method="Spearman")$r
+          if(class(Matrix)=='try-error')  {Matrice<-corr.test(data[,X], method="Spearman")$r
           msgBox(desc_polyc_correlations_failed_rho_used_instead)}
         }
-      }    
-      
+      }
+
       Matrice1 <- mat.sort(Matrice)
       if(length(X)>30) numbers<-F else numbers<-T
       try(cor.plot(Matrice1, show.legend=FALSE, main=txt_correlations_matrix_afe, labels=NULL, n.legend=0, MAR=TRUE, numbers=numbers,cex=1), silent=T)
@@ -125,33 +125,32 @@ factor.an <-
         msgBox(desc_kmo_on_matrix_could_not_be_obtained)
         Resultats$txt_adequation_measurement_of_matrix$txt_kaiser_meyer_olkin_index<-desc_kmo_could_not_be_computed_verify_matrix
       } else {
-        round(KMO1$MSA,3)->Resultats$txt_adequation_measurement_of_matrix$txt_kaiser_meyer_olkin_index ### doit etre superieur a 0.5 sinon la matrice ne convient pas pour analyse factorielle. Dans lÃÂÃÂideal, avoir au moins 0.8. Si des X presentent un KMO<0.5, on peut envisager de les supprimer. 
+        round(KMO1$MSA,3)->Resultats$txt_adequation_measurement_of_matrix$txt_kaiser_meyer_olkin_index ### doit etre superieur a 0.5 sinon la matrice ne convient pas pour analyse factorielle. Dans lÃÂÃÂideal, avoir au moins 0.8. Si des X presentent un KMO<0.5, on peut envisager de les supprimer.
         round(KMO1$MSAi,3)->Resultats$txt_adequation_measurement_of_matrix$'Indice de Kaiser-Meyer-Olkin par item'
         round(det(Matrice),5)->Resultats$txt_adequation_measurement_of_matrix$txt_correlation_matrix_determinant
         Resultats$txt_adequation_measurement_of_matrix$txt_correlation_matrix_determinant_information<-desc_multicolinearity_risk
       }
-      
-      
+
+
       if(dial){
         print(Resultats$txt_adequation_measurement_of_matrix)
         print(desc_kmo_must_strictly_be_more_than_a_half)
         cat (txt_press_enter_to_continue)
-        line <- readline()  
+        line <- readline()
         dlgMessage(c(ask_sufficient_matrix_for_afe, ask_continue), "okcancel")$res->res.kmo
         if(res.kmo=="cancel") {print(desc_you_exited_afe)
           return(analyse())}
       }
-      
-      
+
+
       if(dial || length(methode)>1 || is.null(methode) || methode%in%c("minres","wls","gls","pa", "ml","minchi")==FALSE){
-        if(info) writeLines("Pour les variables ordinales et dichomiques, preferez la methode du minimum des residus - minres -
-                            ou des moindres carres ponderes - wls. Pour les variables continues, le maximum de vraisemblance si la normalite est respectee - ml")
+        if(info) writeLines(desc_for_ordinal_and_dicho_varible_prefer_min_res)
         methode<-dlgList(c("minres","wls","gls","pa", "ml","minchi"), preselect= methode, multiple = FALSE, title=ask_which_algorithm)$res
         if(length(methode)==0) {Resultats<-fa.in()
         return(Resultats)}
-        
+
       }
-      
+
       eigen(Matrice)$values->eigen
       parallel(length(data[,1]), length(X), 100)->P1
       nScree(x =eigen, aparallel=P1$eigen$mevpea)->result
@@ -160,10 +159,10 @@ factor.an <-
       if(dial | is.null(nF) | !is.numeric(nF)) {
         msgBox(paste(txt_factors_to_keep_accord_to_parallel_analysis_is,result$Components$nparallel, txt_factors ))
         cat (txt_press_enter_to_continue)
-        line <- readline() 
+        line <- readline()
         nF<-NA
         while(!is.numeric(nF)) {
-          writeLines(ask_factors_number) 
+          writeLines(ask_factors_number)
           nF <- dlgInput(ask_factors_number, 2)$res
           if(length(nF)==0) {Resultats<-fa.in()
           return(Resultats)
@@ -177,13 +176,13 @@ factor.an <-
           }
         }
       }
-      
-      
-      
+
+
+
       if(dial & nF>1 || (length(rotation)>1 | rotation %in% c("none", "varimax", "quartimax", "bentlerT", "equamax", "varimin", "geominT","bifactor",
                                                               "promax",  "oblimin",  "simplimax","bentlerQ", "geominQ","biquartimin", "cluster")==FALSE)){
         if(choix=="acp" | choix==txt_principal_component_analysis) rotation<- c("none", "varimax", "quartimax", "promax",  "oblimin",  "simplimax","cluster") else{
-          rotation<-c("none", "varimax", "quartimax", "bentlerT", "equamax", "varimin", "geominT","bifactor", "promax",  "oblimin",  
+          rotation<-c("none", "varimax", "quartimax", "bentlerT", "equamax", "varimin", "geominT","bifactor", "promax",  "oblimin",
                       "simplimax","bentlerQ", "geominQ","biquartimin", "cluster")
         }
         writeLines(ask_chose_rotation)
@@ -197,15 +196,14 @@ factor.an <-
         if(length(scor.fac)==0) {Resultats<-fa.in()
         return(Resultats)}
       }
-      
+
       if(!is.numeric(sat) || sat>1 || sat<0 || is.null(sat)){
-        sat<-NULL 
+        sat<-NULL
       }
       while(is.null(sat)){
-        if(info)  writeLines("Le critere de saturation permet de n'afficher dans le tableau de resultats 
-                             que les saturation superieure au seuil fixe")
+        if(info)  writeLines(desc_saturation_criterion_show_only_above_threshold)
         sat <- dlgInput(ask_which_saturation_criterion, 0.3)$res
-        
+
         if(length(sat)==0) {Resultats<-fa.in()
         return(Resultats)  }
         strsplit(sat, ":")->sat
@@ -214,12 +212,12 @@ factor.an <-
         if(is.na(sat)) {sat<-NULL
         msgBox(desc_saturation_criterion_must_be_between_zero_and_one) }
       }
-      
-      
-      
-      if(choix==txt_factorial_exploratory_analysis) {  
+
+
+
+      if(choix==txt_factorial_exploratory_analysis) {
         if(!is.null(n.boot) && ((class(n.boot)!="numeric" & class(n.boot)!="integer") ||  n.boot%%1!=0 || n.boot<1)){
-          msgBox(desc_bootstraps_number_must_be_positive) 
+          msgBox(desc_bootstraps_number_must_be_positive)
           n.boot<-NULL
         }
         while(is.null(n.boot)){
@@ -231,7 +229,7 @@ factor.an <-
           tail(n.boot[[1]],n=1)->n.boot
           as.numeric(n.boot)->n.boot
           if(is.na(n.boot) ||  n.boot%%1!=0 || n.boot<1){
-            msgBox(desc_bootstraps_number_must_be_positive) 
+            msgBox(desc_bootstraps_number_must_be_positive)
             n.boot<-NULL
           }
         }
@@ -239,13 +237,13 @@ factor.an <-
           if(info) writeLines(ask_test_hierarchical_structure)
           dlgList(c("TRUE","FALSE"), preselect="FALSE", multiple = FALSE, title=ask_hierarchical_analysis)$res->hier
           if(length(hier)==0) {Resultats<-fa.in()
-          return(Resultats)  
+          return(Resultats)
           }
           if(!is.null(hier) && hier==TRUE){
             nfact2<-NA
             while(!is.numeric(nfact2)) {
               nfact2<-NA
-              writeLines(ask_factors_number_for_hierarchical_structure) 
+              writeLines(ask_factors_number_for_hierarchical_structure)
               nfact2 <- dlgInput(ask_factors_superior_level, 1)$res
               if(length(nfact2)==0) {Resultats<-fa.in()
               return(Resultats)
@@ -258,21 +256,21 @@ factor.an <-
                 nfact2<-NA
               }
             }
-            
+
           }
         }
       }
-      
-      
-      
+
+
+
       if(dial | !is.logical(sauvegarde)){
         if(info) writeLines(ask_save_results_in_external_file)
         dlgList(c("TRUE","FALSE"), preselect="FALSE", multiple = FALSE, title=ask_save)$res->sauvegarde
         if(length(sauvegarde)==0) {Resultats<-fa.in()
-        return(Resultats)    
+        return(Resultats)
         }
       }
-      
+
       Resultats$choix<-choix
       Resultats$data<-data
       Resultats$nom<-nom
@@ -290,26 +288,26 @@ factor.an <-
       Resultats$scor.fac<-scor.fac
       Resultats$ord<-ord
       Resultats$nfact2<-nfact2
-      return(Resultats) 
+      return(Resultats)
     }
-    
+
     fa.out<-function(Matrice, data, X, nF, methode, rotation, sat, scor.fac, n.boot, nom, hier=FALSE, cor="cor", nfact2){
-      
+
       if( cor=="cor") { Resultats$txt_multivariate_normality<-.normalite(data, X)} else cor<-"mixed"
       if(n.boot==1) {
         FA.results<-fa(Matrice,nfactors= nF, n.obs=length(data[,1]),fm=methode, rotate=rotation, n.iter=1) # realise l AFE
       } else {
         FA.results<-try(fa(data[,X], nfactors= nF, fm=method, rotate=rotation, n.iter=n.boot, cor=cor), silent=T)
-        if(class(FA.results)=="try-error") { 
+        if(class(FA.results)=='try-error') {
           msgBox(desc_model_could_not_converge)
           FA.results<-try(fa(data[,X], nfactors= nF, fm=methode, rotate=rotation, n.iter=1, cor="cor", SMC=F), silent=T)
-          if(class(FA.results)=="try-error"){
+          if(class(FA.results)=='try-error'){
             msgBox(ask_could_not_converge_model_verify_correlation_matrix)
             return(analyse())}
         }
       }
-      
-      
+
+
       Resultats<-list()
       Resultats$analyse<-paste(txt_factorial_analysis_using_fa_with_method, FA.results$fm)
       if(rotation=="none") Resultats$rotation<-desc_there_is_no_rotation else Resultats$rotation<-paste(txt_rotation_is_a_rotation, rotation)
@@ -320,15 +318,15 @@ factor.an <-
                  "specifite"=round(FA.results$uniquenesses,3),
                  txt_complexity=round(FA.results$complexity,2))->communaute
       Resultats$desc_standardized_saturation_on_correlation_matrix<-data.frame(loadfa, communaute)
-      
+
       var.ex <- round(FA.results$Vaccounted,3)
       if(nF>1){dimnames(var.ex)[[1]]<-c(txt_saturations_sum_of_squares, txt_explained_variance_ratio,
-                                        txt_cumulated_explained_variance_ratio, txt_explaination_ratio, 
+                                        txt_cumulated_explained_variance_ratio, txt_explaination_ratio,
                                         txt_cumulated_explaination_ratio)} else {
                                           dimnames(var.ex)[[1]]<-c(txt_saturations_sum_of_squares, txt_explained_variance_ratio)
                                         }
       Resultats$txt_explained_variance<-var.ex
-      
+
       paste("ML",1:nF)->noms1
       if(nF>1 & rotation=="oblimin"){
         round(FA.results$Phi, 3)->cor.f
@@ -337,14 +335,14 @@ factor.an <-
       if(length(X)>5){
         round(matrix(c(FA.results$null.chisq, FA.results$null.dof,FA.results$null.model,
                        FA.results$dof, FA.results$objective, FA.results$RMSEA,
-                       FA.results$TLI,FA.results$BIC, FA.results$SABIC,FA.results$rms, FA.results$crms, FA.results$fit.off, 
+                       FA.results$TLI,FA.results$BIC, FA.results$SABIC,FA.results$rms, FA.results$crms, FA.results$fit.off,
                        FA.results$chi, FA.results$EPVAL, FA.results$STATISTIC, FA.results$PVAL, FA.results$n.obs), ncol=1),4)->stats
         c(txt_chi_squared_null_model, txt_null_model_degrees_of_freedom, txt_objective_function_of_null_model,
           txt_model_degrees_of_freedom, txt_objective_function_of_model, "RMSEA", txt_lower_bound_rmsea, txt_upper_bound_rmsea,
-          txt_confidance_threshold, txt_tucker_lewis_fiability_factor, "BIC", "EBIC", 
+          txt_confidance_threshold, txt_tucker_lewis_fiability_factor, "BIC", "EBIC",
           "RMSR", "RMSR corrige", txt_adequation_outside_diagonal, txt_chi_squared_empirical, txt_empirical_chi_square_proba_value,
           txt_chi_squared_likelihood_max, txt_max_likelihood_chi_squared_proba_value, desc_total_observations)->dimnames(stats)[[1]]
-        
+
         txt_values->dimnames(stats)[[2]]
         stats->Resultats$txt_adequation_adjustement_indexes
         if(all(FA.results$R2<1)){
@@ -352,13 +350,13 @@ factor.an <-
           dimnames(stats)[[1]]<-c(txt_correlation_between_scores_and_factors, txt_multiple_r_square_of_factors_scores,
                                   txt_min_correlation_between_scores_and_factors)
           dimnames(stats)[[2]]<-noms1
-          stats->Resultats$txt_correlation_between_scores_and_factors 
+          stats->Resultats$txt_correlation_between_scores_and_factors
         }
-        
+
         if(n.boot>1) {
           IC<-c()
           for(i in 1:nF){
-            cbind(round(FA.results$cis$ci[,i],3), 
+            cbind(round(FA.results$cis$ci[,i],3),
                   round(as(FA.results$loadings, "matrix"),3)[,i],
                   round(FA.results$cis$ci[,i+nF],3))->IC2
             dimnames(IC2)[[2]]<-c("lim.inf", dimnames(FA.results$loadings)[[2]][i],"lim.sup")
@@ -376,19 +374,19 @@ factor.an <-
         apply(centrees%*%matrice2[i,],1,sum)->centrees2
         cbind(Scores.fac,centrees2)->Scores.fac
       }
-      
+
       data<-data.frame(data,Scores.fac)
       names(data)[(length(data)+1-nF):length(data)]<-paste0(txt_factor, 1:nF)
       assign(nom, data,envir=.GlobalEnv)
-      
+
       }
-      
+
       if(hier) {
         if(cor!="cor") poly<-TRUE else poly<-FALSE
         Resultats$txt_hierarchical_factorial_analysis$Omega<-psych::omega(data[,X], nfactors=nF, n.iter=n.boot,fm=methode, poly=poly, flip=T, digits=3, sl=T, plot=T, n.obs=length(data[,1]), rotate=rotation)
         multi<-fa.multi(Matrice, nfactors=nF, nfact2=nfact2, n.iter=1,fm=methode, n.obs=length(data[,1]), rotate=rotation)
         multi$f2->FA.results
-        
+
         FA.results<-fa.sort(FA.results,polar=FALSE)
         loadfa<-round(as(FA.results$loadings, "matrix"),3)
         loadfa[which(abs(loadfa)<sat)]<-" "
@@ -396,26 +394,26 @@ factor.an <-
                    "specifite"=round(FA.results$uniquenesses,3),
                    txt_complexity=round(FA.results$complexity,2))->communaute
         Resultats$txt_hierarchical_factorial_analysis$desc_standardized_saturation_on_correlation_matrix<-data.frame(loadfa, communaute)
-        
+
         var.ex <- round(FA.results$Vaccounted,3)
         if(nfact2>1){dimnames(var.ex)[[1]]<-c(txt_saturations_sum_of_squares, txt_explained_variance_ratio,
-                                              txt_cumulated_explained_variance_ratio, txt_explaination_ratio, 
+                                              txt_cumulated_explained_variance_ratio, txt_explaination_ratio,
                                               txt_cumulated_explaination_ratio)} else {
                                                 dimnames(var.ex)[[1]]<-c(txt_saturations_sum_of_squares, txt_explained_variance_ratio)
                                               }
         Resultats$txt_hierarchical_factorial_analysis$txt_explained_variance<-var.ex
-        
+
         paste("ML",1:nfact2)->noms1
-        
+
         paste(txt_mean_complexity_is, round(mean(FA.results$complexity),3), txt_this_tests_if, nF, txt_sufficient_factors )-> Resultats$txt_mean_complexity
-        
+
         round(matrix(c( FA.results$null.dof,FA.results$null.model,
-                        FA.results$dof, FA.results$objective, 
+                        FA.results$dof, FA.results$objective,
                         FA.results$rms, FA.results$fit.off), ncol=1),4)->stats
         c( txt_null_model_degrees_of_freedom, txt_objective_function_of_null_model,
-           txt_model_degrees_of_freedom, txt_objective_function_of_model,    "RMSR", 
+           txt_model_degrees_of_freedom, txt_objective_function_of_model,    "RMSR",
            txt_adequation_outside_diagonal)->dimnames(stats)[[1]]
-        
+
         txt_values->dimnames(stats)[[2]]
         stats->Resultats$txt_hierarchical_factorial_analysis$txt_adequation_adjustement_indexes
         if(all(FA.results$R2<1)){
@@ -428,44 +426,44 @@ factor.an <-
         }
       }
       return(Resultats)
-      
-    } 
+
+    }
     acp.out<-function(Matrice, data, X, nF, methode, rotation, sat, scor.fac, nom){
       principal(Matrice, nfactors= nF, n.obs=length(data[,1]), rotate=rotation)->PCA
       list()->Resultats
       Resultats$analyse<-paste(txt_principal_analysis_using_psych_with_algo, PCA$fm)
-      if(!is.null(rotation)) Resultats$rotation<-paste(txt_rotation_is_a_rotation, rotation) 
-      
+      if(!is.null(rotation)) Resultats$rotation<-paste(txt_rotation_is_a_rotation, rotation)
+
       PCA<-fa.sort(PCA,polar=FALSE)
       loadfa<-round(as(PCA$loadings, "matrix"),3)
-      loadfa[which(abs(loadfa)<sat)]<-" " 
+      loadfa[which(abs(loadfa)<sat)]<-" "
       data.frame("communaute"=round(PCA$communality,3),
                  "specifite"=round(PCA$uniquenesses,3),
                  txt_complexity=round(PCA$complexity,2))->communaute
       Resultats$desc_standardized_saturation_on_correlation_matrix<-data.frame(loadfa, communaute)
       var.ex<-round(PCA$Vaccounted,3)
-      
+
       if(nF>1){dimnames(var.ex)[[1]]<-c(txt_saturations_sum_of_squares, txt_explained_variance_ratio,
-                                        txt_cumulated_explained_variance_ratio, txt_explaination_ratio, 
+                                        txt_cumulated_explained_variance_ratio, txt_explaination_ratio,
                                         txt_cumulated_explaination_ratio)} else {
                                           dimnames(var.ex)[[1]]<-c(txt_saturations_sum_of_squares, txt_explained_variance_ratio)
                                         }
       Resultats$txt_explained_variance<-var.ex
-      
+
       paste("TC",1:nF)->noms1
       if(nF>1 & rotation=="oblimin"){  round(PCA$r.scores,3)->cor.f
         Resultats$txt_correlations_between_factors<-cor.f}
       paste(txt_mean_complexity_is, mean(PCA$complexity), txt_this_tests_if, nF, txt_sufficient_factors )-> Resultats$txt_mean_complexity
       round(matrix(c(PCA$null.dof,PCA$null.model,
-                     PCA$dof, PCA$objective, 
-                     PCA$rms, PCA$fit.off, 
+                     PCA$dof, PCA$objective,
+                     PCA$rms, PCA$fit.off,
                      PCA$chi, PCA$EPVAL, PCA$STATISTIC, PCA$PVAL, PCA$n.obs), ncol=1),4)->stats
-      
-      
+
+
       c(txt_null_model_degrees_of_freedom, txt_objective_function_of_null_model,txt_model_degrees_of_freedom, txt_objective_function_of_model,
         "RMSR",  txt_adequation_outside_diagonal, txt_chi_squared_empirical, txt_empirical_chi_square_proba_value,
         txt_chi_squared_likelihood_max, txt_max_likelihood_chi_squared_proba_value, desc_total_observations)->dimnames(stats)[[1]]
-      
+
       txt_values->dimnames(stats)[[2]]
       stats->Resultats$txt_adequation_adjustement_indexes
       if(scor.fac){
@@ -480,19 +478,19 @@ factor.an <-
         data<-data.frame(data,Scores.fac)
         names(data)[(length(data)+1-nF):length(data)]<-paste0(txt_factor, 1:nF)
         assign(nom, data,envir=.GlobalEnv)
-        
+
       }
       return(Resultats)
-    }   
-    
+    }
+
     options (warn=-1)
-    
-    packages<-c("svDialogs", "GPArotation","psych","lavaan", "nFactors")
+
+    packages<-c('svDialogs', 'GPArotation','psych','lavaan', 'nFactors')
     try(lapply(packages, library, character.only=T), silent=T)->test2
-    if(class(test2)== "try-error") return(ez.install())
+    if(class(test2)== 'try-error') return(ez.install())
     .e <- environment()
     list()->Resultats
-    cor<-ifelse(is.null(ord), "cor", "mixed")    
+    cor<-ifelse(is.null(ord), "cor", "mixed")
     fa.options<-fa.in(data=data, choix=choix, X=X, imp=imp, ord=ord, nF=nF, rotation=rotation, methode=methode, sat=sat, scor.fac=scor.fac, n.boot=n.boot, hier=hier,nfact2=nfact2, outlier=outlier,
                       sauvegarde=sauvegarde, info=info)
     if(is.null(fa.options)) return(analyse())
@@ -514,33 +512,33 @@ factor.an <-
     Resultats$txt_correlations_matrix<-fa.options$txt_correlations_matrix
     Resultats$txt_adequation_measurement_of_matrix<-fa.options$txt_adequation_measurement_of_matrix
     Resultats$txt_parallel_analysis<-fa.options$txt_parallel_analysis
-    
-    
-    
+
+
+
     if(fa.options$choix==  txt_factorial_exploratory_analysis |choix=="afe"){
-      Resultats$txt_factorial_analysis<-fa.out(Matrice=Matrice, data=data, X=X, nF=nF, methode=methode, rotation=rotation, sat=sat, 
+      Resultats$txt_factorial_analysis<-fa.out(Matrice=Matrice, data=data, X=X, nF=nF, methode=methode, rotation=rotation, sat=sat,
                                               scor.fac=scor.fac, n.boot=n.boot, nom=nom, hier=hier, cor=cor, nfact2=nfact2)  }
-    
+
     if(fa.options$choix==  txt_principal_component_analysis |choix=="acp"){
       Resultats$txt_principal_component_analysis<-acp.out(Matrice=Matrice, data=data, X=X, nF=nF, methode=methode, rotation=rotation, sat=sat, scor.fac=scor.fac, nom=nom)
     }
-    
-    
+
+
     paste(X, collapse="','", sep="")->X
     if(!is.null(fa.options$ord)) paste(fa.options$ord, collapse="','", sep="")->ord
     Resultats$Call<-paste0("factor.an(data=", nom, ",X=c('",X, "'),nF=", nF,", rotation='", rotation, "',methode='",methode, "',sat=", sat,
                            ",outlier='", outlier, "',imp=", ifelse(is.null(imp), "NULL", paste0("'",imp,"'")),",ord=", ifelse(!is.null(ord), paste0("c('", ord,"')"), "NULL"),
                            ",sauvegarde=", sauvegarde, ",scor.fac=", scor.fac, ",n.boot=", n.boot,",hier=", hier, ",nfact2=", nfact2, ",choix='", fa.options$choix, "',info=T)"
     )
-    
-    
+
+
     .add.history(data=data, command=Resultats$Call, nom=nom)
     .add.result(Resultats=Resultats, name =paste(fa.options$choix, Sys.time() ))
-    
-    
+
+
     if(fa.options$sauvegarde) save(Resultats=Resultats, choix=fa.options$choix, env=.e)
     ref1(packages)->Resultats$desc_references
     if(html) ez.html(Resultats)
     return(Resultats)
-    
+
     }

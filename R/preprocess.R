@@ -14,7 +14,7 @@ preprocess <-
     #       txt_long_or_large_format=ez.reshape()->Resultats,
     #       txt_dynamic_crossed_table={
     #         try(library("rpivotTable"), silent=T)->test2
-    #         if(class(test2)== "try-error") return(ez.install())
+    #         if(class(test2)== 'try-error') return(ez.install())
     #         return( rpivotTable(choix.data(nom=F)))
     #       }
     #)
@@ -27,8 +27,8 @@ preprocess <-
     if (choix==txt_mathematical_operations_on_variables)  maths()->Resultats
     if (choix==txt_long_or_large_format) ez.reshape()->Resultats
     if (choix==txt_dynamic_crossed_table) {
-      try(library("rpivotTable"), silent=T)->test2
-      if(class(test2)== "try-error") return(ez.install())
+      try(library('rpivotTable'), silent=T)->test2
+      if(class(test2)== 'try-error') return(ez.install())
       return( rpivotTable(choix.data(nom=F)))
     }
     return(Resultats)

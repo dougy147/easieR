@@ -16,9 +16,9 @@ ez.reshape<-function(data=NULL, varying = NULL, v.names = NULL,
 
   options (warn=-1)
   # chargement des packages
-  packages<-c( "svDialogs", "reshape2")
+  packages<-c('svDialogs', 'reshape2')
   try(lapply(packages, library, character.only=T), silent=T)->test2
-  if(class(test2)== "try-error") return(ez.install())
+  if(class(test2)== 'try-error') return(ez.install())
   .e <- environment()
   Resultats<-list()
   if(!is.null(data) & class(data)!="character") deparse(substitute(data))->data

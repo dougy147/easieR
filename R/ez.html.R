@@ -1,7 +1,7 @@
 ez.html <-
  function(ez.results=NULL, html=T){
 
-    packages<-c("rmarkdown", "knitr","ggplot2","stringr","reshape2", "readr","stringi")
+    packages<-c('rmarkdown', 'knitr','ggplot2','stringr','reshape2', 'readr','stringi')
     if(any(lapply(packages, require, character.only=T))==FALSE)  {install.packages(packages)
       require(packages)}
     dir.create(path= paste0(tempdir(),"\\easieR") , showWarnings = FALSE)
@@ -214,7 +214,7 @@ ez.html <-
     listes<-c(output2$listes)
 
 
-    if(Sys.info()[[1]]=="Windows"){
+    if(Sys.info()[[1]]=='Windows'){
       file.nametxt<-paste0(tempdir(), "\\easieR\\ez.results.txt")
     } else {
       dir.create(paste0(tempdir(), "/easieR/"))
@@ -225,7 +225,7 @@ ez.html <-
 
 
     output<-c(outputb, output2$output)
-    if(Sys.info()[[1]]=="Windows"){
+    if(Sys.info()[[1]]=='Windows'){
       file.nameRmd<-paste0(tempdir(), "\\easieR\\Rapport.easieR.Rmd")
     } else {
       file.nameRmd<-paste0(tempdir(), "/easieR/Rapport.easieR.Rmd")
@@ -233,20 +233,20 @@ ez.html <-
 
     writeLines(enc2utf8(output), file.nameRmd, useBytes = TRUE)
     render(file.nameRmd, quiet=T, encoding="UTF-8")
-    if (Sys.info()[[1]]=="Darwin") {
-    	options(browser = "open")
-    } else if (Sys.info()[[1]]=="Linux") {
-    	options(browser = "xdg-open")
+    if (Sys.info()[[1]]=='Darwin') {
+    	options(browser = 'open')
+    } else if (Sys.info()[[1]]=='Linux') {
+    	options(browser = 'xdg-open')
     }
 
     if(html){
-      if(Sys.info()[[1]]=="Windows"){
+      if(Sys.info()[[1]]=='Windows'){
         browseURL(file.path("file:\\", tempdir(), "easieR\\Rapport.easieR.html"))
       } else {
         browseURL(file.path("file:/", tempdir(), "easieR/Rapport.easieR.html"))
       }
     } else {
-      if(Sys.info()[[1]]=="Windows") {
+      if(Sys.info()[[1]]=='Windows') {
         browseURL(file.path("file:\\", tempdir(), "easieR\\Rapport.easieR.docx"))
       } else {
         browseURL(file.path("file:/", tempdir(), "easieR/Rapport.easieR.docx"))

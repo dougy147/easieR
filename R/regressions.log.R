@@ -24,8 +24,7 @@ regressions.log <-
 
 
       if(dial && is.null(modele)){
-        if(info) writeLines("Veuillez choisir le(s) type(s) de relations entre les variables. Les effets additifs prennent la forme de
-                            y=X1+X2 tandis que les effets d'interaction prennent la forme de Y=X1+X2+X1:X2")
+        if(info) writeLines(ask_chose_relation_between_vars_regressions_log)
         dlgList(c(txt_additive_effects, txt_interaction_effects, txt_specify_model), preselect=txt_regressions, multiple = TRUE, title=ask_which_regression_type)$res->link
         if(length(link)==0) return(NULL)} else link<-"none"
 
@@ -45,7 +44,7 @@ regressions.log <-
           msg1<-paste(desc_your_dependant_variable_has, length(unique(data[,Y])), desc_must_be_dichotomic )
           msgBox(msg1)
           if(class(data[,Y]) %in%c("numeric","integer")){
-            dlgMessage("voulez-vous convertir la variable dependante en une variable dichotomique,  ?","yesno")$res->conv
+            dlgMessage(ask_convert_dependant_variable_to_dichotomic,"yesno")$res->conv
 
             if(conv=="no") return(reg.log.in())  else{
               if(info) writeLines(ask_criterion_for_dichotomy)
@@ -137,8 +136,7 @@ regressions.log <-
         if(length(pred>1)){
           pred.ord<-c()
           while(length(pred)!=0){
-            if(info)  writeLines("L'ordre d'entree des variables est important pour le calcul du maximum de vraisemblance. Veuillez
-                                 preciser l'ordre d'entree des variables")
+            if(info)  writeLines(ask_variables_order_for_max_likelihood)
             V1<-dlgList(pred, multiple = FALSE,title=ask_variable_at_this_point)$res
             c(pred.ord,V1)->pred.ord
             setdiff(pred,V1)->pred}
@@ -149,7 +147,7 @@ regressions.log <-
         modele<-as.formula(modele)}
 
       model.test<-try(model.matrix(modele, data), silent=T)
-      if(any(class(model.test)=="try-error")) {
+      if(any(class(model.test)=='try-error')) {
         msgBox(desc_incorrect_model)
         return(reg.log.in())
       }
@@ -164,7 +162,7 @@ regressions.log <-
       if(is.null(reg.options)) return(reg.log.in())
 
       if(dial){
-        if(info) writeLines('voulez-vous integrer les probabilites a votre base de donnees ?')
+        if(info) writeLines(ask_integrate_probabilities_to_dataset)
         dlgList(c(TRUE, FALSE), preselect=FALSE, multiple = FALSE, title=ask_probabilities)$res->proba
 
       }
@@ -312,12 +310,12 @@ regressions.log <-
     }
 
 
-    c("boot","car","psych", "mlogit","svDialogs","rms","MASS")->packages
+    c('boot','car','psych', 'mlogit','svDialogs','rms','MASS')->packages
     if(class(data)=="data.frame") deparse(substitute(data))->data
     options (warn=-1)
     .e <- environment()
     try(lapply(packages, library, character.only=T), silent=T)->test2
-    if(class(test2)== "try-error") return(ez.install())
+    if(class(test2)== 'try-error') return(ez.install())
     Resultats<-list()
     reg.in.output<-reg.log.in(data=data, modele=modele, Y=Y, X_a=X_a, X_i=X_i, outlier=outlier, inf=inf,
                               select.m=select.m,  step=step, group=group,  scale=scale, info=info, sauvegarde=sauvegarde, proba=proba)
@@ -345,7 +343,7 @@ regressions.log <-
         G<-split(data, G)
         for(i in 1:length(G)){
           resg<-  try(reg.log.out(data=G[[i]], modele=modele,  select.m=select.m, step=step, scale=scale,proba=proba), silent=T)
-          if(class(resg)=="try-error")   R1[[length(R1)+1]]<-desc_insufficient_obs else R1[[length(R1)+1]]<-resg
+          if(class(resg)=='try-error')   R1[[length(R1)+1]]<-desc_insufficient_obs else R1[[length(R1)+1]]<-resg
           names(R1)[length(R1)]<-names(G)[i]
         }
         Resultats$txt_complete_dataset$txt_group_analysis<-R1
@@ -415,7 +413,7 @@ regressions.log <-
       if(any(outlier== txt_without_outliers)) {
         if(N_retire!=0 | all(outlier!=txt_complete_dataset)){
           so<- try(reg.log.out(data=nettoyees,modele=modele,  select.m=select.m, step=step, scale=scale,proba=proba, nom=paste0(nom,".nettoyees")),silent=T)
-          if(class(so)=="try-error") Resultats$txt_without_outliers<-desc_removing_outliers_weakens_sample_size else{
+          if(class(so)=='try-error') Resultats$txt_without_outliers<-desc_removing_outliers_weakens_sample_size else{
             Resultats$txt_without_outliers<-so
 
             if(!is.null(group))   {
@@ -426,7 +424,7 @@ regressions.log <-
               for(i in 1:length(G)){
                 resg<- try( reg.log.out(data=G[[i]], modele=modele,  VC=VC, select.m=select.m, method=method, step=step, group=group,  scale=scale,proba=proba), silent=T)
 
-                if(class(resg)=="try-error")   R1[[length(R1)+1]]<-desc_insufficient_obs else R1[[length(R1)+1]]<-resg
+                if(class(resg)=='try-error')   R1[[length(R1)+1]]<-desc_insufficient_obs else R1[[length(R1)+1]]<-resg
                 names(R1)[length(R1)]<-names(G)[i]
               }
               Resultats$txt_without_outliers$txt_group_analysis<-R1
