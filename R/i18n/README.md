@@ -87,6 +87,21 @@ msg6 wraps around two variables. How to proceed ?
 `switch` does not allow variables to pattern match against `EXPR`.
 I replaced every `switch` by `if..else` conditions.
 
+## Placeholders variables' names are easily visible on the command line
+
+Potentially annoying. Moreove those variables are made global (might not be good practise)
+
+# Testing 
+
+To install this branch use `R --vanilla` and `remotes::install_github("dougy147/easieR",ref="translation_one_file")`.
+I had to remove my previous easieR install in my library to make this work.
+
+Use those function to switch languages:
+```
+load_en_EN()
+load_fr_FR()
+```
+
 # Bugs
 
 - Redundancy in reports : t.tests always include "without outliers" section even when none was found.
@@ -99,3 +114,4 @@ I replaced every `switch` by `if..else` conditions.
 
 - Find the right place to detect user's language and load dictionnary accordingly.
 - Add "choose language" item in easieR
+- Make placeholders variables names less visible to command line users

@@ -1,14 +1,3 @@
-if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())) {
-       print("French lang detected")
-       source("./R/i18n/lang_fr_FR.R")
-} else {
-       print("English lang (default)")
-       source("./R/i18n/lang_en_EN.R")
-       #print("(dummy) English lang (default)")
-       #source("./R/i18n/lang_fr_FR.R")
-       #print("[loaded french for testing purpose]")
-}
-
 easieR <-
   function(info=TRUE, html=T){
     # 1. l'argument info permettra a terme de choisir les informations qui s'affichent dans la console ou non
@@ -657,6 +646,7 @@ ref1 <-
 
 
 .onAttach <- function(libname, pkgname) {
+  load_language(lang='auto')
   textVersion =
          paste(desc_how_to_cite_easier,
                desc_easier_metapackage,
