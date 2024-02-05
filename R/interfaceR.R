@@ -19,13 +19,13 @@ interfaceR <-
     while(length(choix)==0) return(easieR())
 
 
-           if (choix==txt_get_working_dir) Resultats$txt_working_dir <- getwd()
-           if (choix==txt_list_of_objects_in_mem) Resultats$txt_objects_in_mem <- ls(envir=.GlobalEnv)
+           if (choix==txt_get_working_dir) Resultats[[txt_working_dir]] <- getwd()
+           if (choix==txt_list_of_objects_in_mem) Resultats[[txt_objects_in_mem]] <- ls(envir=.GlobalEnv)
            if (choix==txt_specify_working_dir) {
              repertoire <- dlgDir(title=ask_chose_the_working_dir)$res
              if(length(repertoire)==0) repertoire <- getwd()
              setwd(repertoire)
-             Resultats$txt_new_dir <- paste(desc_working_dir_is_now, repertoire)
+             Resultats[[txt_new_dir]] <- paste(desc_working_dir_is_now, repertoire)
            }
            if (choix==txt_remove_object_in_memory) {
              ls(envir=.GlobalEnv)->tout
@@ -35,7 +35,7 @@ interfaceR <-
              if(length(X)==0) return(easieR())
              rm(list=X, envir=.GlobalEnv)
              Resultats <- list()
-             Resultats$desc_list_of_objects_still_in_mem <- ls(envir=.GlobalEnv)
+             Resultats[[desc_list_of_objects_still_in_mem]] <- ls(envir=.GlobalEnv)
            }
            if (choix==txt_search_for_new_function) {
              require(sos)
@@ -48,7 +48,7 @@ interfaceR <-
              return(Resultats)
            }
            if (choix==txt_packages_update) {update.packages(ask=FALSE)}
-           if (choix==txt_verify_packages_install) vef.pack()->Resultats$txt_packages_verification
+           if (choix==txt_verify_packages_install) vef.pack()->Resultats[[txt_packages_verification]]
 
 	   if (choix==txt_select_language) {select_language()}
 

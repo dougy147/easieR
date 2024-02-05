@@ -20,8 +20,9 @@ valeurs.influentes <-
         rbind(valeur.influentes,data[max, ])->valeur.influentes
         data<-data[ -max, ] # supprime la valeur maximmal de data
       }
-      data.frame(G=outliers$statistic[1], U=outliers$statistic[2], valeur.p=round(outliers$p.value,4))->Resultats.valeurs.influentes$txt_grubbs_test
-      Resultats.valeurs.influentes$desc_highest_value<-outliers$alternative
+      data.frame(G=outliers$statistic[1], U=outliers$statistic[2], valeur.p=round(outliers$p.value,4))->Resultats.valeurs.influentes[[txt_grubbs_test]]
+      c("G", "U", txt_p_dot_val)-> names(Resultats.valeurs.influentes[[txt_grubbs_test]])
+      Resultats.valeurs.influentes[[desc_highest_value]]<-outliers$alternative
 
     }
 
@@ -37,8 +38,9 @@ valeurs.influentes <-
     round((n/i)*100,2)-> pourcentage_N # proportions d observations supprimees (nombre / taille de l echantillon)
     rbind(n, paste(pourcentage_N, "%"))->synthese_aberrant # on combine le nombre et le pourcentage.
     data.frame(information=c(desc_number_outliers_removed, desc_percentage_outliers), Synthese=synthese_aberrant)->synthese_aberrant # on cree un data.frame
-    if(all(dim( valeur.influentes)!=0))    Resultats.valeurs.influentes$txt_outliers<-valeur.influentes
-    Resultats.valeurs.influentes$txt_outliers_synthesis <-synthese_aberrant
+    c(txt_information, txt_synthesis)->names(synthese_aberrant) # translation
+    if(all(dim( valeur.influentes)!=0))    Resultats.valeurs.influentes[[txt_outliers]]<-valeur.influentes
+    Resultats.valeurs.influentes[[txt_outliers_synthesis]] <-synthese_aberrant
     data->>nettoyees
     return(Resultats.valeurs.influentes)
   }

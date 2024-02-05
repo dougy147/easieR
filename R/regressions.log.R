@@ -183,7 +183,7 @@ regressions.log <-
       variables<-terms(as.formula(modele))
       variables<-as.character( attributes(variables)$variables)[-1]
       pred<-attributes(terms(as.formula(modele)))$term.labels
-      Resultats$txt_descriptive_statistics<-.stat.desc.out(X=variables, groupes=NULL, data=data, tr=.1, type=3, plot=T)
+      Resultats[[txt_descriptive_statistics]]<-.stat.desc.out(X=variables, groupes=NULL, data=data, tr=.1, type=3, plot=T)
 
       if(scale==T || scale==txt_center) {Resultats$info<-desc_centered_data_schielzeth_recommandations
       fun<-function(X){X-mean(X)}
@@ -215,8 +215,8 @@ regressions.log <-
 
         attributes(hier)$heading[1]<-txt_hierarchical_models_deviance_table
         round(1-pchisq(hier$Deviance,hier$Df,lower.tail=F),4)->hier$valeur.p
-        names(hier)<-c("ddl.resid", "Deviance.resid","ddl.effet", txt_deviation, "valeur.p")
-        Resultats$txt_hierarchical_model_analysis<-hier
+        names(hier)<-c(txt_df_residual, "Deviance.resid",txt_df_effect, txt_deviation, txt_p_dot_val)
+        Resultats[[txt_hierarchical_model_analysis]]<-hier
       }
 
 
@@ -237,34 +237,34 @@ regressions.log <-
 
       summary(mod[[length(mod)]])->resultats
       as(resultats$call,"character")->texte
-      paste(desc_tested_model_is , texte[2])->Resultats$txt_test_model
+      paste(desc_tested_model_is , texte[2])->Resultats[[txt_test_model]]
 
       cbind(rms::vif(mod[[length(mod)]]), 1/rms::vif(mod[[length(mod)]]))->MC
       dimnames(MC)[[2]]<-c(txt_inflation_variance_factor, txt_tolerance)
-      round(MC,4)->Resultats$txt_multicolinearity_test
+      round(MC,4)->Resultats[[txt_multicolinearity_test]]
 
       sum(Amelioration_du_MV$Df[2:length(Amelioration_du_MV$Df)])->ddl
       Amelioration_du_MV$`Resid. Dev`[1]-Amelioration_du_MV$`Resid. Dev`[length(Amelioration_du_MV$`Resid. Dev`)]->chi.carre.modele
       round(1-pchisq(chi.carre.modele,ddl),4)->valeur.p
       logisticPseudoR2s(mod[[length(mod)]])->Pseudo.R.carre
       data.frame(chi.carre.modele, ddl, valeur.p,Pseudo.R.carre[1],Pseudo.R.carre[2],Pseudo.R.carre[3])->mod.glob
-      names(mod.glob)<-c("chi.2.modele", "ddl", "valeur.p",txt_hosmer_lemeshow_r_2,txt_cox_snell_r_2,"Nagelkerke R^2")
-      mod.glob->Resultats$txt_model_significance
+      names(mod.glob)<-c(txt_chi_dot_squared_model, txt_df, txt_p_dot_val,txt_hosmer_lemeshow_r_2,txt_cox_snell_r_2,"Nagelkerke R^2")
+      mod.glob->Resultats[[txt_model_significance]]
 
 
       Amelioration_du_MV$chi.deux.prob<-1-pchisq(Amelioration_du_MV$Deviance, Amelioration_du_MV$Df)
       round(Amelioration_du_MV,4)->Amelioration_du_MV
-      names(Amelioration_du_MV)<-c("ddl predicteur", "MV","ddl.residuels","MV residuel","valeur.p")
-      Resultats$desc_improve_likelihood_for_each_variable<-data.frame(Amelioration_du_MV)
+      names(Amelioration_du_MV)<-c(txt_df_predictor, "MV",txt_df_residuals,"MV residuel",txt_p_dot_val)
+      Resultats[[desc_improve_likelihood_for_each_variable]]<-data.frame(Amelioration_du_MV)
 
       data.frame(resultats$coefficients)->table
       (table$z.value)^2->table$Wald.statistic
       exp(table$Estimate)->table$Odd.Ratio
       round(table,4)->table
-      names(table)<-c("b","Erreur.standard","valeur.Z","p.Wald", "Wald","Odd.ratio")
+      names(table)<-c("b",txt_error_dot_standard,txt_z_dot_val,"p.Wald", "Wald",txt_odd_ratio_dot)
       cbind(table, round(exp(confint(mod[[length(mod)]])),4))->table
       table$interpretation<-ifelse(table$Odd.ratio>=1,paste(table$Odd.ratio, desc_times_more), paste(round(1/table$Odd.ratio,4), desc_times_less))
-      table->Resultats$txt_coeff_table
+      table->Resultats[[txt_coeff_table]]
 
       R_sq<-NULL
       for(i in 1:length(mod)){logisticPseudoR2s(mod[[i]])->R_squared
@@ -272,10 +272,10 @@ regressions.log <-
       diff(R_sq,lag=1)->R_sq[2.]
       dimnames(R_sq)[[1]]<-pred
       dimnames(R_sq)[[2]]<-c(txt_hosmer_lemeshow_r_2,txt_cox_snell_r_2,"Nagelkerke R^2")
-      R_sq->Resultats$txt_pseudo_r_square_delta
+      R_sq->Resultats[[txt_pseudo_r_square_delta]]
 
       if(proba=="TRUE")	{
-        round(fitted(mod[[length(mod)]]),4)->data$txt_predicted_probabilities
+        round(fitted(mod[[length(mod)]]),4)->data[[txt_predicted_probabilities]]
         head(data)
         print(nom)
         assign(x=nom, value=data, envir=.GlobalEnv)}
@@ -299,7 +299,7 @@ regressions.log <-
     lower = glm.0)) }else{
         steps<-stepAIC(glm.r1, direction=select.m)
         }
-        Resultats$txt_selection_method_akaike<-steps$anova
+        Resultats[[txt_selection_method_akaike]]<-steps$anova
        # modele<-as.formula(attributes(steps$anova)$heading[5])
       }
 
@@ -335,7 +335,7 @@ regressions.log <-
     if(!is.null(reg.in.output$reg.options$CV) && reg.in.output$reg.options$CV==TRUE) print(desc_cross_validation_is_not_yet_supported)
 
     if(any(outlier==  txt_complete_dataset)){
-      Resultats$txt_complete_dataset<-  reg.log.out(data=data, modele=modele,  select.m=select.m, step=step, scale=scale, proba=proba, nom=nom)
+      Resultats[[txt_complete_dataset]]<-  reg.log.out(data=data, modele=modele,  select.m=select.m, step=step, scale=scale, proba=proba, nom=nom)
       if(!is.null(group))   {
         R1<-list()
         G<-data[,group]
@@ -346,7 +346,7 @@ regressions.log <-
           if(class(resg)=='try-error')   R1[[length(R1)+1]]<-desc_insufficient_obs else R1[[length(R1)+1]]<-resg
           names(R1)[length(R1)]<-names(G)[i]
         }
-        Resultats$txt_complete_dataset$txt_group_analysis<-R1
+        Resultats[[txt_complete_dataset]][[txt_group_analysis]]<-R1
       }
 
     }
@@ -399,22 +399,22 @@ regressions.log <-
         data[which(data$cook.d<= seuil_cook), ]->nettoyees
         data[which(data$cook.d>= seuil_cook), ]->outliers
         cbind(outliers[,variables],outliers$cook.d)->outliers
-        Resultats$"information"$desc_outliers_identified_on_4_div_n
+        Resultats$"information"[[desc_outliers_identified_on_4_div_n]]
       }
       nettoyees->>nettoyees
 
       if(any(outlier== txt_identifying_outliers)){
         length(data[,1])-length(nettoyees[,1])->N_retire # identifier le nombre d observations retirees sur la base de la distance de cook
         paste(N_retire/length(data[,1])*100,"%")->Pourcentage_retire # fournit le pourcentage retire
-        data.frame("N.retirees"=N_retire, "Pourcentage.obs.retirees"=Pourcentage_retire)->Resultats$txt_identified_outliers_synthesis
-        if(length(outliers)!=0) Resultats$txt_identifying_outliers$desc_identified_outliers<-outliers
+        data.frame("N.retirees"=N_retire, txt_percentage_removed_obs=Pourcentage_retire)->Resultats[[txt_identified_outliers_synthesis]]
+        if(length(outliers)!=0) Resultats[[txt_identifying_outliers]][[desc_identified_outliers]]<-outliers
 
       }
       if(any(outlier== txt_without_outliers)) {
         if(N_retire!=0 | all(outlier!=txt_complete_dataset)){
-          so<- try(reg.log.out(data=nettoyees,modele=modele,  select.m=select.m, step=step, scale=scale,proba=proba, nom=paste0(nom,".nettoyees")),silent=T)
-          if(class(so)=='try-error') Resultats$txt_without_outliers<-desc_removing_outliers_weakens_sample_size else{
-            Resultats$txt_without_outliers<-so
+          so<- try(reg.log.out(data=nettoyees,modele=modele,  select.m=select.m, step=step, scale=scale,proba=proba, nom=paste0(nom,txt_dot_cleaned)),silent=T)
+          if(class(so)=='try-error') Resultats[[txt_without_outliers]]<-desc_removing_outliers_weakens_sample_size else{
+            Resultats[[txt_without_outliers]]<-so
 
             if(!is.null(group))   {
               R1<-list()
@@ -427,7 +427,7 @@ regressions.log <-
                 if(class(resg)=='try-error')   R1[[length(R1)+1]]<-desc_insufficient_obs else R1[[length(R1)+1]]<-resg
                 names(R1)[length(R1)]<-names(G)[i]
               }
-              Resultats$txt_without_outliers$txt_group_analysis<-R1
+              Resultats[[txt_without_outliers]][[txt_group_analysis]]<-R1
             }
           }
 
@@ -454,9 +454,9 @@ regressions.log <-
 
 
     .add.history(data=data, command=Resultats$Call, nom=nom)
-    .add.result(Resultats=Resultats, name =paste("Regressions.logistique", Sys.time() ))
-    if(sauvegarde)   if(sauvegarde) save(Resultats=Resultats, choix="Regressions.logistique", env=.e)
-    Resultats$txt_references<-ref1(packages)
+    .add.result(Resultats=Resultats, name =paste(txt_log_regression_dot, Sys.time() ))
+    if(sauvegarde)   if(sauvegarde) save(Resultats=Resultats, choix=txt_log_regression_dot, env=.e)
+    Resultats[[txt_references]]<-ref1(packages)
     if(html) try(ez.html(Resultats), silent=T)
     return(Resultats)
 

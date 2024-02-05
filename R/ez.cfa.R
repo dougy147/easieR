@@ -335,22 +335,22 @@ ez.cfa <-
 
         if(outlier==txt_without_outliers){
           inf<-VI.multiples(data,X)
-          Resultats$txt_labeled_outliers<-inf$txt_labeled_outliers
+          Resultats[[txt_labeled_outliers]]<-inf[[txt_labeled_outliers]]
           data<-inf$data
         }
 
         if(dial){
           if(info) writeLines(ask_variables_type_correlations)
-          if(length(unique(unlist(data[,X])))<9) {type<-dlgList(c(txt_dichotomic_ordinal,"continues", "mixte"), preselect=NULL, multiple = FALSE, title=ask_variables_type)$res}else {
-            type<-dlgList(c("continues", "mixte"), preselect=NULL, multiple = FALSE, title=ask_variables_type)$res
+          if(length(unique(unlist(data[,X])))<9) {type<-dlgList(c(txt_dichotomic_ordinal,txt_continuous, "mixte"), preselect=NULL, multiple = FALSE, title=ask_variables_type)$res}else {
+            type<-dlgList(c(txt_continuous, "mixte"), preselect=NULL, multiple = FALSE, title=ask_variables_type)$res
           }
 
           if(length(type)==0) {Resultats<-cfa.in()
           return(Resultats)}
-        } else{if(is.null(ord)) type<-"continues" else type<-txt_dichotomic_ordinal
+        } else{if(is.null(ord)) type<-txt_continuous else type<-txt_dichotomic_ordinal
         }
 
-        if(type!="continues"){
+        if(type!=txt_continuous){
           if(type=="mixte") {
             if(info) writeLines(ask_ordinal_variables)
             ord<-dlgList(X, multiple = TRUE, title=ask_ordinal_variables)$res
@@ -481,18 +481,18 @@ ez.cfa <-
         summary(fit)->>fit
         if(length(output)==1) fit->>modele.cfa
         }
-      if(any(output== "parEst") | any(output==txt_estimated_parameters)) parameterEstimates(fit)->Resultats$txt_estimated_parameters_not_standardized
-      if(any(output== "parSt") | any(output==txt_standardized_parameters)) standardizedSolution(fit)->Resultats$txt_estimated_parameters_standardized
-      if(any(output== txt_covariance_matrix_adjusted) | any(output=="fitted.cov")) fitted(fit)->Resultats$txt_covariance_matrix_adjusted
-      if(any(output== txt_residue_standardized) | any(output=="res.St")) resid(fit, type="standardized")->Resultats$txt_residue_standardized
-      if(any(output== txt_non_standardized_residuals) | any(output=="res.Unst")) resid(fit)->Resultats$txt_non_standardized_residuals
-      if(any(output== "vcov") | any(output==txt_covariance_matrix_estimated)) vcov(fit)->Resultat$txt_covariance_matrix_estimated
+      if(any(output== "parEst") | any(output==txt_estimated_parameters)) parameterEstimates(fit)->Resultats[[txt_estimated_parameters_not_standardized]]
+      if(any(output== "parSt") | any(output==txt_standardized_parameters)) standardizedSolution(fit)->Resultats[[txt_estimated_parameters_standardized]]
+      if(any(output== txt_covariance_matrix_adjusted) | any(output=="fitted.cov")) fitted(fit)->Resultats[[txt_covariance_matrix_adjusted]]
+      if(any(output== txt_residue_standardized) | any(output=="res.St")) resid(fit, type="standardized")->Resultats[[txt_residue_standardized]]
+      if(any(output== txt_non_standardized_residuals) | any(output=="res.Unst")) resid(fit)->Resultats[[txt_non_standardized_residuals]]
+      if(any(output== "vcov") | any(output==txt_covariance_matrix_estimated)) vcov(fit)->Resultat[[txt_covariance_matrix_estimated]]
       if(any(output== "AIC") ) AIC(fit)->Resultats$AIC
       if(any(output== "BIC") ) BIC(fit)->Resultats$BIC
-      if(any(output== txt_adequation_measures) | any(output=="fitM")) fitMeasures(fit)->Resultats$txt_adjustement_measure
-      if(any(output== txt_inspect_initial_values) | any(output=="start"))inspect(fit, what=start)->Resultats$txt_init_values
-      if(any(output== txt_inspect_model_matrices) | any(output=="modmat")) inspect(fit)->Resultats$txt_model_matrix
-      if(any(output== txt_inspect_model_representation) | any(output=="modrep"))inspect(fit, what=list)->Resultats$txt_model_representation
+      if(any(output== txt_adequation_measures) | any(output=="fitM")) fitMeasures(fit)->Resultats[[txt_adjustement_measure]]
+      if(any(output== txt_inspect_initial_values) | any(output=="start"))inspect(fit, what=start)->Resultats[[txt_init_values]]
+      if(any(output== txt_inspect_model_matrices) | any(output=="modmat")) inspect(fit)->Resultats[[txt_model_matrix]]
+      if(any(output== txt_inspect_model_representation) | any(output=="modrep"))inspect(fit, what=list)->Resultats[[txt_model_representation]]
       semPaths(fit, what="path", whatLabels="std", edge.label.cex = 0.65,edge.color="black", exoVar = FALSE,exoCov =T)
 
 

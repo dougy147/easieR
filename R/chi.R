@@ -175,6 +175,7 @@ chi <-
       V<-round((x/((min(dims)-1)*n))^0.5,3)
       V.sq<-round(V^2,3)
       resultats<-data.frame("V"=V, "V.carre"=V.sq) # TODO translation
+      names(resultats) <-c("V", txt_cramer_v_square) # translation
       return(resultats)}
     chi.out<-function(data=NULL, X=NULL, Y=NULL, p=NULL, choix=NULL, Effectifs=NULL, n.boot=NULL, SampleType=NULL,
                       fixedMargin=NULL, choix2=NULL, rscale=2^0.5/2,priorConcentration=1){
@@ -186,12 +187,13 @@ chi <-
             table(data[,X])->tab
             rbind(tab, p, sum(tab)*p)->Distribution}
         dimnames(Distribution)[[1]]<-c(txt_observed, txt_probabilities,txt_expected)
-        Resultats$txt_synthesis_table<-Distribution
+        Resultats[[txt_synthesis_table]]<-Distribution
         chi<-chisq.test(tab, p=p, B=n.boot)
-        Resultats$"chi.deux d'ajustement"<-data.frame(chi.deux=round(chi$statistic,3), ddl=chi$parameter) # TODO translation !
-        if(any(choix2== txt_non_parametric_test)) Resultats$"chi.deux d'ajustement"$valeur.p<-round(chi$p.value,4)
+        Resultats[[txt_chi_dot_squared_adjustment]]<-data.frame(chi.deux=round(chi$statistic,3), ddl=chi$parameter) # TODO translation !
+        names(Resultats[[txt_chi_dot_squared_adjustment]])<-c(txt_chi_dot_squared, txt_df) # translation
+        if(any(choix2== txt_non_parametric_test)) Resultats[[txt_chi_dot_squared_adjustment]][[txt_p_dot_val]]<-round(chi$p.value,4)
         if(!is.null(n.boot) && n.boot>1){
-          Resultats$"chi.deux d'ajustement"$txt_p_estimation_with_monter_carlo<-round(chisq.test(tab, B=n.boot, simulate.p.value=T, correct=F)$p.value,4)}
+          Resultats[[txt_chi_dot_squared_adjustment]][[txt_p_estimation_with_monter_carlo]]<-round(chisq.test(tab, B=n.boot, simulate.p.value=T, correct=F)$p.value,4)}
 
       }
       if((choix!=txt_chi_adjustement)){
@@ -203,27 +205,29 @@ chi <-
         }
         # graphique
         spineplot(tab, col=topo.colors(nlevels(data[,Y])))
-        table.margins(tab)->Resultats$txt_observed_sample
+        table.margins(tab)->Resultats[[txt_observed_sample]]
         if(choix==txt_chi_independance){
           mon.chi<-chisq.test(tab, B=n.boot, correct=F)
-          mon.chi$expected->Resultats$txt_expected_sample
+          mon.chi$expected->Resultats[[txt_expected_sample]]
           if(any(choix2 %in% c(txt_non_parametric_test,txt_robusts_tests_with_bootstraps)))    {
-            SY<-data.frame( "chi.deux"=round(mon.chi$statistic,4), # TODO translation
-                            "ddl"=mon.chi$parameter, Cramer(mon.chi))
-            if(any(choix2==txt_non_parametric_test)) SY$valeur.p<-round(mon.chi$p.value,4)
+            SY<-data.frame( txt_chi_dot_squared=round(mon.chi$statistic,4), # TODO translation
+                            txt_df=mon.chi$parameter, Cramer(mon.chi))
+            names(SY)<-c(txt_chi_dot_squared, txt_df, "Cramer")
+            if(any(choix2==txt_non_parametric_test)) SY[[txt_p_dot_val]]<-round(mon.chi$p.value,4)
             try(fisher.test(tab),silent=T)->fisher
             if(class(fisher)!='try-error') SY$Fisher.Exact.Test=round(fisher$p.value,4)
             if(all(dim(tab)==2)){
               mon.chi<-chisq.test(tab, B=n.boot, correct=T)
-              AY<-data.frame("chi.deux"=round(mon.chi$statistic,4),"ddl"=mon.chi$parameter,   Cramer(mon.chi),valeur.p=round(mon.chi$p.value,4) ,Fisher.Exact.Test="" )
-              if(any(choix2==txt_non_parametric_test)) AY$valeur.p<-round(mon.chi$p.value,4)
+              AY<-data.frame(txt_chi_dot_squared=round(mon.chi$statistic,4),txt_df=mon.chi$parameter,   Cramer(mon.chi),valeur.p=round(mon.chi$p.value,4) ,Fisher.Exact.Test="" )
+              names(AY)<-c(txt_chi_dot_squared,txt_df,"Cramer",txt_p_dot_val,"Fisher.Exact.Test")
+              if(any(choix2==txt_non_parametric_test)) AY[[txt_p_dot_val]]<-round(mon.chi$p.value,4)
               SY<-rbind(SY, AY)
               dimnames(SY)[[1]]<-c(txt_without_yates_correction, txt_with_yates_correction)
             } else dimnames(SY)[[1]][1]<-c(txt_without_yates_correction)
             if(!is.null(n.boot) && n.boot>1){
-              SY$txt_p_value_with_monte_carlo<-chisq.test(tab, B=n.boot, simulate.p.value=T, correct=F)$p.value
+              SY[[txt_p_value_with_monte_carlo]]<-chisq.test(tab, B=n.boot, simulate.p.value=T, correct=F)$p.value
             }
-            Resultats$txt_principal_analysis<-SY
+            Resultats[[txt_principal_analysis]]<-SY
             # Rapport de vraisemblance
             RV<-2* sum(mon.chi$observed[which(mon.chi$observed!=0)] *
                          log(mon.chi$observed[which(mon.chi$observed!=0)]/mon.chi$expected[which(mon.chi$observed!=0)],base=exp(1)))
@@ -231,8 +235,9 @@ chi <-
             p<-mon.chi$observed/sum(mon.chi$observed)
             q<-mon.chi$expected/sum(mon.chi$expected)
             RVES<-(-1/(log(min(q[which(p!=0)]), base=exp(1)))) *sum(p *log(p[which(p!=0)]/q[which(p!=0)], base=exp(1))) # ES from JOHNSTON et al. 2006
-            RV<-data.frame("chi.carre"=RV, "ddl"=mon.chi$parameter, "valeur.p"=round(PRV,4), "Taille.effet"=round(RVES,4))
-            Resultats$txt_likelihood_ratio_g_test<-RV
+            RV<-data.frame(txt_chi_dot_squared=RV, txt_df=mon.chi$parameter, txt_p_dot_val=round(PRV,4), txt_effect_size=round(RVES,4))
+            names(RV)<-c(txt_chi_dot_squared, txt_df, txt_p_dot_val, txt_effect_size)
+            Resultats[[txt_likelihood_ratio_g_test]]<-RV
           }
           # facteur bayesien
           if(any(choix2==txt_bayesian_factors)) {
@@ -240,44 +245,47 @@ chi <-
             bf<-contingencyTableBF(tab, sampleType = SampleType, fixedMargin = fixedMargin, priorConcentration=priorConcentration)
             bf<-ifelse(extractBF(bf, onlybf=T)>1000, ">1000", ifelse(extractBF(bf, onlybf=T)<.001, "<0.001",round(extractBF(bf, onlybf=T),4)))
             bf<-data.frame(txt_bayesian_factor=c(bf, ifelse(class(bf)=="character", "<0.001", round(1/bf,4)),SampleType))
+	    names(bf) <- c(txt_bayesian_factor)
             dimnames(bf)[[1]]<-c(txt_supports_alternative, txt_supports_null, txt_type)
-            Resultats$txt_bayesian_factor<-bf
+            Resultats[[txt_bayesian_factor]]<-bf
           }
 
           # Odd ratio
           as.matrix(tab)->tab
           if(all(dim(tab)>2) |any(mon.chi$observed==0)) {
-            desc_odd_ratio_cannot_be_computed->Resultats$txt_odd_ratio
+            desc_odd_ratio_cannot_be_computed->Resultats[[txt_odd_ratio]]
           }else{
             if(length(tab[1,])>2) tab<-apply(tab,1, rev)
-            Resultats$txt_odd_ratio<- oddsratio.wald(x=tab,conf.level = 0.95,rev = c("neither"),correction = FALSE,verbose = FALSE)$measure
+            Resultats[[txt_odd_ratio]]<- oddsratio.wald(x=tab,conf.level = 0.95,rev = c("neither"),correction = FALSE,verbose = FALSE)$measure
           }
           if(any(choix2 %in% c(txt_non_parametric_test,txt_robusts_tests_with_bootstraps)))      {
-            if(is.null(SY$txt_p_value_with_monte_carlo)) p<-SY$valeur.p else p<-SY$txt_p_value_with_monte_carlo
+            if(is.null(SY[[txt_p_value_with_monte_carlo]])) p<-SY[[txt_p_dot_val]] else p<-SY[[txt_p_value_with_monte_carlo]]
             if(any(p<0.05))  {
-              round(mon.chi$residuals,3)->Resultats$txt_residue
-              round((mon.chi$observed-mon.chi$expected)/(mon.chi$expected^0.5),3)->Resultats$txt_residue_standardized
-              round(mon.chi$stdres,3)->Resultats$txt_residue_standardized_adjusted
-              p.adjust(2*(1-pnorm(abs(Resultats$txt_residue_standardized_adjusted))), method="holm")->valeur.p
+              round(mon.chi$residuals,3)->Resultats[[txt_residue]]
+              round((mon.chi$observed-mon.chi$expected)/(mon.chi$expected^0.5),3)->Resultats[[txt_residue_standardized]]
+              round(mon.chi$stdres,3)->Resultats[[txt_residue_standardized_adjusted]]
+              p.adjust(2*(1-pnorm(abs(Resultats[[txt_residue_standardized_adjusted]]))), method="holm")->valeur.p
               matrix(valeur.p, nrow=nrow(tab))->valeur.p
               dimnames(tab)->dimnames(valeur.p)
-              round(valeur.p,4)->Resultats$txt_residues_significativity_holm_correction
+              round(valeur.p,4)->Resultats[[txt_residues_significativity_holm_correction]]
             }
           }
-          round(table.margins(prop.table(mon.chi$observed))*100,1)->Resultats$txt_percentage_total
-          round(sweep(addmargins(mon.chi$observed, 1, list(list(All = sum, N = function(x) sum(x)^2/100))), 2,apply(mon.chi$observed, 2, sum)/100, "/"), 1)->Resultats$txt_percentage_col
-          round(sweep(addmargins(mon.chi$observed, 2, list(list(All = sum, N = function(x) sum(x)^2/100))), 1,apply(mon.chi$observed, 1, sum)/100, "/"), 1)->Resultats$txt_percentage_row
+          round(table.margins(prop.table(mon.chi$observed))*100,1)->Resultats[[txt_percentage_total]]
+          round(sweep(addmargins(mon.chi$observed, 1, list(list(All = sum, N = function(x) sum(x)^2/100))), 2,apply(mon.chi$observed, 2, sum)/100, "/"), 1)->Resultats[[txt_percentage_col]]
+          round(sweep(addmargins(mon.chi$observed, 2, list(list(All = sum, N = function(x) sum(x)^2/100))), 1,apply(mon.chi$observed, 1, sum)/100, "/"), 1)->Resultats[[txt_percentage_row]]
 
         }
         if(choix==txt_mcnemar_test){
           if(any(choix2== txt_non_parametric_test))    {
             MCN<-mcnemar.test(tab, correct=F)
-            MCN<-data.frame("chi.deux"=round(MCN$statistic,3), "ddl"=MCN$parameter, "valeur.p"= round(MCN$p.value,4))
+            MCN<-data.frame(txt_chi_dot_squared=round(MCN$statistic,3), txt_df=MCN$parameter, txt_p_dot_val= round(MCN$p.value,4))
+            names(MCN)<-c(txt_chi_dot_squared, txt_df, txt_p_dot_val)
             MCN2<-mcnemar.test(tab, correct=T)
-            MCN2<-data.frame("chi.deux"=round(MCN2$statistic,3), "ddl"=MCN2$parameter, "valeur.p"= round(MCN2$p.value,4))
+            MCN2<-data.frame(txt_chi_dot_squared=round(MCN2$statistic,3), txt_df=MCN2$parameter, txt_p_dot_val= round(MCN2$p.value,4))
+            names(MCN2)<-c(txt_chi_dot_squared, txt_df, txt_p_dot_val)
             MCN<-rbind(MCN, MCN2)
             dimnames(MCN)[[1]]<-c(txt_mcnemar_test_without_yates_correction, txt_mcnemar_test_with_continuity_correction )
-            MCN->Resultats$txt_mcnemar_test_with_yates_correction # test de McNemar
+            MCN->Resultats[[txt_mcnemar_test_with_yates_correction]] # test de McNemar
           }
           if(any(choix2==txt_bayesian_factors)) {
             bf<-proportionBF(y=tab[1,2], tab[1,2]+tab[2,1], p=0.5,rscale=rscale)
@@ -287,8 +295,9 @@ chi <-
             samples =proportionBF(y = tab[1,2], N = tab[1,2]+tab[2,1], p = .5, posterior = TRUE, iterations = 10000)
             plot(samples[,"p"])
             bf<-data.frame(txt_bayesian_factor=c(bf, ifelse(class(bf)=="character", "<0.001", round(1/bf,4)), erreur, rscale))
+            names(bf)<-c(txt_bayesian_factor)
             dimnames(bf)[[1]]<-c(txt_supports_alternative, txt_supports_null, txt_error, "rscale")
-            Resultats$txt_bayesian_factors<-bf
+            Resultats[[txt_bayesian_factors]]<-bf
           }
 
           if( all(dimnames(tab)[[1]]==dimnames(tab)[[2]])) {
@@ -325,7 +334,7 @@ chi <-
     } else {X<-chi.options$Variables
     Y<-NULL}
 
-    if(length(X)>1) Resultats$txt_alpha_warning<-paste(desc_alpha_increased_with_value_equals_to, 100*(1-0.95^length(X)), "%", sep=" ")
+    if(length(X)>1) Resultats[[txt_alpha_warning]]<-paste(desc_alpha_increased_with_value_equals_to, 100*(1-0.95^length(X)), "%", sep=" ")
     for(i in 1:length(X)) {
       as.character(X[i])->Xi
       as.character(Y[i])->Yi
@@ -358,7 +367,7 @@ chi <-
     .add.result(Resultats=Resultats, name =paste(chi.options$analyse, Sys.time() ))
 
 
-    ref1(packages)->Resultats$txt_references
+    ref1(packages)->Resultats[[txt_references]]
     ### Obtenir les Resultats
     if(html) try(ez.html(Resultats))
     return(Resultats)

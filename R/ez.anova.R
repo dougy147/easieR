@@ -59,7 +59,7 @@ ez.anova<-function(data=NULL, DV=NULL, between=NULL, within=NULL,id=NULL, cov=NU
   
   if(any(outlier %in% c("complete", txt_complete_dataset,txt_complete_dataset))){
     Resultats[[.ez.anova.msg("title", 12)]]<-complet
-    aov.plus.in->aov.plus.list$txt_complete_dataset}
+    aov.plus.in->aov.plus.list[[txt_complete_dataset]]}
   
   if(any(outlier %in% c("id", "removed" , txt_identifying_outliers, txt_without_outliers,
                         txt_identifying_outliers, txt_without_outliers))) { 
@@ -71,10 +71,11 @@ ez.anova<-function(data=NULL, DV=NULL, between=NULL, within=NULL,id=NULL, cov=NU
     if(any(outlier %in% c(txt_identifying_outliers,"id",txt_identifying_outliers ))) Resultats[[.ez.anova.msg("title", 13)]]<-influentes
     if(any(outlier %in% c( txt_without_outliers,  txt_without_outliers,"removed" ))){
       
-      #if(!is.null(influentes$txt_outliers[,id])){
-      #  setdiff(data[,as.character(id)],influentes$txt_outliers[,as.character(id)])->diffs
-      if(influentes$txt_outliers_synthesis$Synthese[1]!=0){
-        setdiff(data[,as.character(id)],influentes$txt_outliers[,as.character(id)])->diffs
+      #if(!is.null(influentes[[txt_outliers]][,id])){
+      #  setdiff(data[,as.character(id)],influentes[[txt_outliers]][,as.character(id)])->diffs
+      #if(influentes[[txt_outliers_synthesis]]$Synthese[1]!=0){
+      if(influentes[[txt_outliers_synthesis]][[txt_synthesis]][1]!=0){
+        setdiff(data[,as.character(id)],influentes[[txt_outliers]][,as.character(id)])->diffs
         data[which(data[,id] %in% diffs), ]->nettoyees
         factor(nettoyees[,id])->nettoyees[,id]
         nett<-.ez.anova.out(data=nettoyees, DV=DV, between=between, within=within,id=id, cov=cov,  
@@ -83,7 +84,7 @@ ez.anova<-function(data=NULL, DV=NULL, between=NULL, within=NULL,id=NULL, cov=NU
         nett[["data"]]<-NULL
         nett[["aov.plus.in"]]<-NULL
         Resultats[[.ez.anova.msg("title", 14)]]<-nett
-        aov.plus.in->aov.plus.list$txt_without_outliers
+        aov.plus.in->aov.plus.list[[txt_without_outliers]]
       }
       print(!all(outlier %in% c("complete", txt_complete_dataset,txt_complete_dataset)))
     if(!any(outlier %in% c("complete", txt_complete_dataset,txt_complete_dataset)))   Resultats[[.ez.anova.msg("title", 14)]]<-complet
@@ -259,7 +260,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
 .contrastes.ez<-function(data, between=NULL, within=NULL, contrasts="none", p.adjust="none", dial=T){
   options (warn=1)
   c(between, unlist(within))->betweenwithin
-  if(any(!contrasts%in%c("none",txt_pairwise,txt_none,"comparaison 2 a 2")) & class(contrasts)!="list") { # TODO translation
+  if(any(!contrasts%in%c("none",txt_pairwise,txt_none,txt_pairwise_comparison)) & class(contrasts)!="list") { # TODO translation
     okCancelBox( .ez.anova.msg("msg", 27))
     return(.contrastes.ez(data=data, between=between, within=within, contrasts="none", p.adjust="none", dial=T))
   }
@@ -556,8 +557,8 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
                      IV.names=IV.names, IV.levels=RML.factor) 
     nom<-paste0(nom, ".long")
     reshape.data<-TRUE
-    DV<-"value"
-    within<-setdiff(names(data), c(idvar, "value","IDeasy"))
+    DV<-txt_value
+    within<-setdiff(names(data), c(idvar, txt_value,"IDeasy"))
     if(length(within)>1) {
       data[,within]<-lapply(data[, within], factor)
       within<-within[-which(within=="time")]
@@ -760,7 +761,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
         aov(as.formula(paste0(cov[i], "~",pred.ind)), data=data)->aov.cov
         Anova(aov.cov, type="III")->aov.cov
         #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-          names(aov.cov)<-c("SC", "ddl", "F", "valeur.p")  # TODO translation
+          names(aov.cov)<-c("SC", txt_df, "F", txt_p_dot_val)  # TODO translation
         #}
         
         Resultats[[.ez.anova.msg("title",32)]][[paste0(.ez.anova.msg("title",33), cov[i])]]<-aov.cov
@@ -769,7 +770,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
       aov(as.formula(paste0(DV, "~", cov2,pred.ind)), data=data)->aov.cov
       Anova(aov.cov, type="III")->aov.cov
       #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-        names(aov.cov)<-c("SC", "ddl", "F", "valeur.p") # TODO translation
+        names(aov.cov)<-c("SC", txt_df, "F", txt_p_dot_val) # TODO translation
       #}
       Resultats[[.ez.anova.msg("title",32)]][[.ez.anova.msg("title",34)]]<-aov.cov
       
@@ -780,7 +781,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
       Levene<-leveneTest(as.formula(modele2),data=data) # test de Levene pour homogeneite des variances
       Levene<-round(unlist(Levene)[c(1,2,3,5)],3)
       #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-        names(Levene)<-c("ddl1","ddl2","F","valeur.p") # TODO translation
+        names(Levene)<-c(txt_df1,txt_df2,"F",txt_p_dot_val) # TODO translation
     #}
       Resultats[[.ez.anova.msg("title",35)]]<- Levene
     }
@@ -802,7 +803,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
     if(!is.null(within) && any( sapply(data[,c(unlist(within))],nlevels)>2)) {
       aov.out2b<-round(aov.out2$sphericity.test,5)
       aov.out2b<-matrix(aov.out2b, ncol=2)
-      dimnames(aov.out2b)<-list(dimnames(aov.out2$sphericity.test)[[1]], c("Stat", "valeur.p")) # TODO translation
+      dimnames(aov.out2b)<-list(dimnames(aov.out2$sphericity.test)[[1]], c("Stat", txt_p_dot_val)) # TODO translation
       Resultats[[.ez.anova.msg("title",36)]]<-aov.out2b
     }
 
@@ -810,7 +811,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
     aov.out3<-data.frame(aov.out3)
 #    aov.out3[,6]<-round.ps(aov.out3[,6])
     #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-      names(aov.out3)<-c("ddl.num", "ddl.denom", "CME", "F", ES, "valeur.p" ) # TODO translation
+      names(aov.out3)<-c(txt_df_num, txt_df_denom, "CME", "F", ES, txt_p_dot_val ) # TODO translation
     #}
     omega.out<-effectsize::omega_squared(aov.out$Anova)
     aov.out3<-cbind(aov.out3, omega.2=omega.out[match(rownames(aov.out3), omega.out$Parameter),2])
@@ -819,7 +820,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
     if(!is.null(within) && any( sapply(data[,c(unlist(within))],nlevels)>2)) {
       GG.HF<-data.frame(round(aov.out2$pval.adjustments,5))
       #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-        names(GG.HF)<-c("GG.eps", "GG.valeur.p","HF.eps", "HF.valeur.p") # TODO translation
+        names(GG.HF)<-c("GG.eps", "GG.valeur.p","HF.eps", txt_hf_p_value) # TODO translation
       #}
       Resultats$"Correction : Greenhouse-Geisser &  Hyunh-Feldt"<-GG.HF} # TODO translation
     if(length(between)==1 & is.null(within) & is.null(cov)) {
@@ -836,7 +837,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
     if(!is.list(contrasts) && any(contrasts %in% c(txt_pairwise,  txt_comparison_two_by_two ))){
       pair<-pairs(em.out, adjust=p.adjust)
       pair<-summary(pair)
-      names(pair)[which(names(pair)=="p.value")]<-"valeur.p" # TODO translation
+      names(pair)[which(names(pair)=="p.value")]<-txt_p_dot_val # TODO translation
       Resultats[[.ez.anova.msg("title",39)]]<-pair
     }
     
@@ -896,7 +897,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
           round(table.cont$t.ratio/((nlevels(data[,id]))^0.5),4)->table.cont$d.Cohen}
       
       #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-        names(table.cont)<-c(txt_contrast,txt_estimation, "erreur.st", "ddl","t", "valeur.p", "R carre", "d Cohen") # TODO translation
+        names(table.cont)<-c(txt_contrast,txt_estimation, txt_error_dot_standard_short, txt_df,"t", txt_p_dot_val, txt_r_square, "d Cohen") # TODO translation
       #  }
 
     
@@ -950,7 +951,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
         round(Table.contrasts,4)->Table.contrasts
         data.frame(Table.contrasts)->Table.contrasts  
         #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-          names(Table.contrasts)<-c("estimateur", "ddl","t", "valeur.p") # TODO translation
+          names(Table.contrasts)<-c(txt_estimator, txt_df,"t", txt_p_dot_val) # TODO translation
          Table.contrasts$t^2/(Table.contrasts$t^2+Table.contrasts$ddl)->Table.contrasts$R.2
           round(Table.contrasts$t/(nlevels(data[,id]))^0.5,4)->Table.contrasts$D.Cohen 
         #}else {
@@ -1001,7 +1002,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
       kruskal.test(as.formula( paste0(DV, "~",between[1])), data = data)->KW
       round(data.frame(KW$statistic,KW$parameter,KW$p.value),4)->KW
       #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-        names(KW)<-c("H","ddl","valeur.p")
+        names(KW)<-c("H",txt_df,txt_p_dot_val)
       #}
       round((KW$H-nlevels(data[,between])+1)/(length(data[,1])-nlevels(data[,between])),4)->eta
       if(eta<0.0001) "<0.001"->KW$eta.2.H else KW$eta.2.H
@@ -1020,8 +1021,8 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
       friedman<-round(data.frame(friedman$statistic,friedman$parameter,friedman$p.value),4)
       friedman$W.de.Kendall<-round(friedman[,1]/(nrow(data)*(nlevels(data[,unlist(within)])-1)),4)
       #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-        names(friedman)<-c("chi.2","ddl","valeur.p", "W.de.Kendall") # TODO translation
-      #}else { names(friedman)<-c("chi.2","df","p.value","Kendall's W") }
+        names(friedman)<-c(txt_chi_dot_squared,txt_df,txt_p_dot_val, txt_kendall_w) # TODO translation
+      #}else { names(friedman)<-c(txt_chi_dot_squared,"df","p.value","Kendall's W") }
       Resultats[[.ez.anova.msg("title",45)]][[.ez.anova.msg("title",47)]]<-friedman
       ans<-frdAllPairsExactTest(y=data[,DV],groups=data[,within], blocks=data[,id], p.adjust = p.adjust)
       comp<-expand.grid(dimnames(ans$p.value))
@@ -1043,7 +1044,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
       try(unlist(WRS::med1way(robuste,iter = n.boot)), silent=T)->mediane
       if(class(mediane)!='try-error'){
         #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-          names(mediane)<-c("Test", "Valeur.critique","valeur.p") # TODO translation
+          names(mediane)<-c("Test", txt_critical_dot_val,txt_p_dot_val) # TODO translation
         #}
         Resultats[[.ez.anova.msg("title",50)]][[.ez.anova.msg("title",51)]]<-round(mediane,4)
         # revoir
@@ -1051,8 +1052,8 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
           contrasts<-contrasts[[1]]
           cont<-WRS::medpb(robuste,alpha=.05,nboot=n.boot,con=contrasts,bhop=FALSE)
           #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-            dimnames(cont$output)[[2]]<-c("Numero.contraste","Valeur.contraste",
-                                          "valeur.p","p.critique.corrigee","lim.inf.IC","lim.sup.IC") # TODO translation
+            dimnames(cont$output)[[2]]<-c("Numero.contraste",txt_contrast_dot_val,
+                                          txt_p_dot_val,txt_critical_p_corrected,txt_ci_inferior_limit_dot,txt_ci_superior_limit_dot) # TODO translation
           #}
           
           Resultats[[.ez.anova.msg("title",50)]][[.ez.anova.msg("title",42)]]<-cont$output
@@ -1071,7 +1072,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
         WRS2::t1waybt(as.formula(paste0(DV, "~",between)), tr=.2, nboot=n.boot,data=data)->AR2
         data.frame(AR1[[2]],AR1[[3]],AR1[[1]],AR2[[2]],AR2[[3]],AR2[[4]], AR2[[5]])->AR1
         #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-          names(AR1)<-c("ddl.num","ddl.denom","Stat","valeur.p","Var.expliquee","Taille.effet","Nombre.bootstrap" ) # TODO translation
+          names(AR1)<-c(txt_df_num,txt_df_denom,"Stat",txt_p_dot_val,"Var.expliquee","Taille.effet",txt_bootstrap_dot_number ) # TODO translation
         #}else {
         #  names(AR1)<-c("df.num","df.denom","Stat","p.value","Var.explained","effect size","N.bootstrap" )
         #}
@@ -1085,7 +1086,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
         if(class(cont)!= 'try-error') {
           cont<-data.frame(cont$psihat[,2],cont$test[,4],cont$test[,5],cont$test[,2],cont$test[,3],cont2$psihat[,4],cont2$psihat[,5],cont2$psihat[,6])
           #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-            names(cont)<-c("Valeur.contraste","erreur.standard","ddl","test","seuil.critique","lim.inf.IC","lim.sup.IC","valeur.p") # TODO translation
+            names(cont)<-c(txt_contrast_dot_val,txt_error_dot_standard,txt_df,"test",txt_critical_dot_threshold,txt_ci_inferior_limit_dot,txt_ci_superior_limit_dot,txt_p_dot_val) # TODO translation
           #}else {
           #  names(cont)<-c("estimate","se","df","test","critic","lower.lim.CI","upper.lim.CI","p.value")
           #}
@@ -1105,7 +1106,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
       if(class(T2)!='try-error'){
         T2<-matrix(unlist(T2[c(1:6)]), ncol=2, byrow=T)
         #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-          dimnames(T2)[[2]]<-c(txt_value, "valeur.p")
+          dimnames(T2)[[2]]<-c(txt_value, txt_p_dot_val)
         #}
         c(names(data[,between]), paste(names(data[,between])[1],":",names(data[,between])[2]))->dimnames(T2)[[1]]
         Resultats[[.ez.anova.msg("title",52)]][[.ez.anova.msg("title",51)]]<-T2
@@ -1114,7 +1115,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
         WRS2::pbad2way(as.formula(paste0(DV, "~",between[1],"*",between[2])),data=data, est = "mom", nboot = n.boot),silent=T)
       if(class(mom)!='try-error')  {
         mom<-matrix(unlist(mom[c(2,4,6)]), ncol=1)
-        dimnames(mom)<-list(c(between, paste0(between[1], ":",between[2])),c("valeur.p"))
+        dimnames(mom)<-list(c(between, paste0(between[1], ":",between[2])),c(txt_p_dot_val))
          Resultats[[.ez.anova.msg("title",53)]][[.ez.anova.msg("title",51)]]<-mom
       }
      
@@ -1122,7 +1123,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
      WRS2::pbad2way(as.formula(paste0(DV, "~",between[1],"*",between[2])),data=data, est = "median", nboot = n.boot),silent=T)
   if(class(mom)!='try-error')  {
     mom<-matrix(unlist(mom[c(2,4,6)]), ncol=1)
-    dimnames(mom)<-list(c(between, paste0(between[1], ":",between[2])),c("valeur.p"))
+    dimnames(mom)<-list(c(between, paste0(between[1], ":",between[2])),c(txt_p_dot_val))
     Resultats[[.ez.anova.msg("title",50)]][[.ez.anova.msg("title",51)]]<-mom
   }
       
@@ -1131,7 +1132,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
         comp<-data.frame(psihat=c(mediane[[1]][[1]][[1]], mediane[[1]][[2]][[1]] , mediane[[1]][[3]][[1]]), 
                  valeur.p=c(mediane[[1]][[1]][[3]], mediane[[1]][[2]][[3]] , mediane[[1]][[3]][[3]]))
         med<-cbind(comp, matrix(c(mediane[[1]][[1]][[2]], mediane[[1]][[2]][[2]] , mediane[[1]][[3]][[2]]), ncol=2, byrow=T))
-        names(med)<-c("psihat", "valeur.p", "lim.inf","lim.sup")
+        names(med)<-c("psihat", txt_p_dot_val, txt_inferior_limit,txt_ci_superior_limit)
         dimnames(med)[[1]]<-names(mediane[[2]])
         Resultats[[.ez.anova.msg("title",53)]][[.ez.anova.msg("title",42)]]<-med
       }
@@ -1141,7 +1142,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
         comp<-data.frame(psihat=c(mediane[[1]][[1]][[1]], mediane[[1]][[2]][[1]] , mediane[[1]][[3]][[1]]), 
                  valeur.p=c(mediane[[1]][[1]][[3]], mediane[[1]][[2]][[3]] , mediane[[1]][[3]][[3]]))
         med<-cbind(comp, matrix(c(mediane[[1]][[1]][[2]], mediane[[1]][[2]][[2]] , mediane[[1]][[3]][[2]]), ncol=2, byrow=T))
-        names(med)<-c("psihat", "valeur.p", "lim.inf","lim.sup")
+        names(med)<-c("psihat", txt_p_dot_val, txt_inferior_limit,txt_ci_superior_limit)
         dimnames(med)[[1]]<-names(mediane[[2]])
         Resultats[[.ez.anova.msg("title",50)]][[.ez.anova.msg("title",42)]]<-med
       }
@@ -1161,7 +1162,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
       if(class(ANOVA.tr)!='try-error'){
         
         #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-          ANOVA.tr<-round(data.frame("Valeur.test"= ANOVA.tr$test,"ddl1"=ANOVA.tr$df1, "ddl2"=ANOVA.tr$df2,"valeur.p"=ANOVA.tr$p.value),4)
+          ANOVA.tr<-round(data.frame(txt_test_dot_val= ANOVA.tr$test,txt_df1=ANOVA.tr$df1, txt_df2=ANOVA.tr$df2,txt_p_dot_val=ANOVA.tr$p.value),4)
           
         #}else {
         #  ANOVA.tr<-round(data.frame("Test"= ANOVA.tr$test,"df1"=ANOVA.tr$df1, "df2"=ANOVA.tr$df2,"p.value"=ANOVA.tr$p.value),4)
@@ -1184,13 +1185,15 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
         tronquees2<-matrix(unlist(unlist(tronquees)[c(1:12)]),ncol=4, byrow=T)
         tronquees2<-data.frame(tronquees2)
         rownames(tronquees2)<-c(tronquees$varnames[2] , tronquees$varnames[3], paste0(tronquees$varnames[2],":",tronquees$varnames[3]))
-        names(tronquees2)<-c("F", "valeur.p", "df1", "df2")
+        names(tronquees2)<-c("F", txt_p_dot_val, txt_df1, txt_df2)
         Resultats[[.ez.anova.msg("title",52)]][[.ez.anova.msg("title",51)]] <-tronquees2
         WRS2::sppba(modeleR, data[,id], data=data, est = "mom", avg = TRUE, nboot = n.boot, MDIS = FALSE)->MoMa 
         WRS2::sppbb(modeleR, data[,id], data=data, est = "mom", nboot = n.boot)->MoMb
         WRS2::sppbi(modeleR, data[,id], data=data, est = "mom", nboot = n.boot)->MoMi 
         #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-          MoM<-data.frame("effet"= c(between,within[[1]],"interaction"), "valeur.p"=c(MoMa$p.value,MoMb$p.value, MoMi$p.value) )
+          #MoM<-data.frame("effet"= c(between,within[[1]],"interaction"), txt_p_dot_val=c(MoMa$p.value,MoMb$p.value, MoMi$p.value) )
+          MoM<-data.frame("effet"= c(between,within[[1]],"interaction"), txt_p_dot_val=c(MoMa$p.value,MoMb$p.value, MoMi$p.value) )
+	  names(MoM) <- c(txt_effect,txt_p_dot_val)
           
         #}else {
         #  MoM<-data.frame("effect"= c(between,within[[1]],"interaction"), "p.value"=c(MoMa$p.value,MoMb$p.value, MoMi$p.value) )

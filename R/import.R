@@ -62,9 +62,9 @@ import <-
 
         if(type==txt_csv_file|type==txt_txt_file){
           if(info==TRUE) print(ask_col_separation_index)
-          sep <- dlgList(c("espace","tab",txt_semicolon,txt_comma), preselect=txt_semicolon, multiple = FALSE, title=txt_col_separator)$res
+          sep <- dlgList(c(txt_space,"tab",txt_semicolon,txt_comma), preselect=txt_semicolon, multiple = FALSE, title=txt_col_separator)$res
           if(length(sep)==0) return(import())
-          m1 <- matrix(c("espace","tab",txt_semicolon,txt_comma," ","\t",";",","),nrow=4)
+          m1 <- matrix(c(txt_space,"tab",txt_semicolon,txt_comma," ","\t",";",","),nrow=4)
           sep <- subset(m1, m1[,1] %in% sep)[,2]
 
           if(info==TRUE) print(ask_decimal_symbol)

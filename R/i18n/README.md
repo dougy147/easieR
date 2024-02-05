@@ -109,6 +109,7 @@ load_fr_FR()
 
 - Reports correctly display placeholders
 - Redundancy in reports : "with/without outliers" works back.
+- Placeholders are not shown anymore in command-line output thanks to `for x in *.R; do sed -Ei "s/\\\$((txt|ask|desc)_([[:alpha:]]|[[:digit:]]|_|\.)*)/\[\[\1\]\]/g" $x; done`
 
 # Done
 

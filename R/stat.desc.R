@@ -101,7 +101,7 @@ stat.desc <-
     .add.result(Resultats=Resultats, name =paste(txt_descriptive_statistics, Sys.time() ))
 
     if(data.in$sauvegarde==TRUE) save(Resultats=Resultats ,choix =paste(desc_descriptive_statistics_on,data.in$nom1 ), env=.e)
-    if(ref) ref1(packages)->Resultats$desc_references
+    if(ref) ref1(packages)->Resultats[[desc_references]]
     if(html) try(ez.html(Resultats), silent=T)
     return(Resultats)
   }

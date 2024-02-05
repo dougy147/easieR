@@ -68,7 +68,7 @@ tetrapoly <-
         return(Resultats)
       }
     }
-    Resultats$txt_tetra_polyc_corr_matrix_or_mixt<-lavCor(data[,c(X,group)], ordered=ord,estimator=estimator, group=group,  missing="default", output=output)
+    Resultats[[txt_tetra_polyc_corr_matrix_or_mixt]]<-lavCor(data[,c(X,group)], ordered=ord,estimator=estimator, group=group,  missing="default", output=output)
     paste(X, collapse="','", sep="")->X
     if(!is.null(ord)) paste(ord, collapse="','", sep="")->ord
     Resultats$Call<-paste0("tetrapoly(data=", nom,",X=c('", X,"'),sauvegarde=", sauvegarde, ",ord=", ifelse(!is.null(ord),paste0("c('",ord,"')"), "NULL"),
@@ -80,6 +80,6 @@ tetrapoly <-
 
     if(sauvegarde) save(Resultats=Resultats, choix="cor.polychorique", env=.e)
 
-    ref1(packages)->Resultats$txt_references
+    ref1(packages)->Resultats[[txt_references]]
     if(html) ez.html(Resultats)
     return(Resultats) }

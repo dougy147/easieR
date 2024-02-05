@@ -179,20 +179,20 @@ ez.mediation <-
     #round(as.numeric(as.character(results[,3])),3)->results$t.ratio
     #round(as.numeric(as.character(results$Med.Ratio)),4)->results$Med.Ratio
     #names(results)<-c(txt_effect, "Erreur.st","test.t", "Ratio.med")
-    #results->Resultats$txt_distance_mediator
+    #results->Resultats[[txt_distance_mediator]]
     #Resultats$Information<-txt_for_a_detailed_results_description_distal
     #distmed.boot <- boot(data2, distInd.ef, R=n.boot)
     #boot.ci(distmed.boot, conf=.95, type=c("basic","perc", "norm"))->IC.boot
     #round(matrix(c(IC.boot$normal[,2:3],IC.boot$basic[,4:5],IC.boot$percent[,4:5]), ncol=2 ),4)->IC.boot
     #dimnames(IC.boot)[[1]]<-c("normal","basic","percentile")
     #dimnames(IC.boot)[[2]]<-c("limite.inf","limite.sup")
-    #IC.boot->Resultats$txt_confidence_interval_estimated_by_bootstrap
+    #IC.boot->Resultats[[txt_confidence_interval_estimated_by_bootstrap]]
           }
 
     dlgList(c("TRUE","FALSE"), preselect="FALSE", multiple = FALSE, title=ask_save_results)$res->sauvegarde
     if(length(sauvegarde)==0) sauvegarde<-FALSE
     if(sauvegarde) save(Resultats=Resultats, choix=choix, env=.e)
-    ref1(packages)->Resultats$txt_references
+    ref1(packages)->Resultats[[txt_references]]
     if(html) ez.html(Resultats)
     return(Resultats)
 

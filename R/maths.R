@@ -106,7 +106,7 @@ maths <-
         valeur(info=info, out=NULL)->valeur1
         if(is.null(valeur1)) return(maths())
         data.frame(data, data[,X]*valeur1)->data
-        names(data)[(length(data)-(length(X)-1)):length(data)]<-paste(X, "multiplie.par", valeur1, sep=".")
+        names(data)[(length(data)-(length(X)-1)):length(data)]<-paste(X, txt_multiplied_by, valeur1, sep=".")
         assign(nom1, data, envir=.GlobalEnv)
         paste(valeur1, desc_has_multiplied_variables, X)->Resultats
       }
@@ -244,7 +244,7 @@ maths <-
       variable(multiple=TRUE)->X
       if(length(X)==0|| any(X==txt_cancel)) return(maths())
       data.frame(data, abs(data[,X]))->data
-      names(data)[(length(data)-(length(X)-1)):length(data)]<-paste("valeur.absolue.", X,  sep=".")
+      names(data)[(length(data)-(length(X)-1)):length(data)]<-paste(txt_absolute_dot_val, X,  sep=".")
       assign(nom1, data, envir=.GlobalEnv)
       paste(desc_abs_val_applied_to_var, X)->Resultats
     }
