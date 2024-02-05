@@ -43,6 +43,7 @@ comp.corr <-
       }
 
       # For Unix users: The native form dialog box (dlgForm) is available only if you install 'yad'
+      # moreover, dlgForm is working as a dialog box only on Linux (see ?dlgForm)
       value<-dlgForm(Form, ask_enter_different_values)$res
       if(any(is.na(value))) {
         msgBox(desc_some_values_are_not_numeric)

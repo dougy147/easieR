@@ -495,7 +495,7 @@ VI.multiples<-function(data, X){
       shapiro.test(data[,"res"])->Shapiro_Wilk # realise le Shapiro-Wilk
       lillie.test(data[,"res"])->Lilliefors  # realise le Lilliefors
       round(data.frame(Shapiro_Wilk$statistic,Shapiro_Wilk$p.value, Lilliefors$statistic, Lilliefors$p.value),4)->normalite
-      names(normalite)<-c(txt_shapiro_wilk, txt_p_dot_val_sw, txt_lilliefors_d, txt_p_dot_val_lilliefors) # TODO translation
+      names(normalite)<-c(txt_shapiro_wilk, txt_p_dot_val_sw, txt_lilliefors_d, txt_p_dot_val_lilliefors)
       dimnames(normalite)[1]<-" "
 #      format(normalite, width = max(sapply(names(normalite), nchar)), justify = "centre")->normalite
       n2[[txt_normality_tests]]<-normalite}
@@ -523,7 +523,7 @@ VI.multiples<-function(data, X){
                  "kurtosis"=mardia.results$kurtosis,"p.kurtosis"=mardia.results$p.kurt )->n2
     } else {
       msgBox(desc_matrix_is_singular_mardia_cannot_be_performed)
-       n2<-data.frame(txt_shapiro_wilk=NULL, txt_p_dot_val_sw=NULL, txt_lilliefors_d=NULL, txt_p_dot_val_lilliefors=NULL) # TODO translation
+       n2<-data.frame(txt_shapiro_wilk=NULL, txt_p_dot_val_sw=NULL, txt_lilliefors_d=NULL, txt_p_dot_val_lilliefors=NULL)
       for(i in 1:length(X)){
         X[i]->Z
         .normalite(data=data, X=Z,Y=Y)->nor1
@@ -563,8 +563,7 @@ VI.multiples<-function(data, X){
       for(i in 1:length(modalites[,1])) {
         if(is.null(psych.desc[[i]])) paste(desc_no_obs_for_combination, paste(unlist(modalites[i,]), collapse=" & "))->Resultats[[i]] else   psych.desc[[i]]->Resultats[[i]]
         paste(unlist(modalites[i,]), collapse=" & ")->names(Resultats)[i]}
-    #} else psych.desc-> Resultats$'Variables numeriques' # TODO translation ?
-    } else psych.desc-> Resultats[[txt_numeric_variables]] # TODO translation ?
+    } else psych.desc-> Resultats[[txt_numeric_variables]]
 
 
 
@@ -618,7 +617,7 @@ VI.multiples<-function(data, X){
   }
   if(!is.null(categ)) {
     for(i in 1:length(categ)) {
-      Resultats$'Variables categorielles'[[categ[i]]] <-ftable(data[, c(categ[i], groupes)]) # TODO translation?
+      Resultats$'Variables categorielles'[[categ[i]]] <-ftable(data[, c(categ[i], groupes)])
     }
   }
 
@@ -657,7 +656,7 @@ ref1 <-
   packageStartupMessage(desc_first_time_easier)
   packageStartupMessage(desc_special_characters_have_been_removed)
   packageStartupMessage(textVersion)
-  packageStartupMessage("Last update 06/05/2023") # TODO
+  packageStartupMessage("Last update 06/05/2023") # TODO translation
   packageStartupMessage("##############")
 
 }

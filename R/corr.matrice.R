@@ -250,7 +250,7 @@ corr.matrice <-
         		round(matrice$p,3)->r2}else{
 		r2<-round(matrice$p.adj,3)
 	}
-        class(r2)<-c("matrix", "p.value") # TODO translation?
+        class(r2)<-c("matrix", "p.value")
         Resultats[[txt_probability_matrix]]<-r2
         dimnames(r2)[[1]]<-paste0(dimnames(r2)[[1]], ".p")
         if(is.null(Y)) r2[which(lower.tri(r2, diag = T))]<-NA
@@ -276,7 +276,7 @@ corr.matrice <-
       }
       class(r2)<-"matrix"
       if(is.null(Y)) r2[which(lower.tri(r2, diag = T))]<-"-"
-      Resultats[[txt_r_squared_matrix]] <-as.data.frame(r2) # TODO translation
+      Resultats[[txt_r_squared_matrix]] <-as.data.frame(r2)
       dimnames(r2)[[1]]<-paste(dimnames(r2)[[1]], "r^2")
       r1<-rbind(r1, r2)
       r1<-data.frame(r1)
@@ -292,7 +292,7 @@ corr.matrice <-
 
 
       if(is.null(Y) & is.null(Z) & (!is.null(n.boot) && n.boot > 100)) round(cor.ci(data[,X], n.iter=n.boot, plot=FALSE)$ci,4)->Resultats[[txt_confidence_interval_estimated_by_bootstrap]] else  round(matrice$ci,4)->Resultats[[txt_confidence_interval]]
-      names(Resultats[[length(Resultats)]])<-c(txt_inferior_limit,"r",txt_ci_superior_limit,txt_p_dot_val) # TODO translation
+      names(Resultats[[length(Resultats)]])<-c(txt_inferior_limit,"r",txt_ci_superior_limit,txt_p_dot_val)
 
       return(Resultats)
 

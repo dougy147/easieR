@@ -18,11 +18,6 @@ import <-
     Resultats <- list()
     if(info==TRUE) print(ask_file_format_to_import)
     if(!is.null(type)){
-      #type<-switch(type,
-      #             "csv"=txt_csv_file,txt_csv_file=txt_csv_file ,
-      #             "txt"=txt_txt_file,txt_txt_file=txt_txt_file ,
-      #             "excel"=txt_excel_file,txt_excel_file=txt_excel_file,
-      #             "SPSS" =  txt_spss_file,txt_spss_file=txt_spss_file )
       if (type=="csv")   txt_csv_file -> type
       if (type=="txt")   txt_txt_file -> type
       if (type=="excel") txt_excel_file -> type

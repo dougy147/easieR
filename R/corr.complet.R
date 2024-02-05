@@ -97,7 +97,7 @@ corr.complet <-
       if(exists("group")) Resultats$group<-group
       Resultats$options<-options
       return(Resultats)
-    } # end function corr.complet.in()
+    }
 
 
     corr.complet.out<-function(X=NULL, Y=NULL, Z=NULL, data=NULL, choix=NULL, group=NULL, param=NULL,n.boot=NULL, rscale=0.353) {
@@ -159,7 +159,6 @@ corr.complet <-
           }
           graphiques[[2]]<-p1
         }
-        #Resultats[[txt_param_tests]]$Graphiques<-graphiques
         Resultats[[txt_param_tests]][[txt_graphics]]<-graphiques
       }
 
@@ -167,16 +166,15 @@ corr.complet <-
         if(choix!=txt_correlations) {
           cor.part<-rbind( pcor.test(data[,X], data[ ,Y], data[ , Z], method = "pearson")[1:3],
                            spcor.test(data[,X], data[ ,Y], data[ ,Z], method = "pearson")[1:3])
-          #cor.part$estimate^2->cor.part$r.carre
           cor.part$estimate^2->cor.part[[txt_r_dot_square]]
           round(cor.part, 4)->cor.part
           cor.part$ddl<-(pcor.test(data[,X], data[ ,Y], data[ , Z], method = "pearson")$n-2-length(Z))
-          dimnames(cor.part)<-list(c(txt_partial_corr_BP,txt_semi_BP), c("Correlation", txt_p_dot_val, "test.t", txt_r_dot_square,txt_df)) # TODO translation
+          dimnames(cor.part)<-list(c(txt_partial_corr_BP,txt_semi_BP), c("Correlation", txt_p_dot_val, "test.t", txt_r_dot_square,txt_df))
           Resultats[[txt_partial_semi_BP]]<-cor.part
         } else {
           BP<-cor.test(data[, X1], data[ ,Y1], method = "pearson")
-          Resultats[[txt_param_tests]][[txt_BP_correlation]]<-round(data.frame("r"=BP$estimate,txt_r_dot_two=BP$estimate^2, txt_ci_inferior_limit=BP$conf.int[1],txt_ci_superior_limit=BP$conf.int[2], "t"=BP$statistic, txt_df=BP$parameter, txt_p_dot_val=BP$p.value),4) # TODO translation
-          names(Resultats[[txt_param_tests]][[txt_BP_correlation]])<-c("r",txt_r_dot_two, txt_ci_inferior_limit,txt_ci_superior_limit, "t", txt_df, txt_p_dot_val) # TODO translation
+          Resultats[[txt_param_tests]][[txt_BP_correlation]]<-round(data.frame("r"=BP$estimate,txt_r_dot_two=BP$estimate^2, txt_ci_inferior_limit=BP$conf.int[1],txt_ci_superior_limit=BP$conf.int[2], "t"=BP$statistic, txt_df=BP$parameter, txt_p_dot_val=BP$p.value),4)
+          names(Resultats[[txt_param_tests]][[txt_BP_correlation]])<-c("r",txt_r_dot_two, txt_ci_inferior_limit,txt_ci_superior_limit, "t", txt_df, txt_p_dot_val)
         }
 
         if(!is.null(group)){
@@ -234,7 +232,6 @@ corr.complet <-
           }
           graphiques[[2]]<-p1
         }
-        #Resultats[[txt_non_parametric_test]]$Graphiques<-graphiques
         Resultats[[txt_non_parametric_test]][[txt_graphics]]<-graphiques
 
         if(choix!=txt_correlations) {
@@ -245,17 +242,17 @@ corr.complet <-
           #spear$estimate^2->spear$r.carre
           spear$estimate^2->spear[[txt_r_dot_square]]
           round(spear, 4)->cor.part
-          dimnames(spear)<-list(c(txt_partial_rho,txt_semi_partial_rho), c("rho", txt_p_dot_val, "t", txt_r_dot_square)) # TODO translation
+          dimnames(spear)<-list(c(txt_partial_rho,txt_semi_partial_rho), c("rho", txt_p_dot_val, "t", txt_r_dot_square))
           Resultats[[txt_non_parametric_test]][[txt_partial_semi_partial_rho]]<-spear
           tau<-round(tau,4)
-          dimnames(tau)<-list(c(txt_kendall_partial_tau,txt_kendall_semipartial_tau), c("tau", txt_p_dot_val, "z")) # TODO translation
+          dimnames(tau)<-list(c(txt_kendall_partial_tau,txt_kendall_semipartial_tau), c("tau", txt_p_dot_val, "z"))
           Resultats[[txt_non_parametric_test]][[txt_kendall_partial_semipartial_tau]]<-tau
         } else { Spear<-cor.test(data[,X1], data[ ,Y1], method = "spearman", exact=T, continuity=T)
         cor.test(data[,X1], data[ ,Y1], method = "kendall")->Kendall
         Resultats[[txt_non_parametric_test]][[txt_rho]]<-round(data.frame("rho"=Spear$estimate,txt_rho_dot_square=Spear$estimate^2,"S"=Spear$statistic,txt_p_dot_val=Spear$p.value),4)
-        names(Resultats[[txt_non_parametric_test]][[txt_rho]])<-c("rho",txt_rho_dot_square,"S",txt_p_dot_val) # added translation
+        names(Resultats[[txt_non_parametric_test]][[txt_rho]])<-c("rho",txt_rho_dot_square,"S",txt_p_dot_val)
         round(data.frame("tau"=Kendall$estimate,"z"=Kendall$statistic,txt_p_dot_val=Kendall$p.value),4)->Resultats[[txt_non_parametric_test]][[txt_kendall_tau]]
-        c("tau","z",txt_p_dot_val)->names(Resultats[[txt_non_parametric_test]][[txt_kendall_tau]]) # added translation
+        c("tau","z",txt_p_dot_val)->names(Resultats[[txt_non_parametric_test]][[txt_kendall_tau]])
 	}
 
         if(!is.null(group)){
@@ -282,11 +279,11 @@ corr.complet <-
 		gr.l<-expand.grid(gr.l)
         }
         if(choix!=txt_correlations){
-          dimnames(BPgroup)[[2]]<- c("Spearman.rho", txt_spearman_df, "Spearman.t", "Spearman.p") #TODO translation
+          dimnames(BPgroup)[[2]]<- c("Spearman.rho", txt_spearman_df, "Spearman.t", "Spearman.p")
           BPgroup<-data.frame(gr.l,BPgroup )
           Resultats[[txt_non_parametric_test]][[txt_partial_spearman_by_group]]<-BPgroup
         } else {
-		dimnames(BPgroup)[[2]]<- c( "Spearman.r", "Spearman.p", "Tau.Kendall.r", "Tau.Kendall.p") # TODO translation
+		dimnames(BPgroup)[[2]]<- c( "Spearman.r", "Spearman.p", "Tau.Kendall.r", "Tau.Kendall.p")
         	BPgroup<-data.frame(gr.l,BPgroup )
         	Resultats[[txt_non_parametric_test]][[txt_spearman_kendall_corr_by_group]]<-BPgroup
 	}
@@ -330,7 +327,7 @@ corr.complet <-
         BF<-extractBF(BF, onlybf=F)
         BF<-data.frame(txt_bayesian_factor=c(ifelse(BF$bf>10000,">10000", round(BF$bf,5)),
                                             ifelse(1/BF$bf>10000, ">10000", round((1/BF$bf),5))), txt_error=round(c( BF$error, BF$error),5))
-	names(BF)<-c(txt_bayesian_factor,txt_error) # added translation
+	names(BF)<-c(txt_bayesian_factor,txt_error)
 
         dimnames(BF)[[1]]<-c(txt_supports_alternative, txt_supports_null)
         # what is the t-value for the data?
@@ -356,7 +353,7 @@ corr.complet <-
           BFS<-data.frame(txt_bayesian_factor=c(ifelse(BFS$bf>10000,">10000", round(BFS$bf,5)),
                                                ifelse(1/BFS$bf>10000, ">10000", round((1/BFS$bf),5))), txt_error=round(c( BFS$error, BF$error),5))
 
-	  names(BFS)<-c(txt_bayesian_factor,txt_error) # added translation
+	  names(BFS)<-c(txt_bayesian_factor,txt_error)
           dimnames(BFS)[[1]]<-c(txt_supports_alternative, txt_supports_null)
           Resultats[[txt_bayesian_factors]][[txt_bayesian_factors_for_spearman]]<-BFS
 
@@ -398,7 +395,7 @@ corr.complet <-
         }
 
         SBF<-data.frame("n"=rep(5:length(data[,X]), each=3 ),"BF"= bfs,
-                        "rscale"=as.factor(rep(c("moyen - 0.353", txt_large_half, txt_ultrawide_val), length.out= 3*(length(data[,X])-4) ))) # TODO translation
+                        "rscale"=as.factor(rep(c("moyen - 0.353", txt_large_half, txt_ultrawide_val), length.out= 3*(length(data[,X])-4) )))
         SBF$rscale<-relevel(SBF$rscale, ref=2)
         Resultats[[txt_bayesian_factors_sequential]]<-.plotSBF(SBF)
 

@@ -174,8 +174,8 @@ chi <-
       dims<-dim(chi.r$expected)
       V<-round((x/((min(dims)-1)*n))^0.5,3)
       V.sq<-round(V^2,3)
-      resultats<-data.frame("V"=V, "V.carre"=V.sq) # TODO translation
-      names(resultats) <-c("V", txt_cramer_v_square) # translation
+      resultats<-data.frame("V"=V, "V.carre"=V.sq)
+      names(resultats) <-c("V", txt_cramer_v_square)
       return(resultats)}
     chi.out<-function(data=NULL, X=NULL, Y=NULL, p=NULL, choix=NULL, Effectifs=NULL, n.boot=NULL, SampleType=NULL,
                       fixedMargin=NULL, choix2=NULL, rscale=2^0.5/2,priorConcentration=1){
@@ -189,8 +189,8 @@ chi <-
         dimnames(Distribution)[[1]]<-c(txt_observed, txt_probabilities,txt_expected)
         Resultats[[txt_synthesis_table]]<-Distribution
         chi<-chisq.test(tab, p=p, B=n.boot)
-        Resultats[[txt_chi_dot_squared_adjustment]]<-data.frame(chi.deux=round(chi$statistic,3), ddl=chi$parameter) # TODO translation !
-        names(Resultats[[txt_chi_dot_squared_adjustment]])<-c(txt_chi_dot_squared, txt_df) # translation
+        Resultats[[txt_chi_dot_squared_adjustment]]<-data.frame(chi.deux=round(chi$statistic,3), ddl=chi$parameter)
+        names(Resultats[[txt_chi_dot_squared_adjustment]])<-c(txt_chi_dot_squared, txt_df)
         if(any(choix2== txt_non_parametric_test)) Resultats[[txt_chi_dot_squared_adjustment]][[txt_p_dot_val]]<-round(chi$p.value,4)
         if(!is.null(n.boot) && n.boot>1){
           Resultats[[txt_chi_dot_squared_adjustment]][[txt_p_estimation_with_monter_carlo]]<-round(chisq.test(tab, B=n.boot, simulate.p.value=T, correct=F)$p.value,4)}
@@ -210,7 +210,7 @@ chi <-
           mon.chi<-chisq.test(tab, B=n.boot, correct=F)
           mon.chi$expected->Resultats[[txt_expected_sample]]
           if(any(choix2 %in% c(txt_non_parametric_test,txt_robusts_tests_with_bootstraps)))    {
-            SY<-data.frame( txt_chi_dot_squared=round(mon.chi$statistic,4), # TODO translation
+            SY<-data.frame( txt_chi_dot_squared=round(mon.chi$statistic,4),
                             txt_df=mon.chi$parameter, Cramer(mon.chi))
             names(SY)<-c(txt_chi_dot_squared, txt_df, "Cramer")
             if(any(choix2==txt_non_parametric_test)) SY[[txt_p_dot_val]]<-round(mon.chi$p.value,4)
@@ -357,7 +357,7 @@ chi <-
     if(!is.null(chi.options$SampleType)) paste(chi.options$SampleType, collapse="','", sep="")->SampleType
     paste(chi.options$fixedMargin, collapse="','", sep="")->FM
     paste0("chi(X=c('", X,ifelse(!is.null(Y), paste0("'),Y=c('", Y, "')"), "'), Y=NULL"),
-           ifelse(is.null(chi.options$Effectifs),",Effectifs=NULL", paste0(",Effectifs='", chi.options$Effectifs, "'")), # TODO translation
+           ifelse(is.null(chi.options$Effectifs),",Effectifs=NULL", paste0(",Effectifs='", chi.options$Effectifs, "'")),
            ifelse(!is.null(Y), ", p=NULL", paste0(", p=c(", p,")")),
            ", choix='", chi.options$analyse, "',data=", chi.options$nom.data, ",info=", info, ",n.boot=", ifelse(is.null(chi.options$n.boot), "NULL",chi.options$n.boot) ,
            ",priorConcentration =" ,priorConcentration, ",SampleType=", ifelse(is.null(chi.options$SampleType), 'NULL', paste0("c('",SampleType,"')")),

@@ -25,15 +25,15 @@ Centrer.red <-
     for(i in 1:length(choix)){
       if(choix[i]==txt_center) {S<-FALSE
       nn<-txt_center}else {S<-TRUE
-      nn<-txt_centered_dot_reduced} # TODO translation
+      nn<-txt_centered_dot_reduced}
       scale(data[,X], scale=S)->centree
       matrix(centree, ncol=length(X))->centree
       if(choix[i]==txt_superior_proba|choix[i]==txt_inferior_proba){
         if(choix[i]==txt_superior_proba){
-          nn<-"p.sup" # TODO translation
+          nn<-"p.sup"
           lower<-FALSE
         }else {
-          nn<-"p.inf" # TODO translation
+          nn<-"p.inf"
           lower<-TRUE
         }
         round(pnorm(centree, lower.tail = lower),4)->centree

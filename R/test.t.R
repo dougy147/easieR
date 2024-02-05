@@ -266,13 +266,6 @@ test.t <-
             t.test(data, mu = moy)->ttest
             ttest$statistic^2/( ttest$statistic^2+ ttest$parameter)->R_carre
             cohensD(data[,1], mu=moy)->dc
-            #return(data.frame(test.t=round(ttest$statistic,3),
-            #                  ddl=ttest$parameter,
-            #                  valeur.p=round(ttest$p.value,4),
-            #                  IC.inf=ttest$conf.int[[1]],
-            #                  IC.sup=ttest$conf.int[[2]],
-            #                  txt_r_dot_square=round(R_carre,4),
-            #                  D.Cohen=round(dc,3)))
             current_df <- data.frame(test.t=round(ttest$statistic,3),
                               ddl=ttest$parameter,
                               valeur.p=round(ttest$p.value,4),
@@ -686,7 +679,6 @@ test.t <-
             yuen.bt.modele->Resultats[[txt_robusts_statistics]][[txt_bootstrap_t_method_on_truncated_means]]
             WRS::pb2gen(g1[,X],g2[,X], nboot=n.boot)->pb2gen.modele### calcule le bootstrap sur le M-estimateur et fournit l intervalle de confiance.
             round(unlist(pb2gen.modele)[1:6],4)->pb2gen.modele
-            #names(pb2gen.modele)<-c("M.estimaror.G1", "M.estimator.G2", "diff", txt_ci_inferior_limit_dot, txt_ci_superior_limit_dot, txt_p_dot_val)
             names(pb2gen.modele)<-c("M.estimator.G1", "M.estimator.G2", "diff", txt_ci_inferior_limit_dot, txt_ci_superior_limit_dot, txt_p_dot_val)
             pb2gen.modele->Resultats[[txt_robusts_statistics]][[txt_percentile_bootstrap_on_m_estimators]]
             Resultats[[txt_robusts_statistics]]$Informations<-c(desc_percentile_bootstrap_prefered_for_small_samples,
@@ -756,10 +748,6 @@ test.t <-
       X1<-X[i]
       R1<-list()
       if(any(outlier==  txt_complete_dataset)){
-        #switch(choix,
-	#       txt_comparison_to_norm=R1[[txt_complete_dataset]]<-norme(X=X1, mu=mu, data=data1, param=param, group=group, alternative=alternative, n.boot=n.boot, rscale=rscale),
-        #       txt_two_paired_samples=R1[[txt_complete_dataset]]<-apparies(X=X1, Y=Y, data=data1, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale),
-        #       txt_two_independant_samples= R1[[txt_complete_dataset]]<-indpdts(X=X1, Y=Y, data=data1, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale))
         if (choix==txt_comparison_to_norm) {
 		R1[[txt_complete_dataset]]<-norme(X=X1, mu=mu, data=data1, param=param, group=group, alternative=alternative, n.boot=n.boot, rscale=rscale)
 	}
@@ -786,8 +774,6 @@ test.t <-
       }
       if(any(outlier== txt_identifying_outliers)){influentes->R1[[txt_outliers_values]]}
       if(any(outlier== txt_without_outliers)) {
-        #if(length(influentes[[txt_outliers]])!=0 | all(outlier!=txt_complete_dataset)){
-        #if(influentes[[txt_outliers_synthesis]]$Synthese[1]!=0 | all(outlier!=txt_complete_dataset)){
         if(influentes[[txt_outliers_synthesis]][[txt_synthesis]][1]!=0 | all(outlier!=txt_complete_dataset)){
           if(choix==txt_two_paired_samples){
             setdiff(data$IDeasy,influentes[[txt_outliers]]$IDeasy)->diffs
@@ -795,9 +781,6 @@ test.t <-
           } else  get('nettoyees', envir=.GlobalEnv)->nettoyees
 
           ### Regler le souci pour les echantillons apparies
-          #switch(choix,  txt_comparison_to_norm=  R1[[txt_without_outliers]]<-norme(X=X1, mu=mu, data=nettoyees, param=param, group=group, alternative=alternative, n.boot=n.boot, rscale=rscale),
-          #       txt_two_paired_samples=R1[[txt_without_outliers]]<-apparies(X=X1, Y=Y, data=nettoyees, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale),
-          #       txt_two_independant_samples= R1[[txt_without_outliers]]<-indpdts(X=X1, Y=Y, data=nettoyees, param=param,alternative=alternative, n.boot=n.boot, rscale=rscale))
           if (choix==txt_comparison_to_norm) {
 		  R1[[txt_without_outliers]]<-norme(X=X1, mu=mu, data=nettoyees, param=param, group=group, alternative=alternative, n.boot=n.boot, rscale=rscale)
 	  }

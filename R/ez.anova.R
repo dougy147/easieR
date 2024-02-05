@@ -137,7 +137,6 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
 .ez.anova.msg<-function(type, number){
   # type : either "msg" or "title"
   # number : number of message 
-  #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())) {
     msg<-c(ask_variables_type_for_anova,
            desc_at_least_independant_variables_or_repeated_measures,
            ask_select_variables_or_modalities_of_repeated_measure_variable,
@@ -260,7 +259,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
 .contrastes.ez<-function(data, between=NULL, within=NULL, contrasts="none", p.adjust="none", dial=T){
   options (warn=1)
   c(between, unlist(within))->betweenwithin
-  if(any(!contrasts%in%c("none",txt_pairwise,txt_none,txt_pairwise_comparison)) & class(contrasts)!="list") { # TODO translation
+  if(any(!contrasts%in%c("none",txt_pairwise,txt_none,txt_pairwise_comparison)) & class(contrasts)!="list") {
     okCancelBox( .ez.anova.msg("msg", 27))
     return(.contrastes.ez(data=data, between=between, within=within, contrasts="none", p.adjust="none", dial=T))
   }
@@ -320,19 +319,6 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
         if(length(type.cont2)==0) return(contrastes.ez())
 	## With translation, switch case can cause trouble when using variables instead of literal strings.
 	## That's why I've been converting it here too.
-        #contrastes[[i]]<-switch(EXPR =type.cont2,
-        #                        "Helmert"= contr.helmert(nlevels(data[,betweenwithin[i]])), 
-        #                        "Helmert reversed"= apply(contr.helmert(nlevels(data[,betweenwithin[i]])), 2, rev), 
-        #                        "poly"= emmeans:::poly.emmc(1:nlevels(data[,betweenwithin[i]])),
-        #                        "Trait.vs.contr"= {
-        #                          base<- dlgList(levels(data[, betweenwithin[i]]), preselect=levels(data[,betweenwithin[i]])[1],
-        #                                         multiple = FALSE, title=.ez.anova.msg("title", 25))$res
-        #                          which(levels(data[, betweenwithin[i]])==base)->base
-        #                          emmeans:::trt.vs.ctrl1.emmc(1:nlevels(data[,betweenwithin[i]]), ref=base)
-        #                        }, 
-        #                        "Eff"=emmeans:::del.eff.emmc(1:nlevels(data[,betweenwithin[i]])), 
-        #                        "consec"= emmeans:::consec.emmc(1:nlevels(data[,betweenwithin[i]])), 
-        #                        "mean.change"= emmeans:::mean_chg.emmc(1:nlevels(data[,betweenwithin[i]]))) 
 	if (type.cont2=="Helmert") { contr.helmert(nlevels(data[,betweenwithin[i]])) -> contrastes[[i]] }
         if (type.cont2=="Helmert reversed") { apply(contr.helmert(nlevels(data[,betweenwithin[i]])), 2, rev)  -> contrastes[[i]]}
         if (type.cont2=="poly") { emmeans:::poly.emmc(1:nlevels(data[,betweenwithin[i]]))  -> contrastes[[i]]}
@@ -493,11 +479,9 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
     return(.ez.anova.in())}
   
   if(is.null(c(between,within, RML))) {
-    #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())) index<-1 else index<-2
-    index<-1 # From when language was hard coded in easieR. TODO change
+    index<-1 # From when language was hard coded in easieR. TODO 
     type.v<-matrix(c(txt_independant_groups, txt_repeated_measures, txt_covariables,
 	             txt_independant_groups, txt_repeated_measures, txt_covariables), ncol=2)
-                     #"Independant groups", "Repeated measures", "Covariables"), ncol=2) 
     writeLines(.ez.anova.msg("msg", 1))
     type.v2<-dlgList(type.v[,index], multiple = TRUE, title=.ez.anova.msg("title", 1))$res
     if(length(type.v2)==0) return(.ez.anova.in())
@@ -760,18 +744,14 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
       for(i in 1:length(cov)){
         aov(as.formula(paste0(cov[i], "~",pred.ind)), data=data)->aov.cov
         Anova(aov.cov, type="III")->aov.cov
-        #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-          names(aov.cov)<-c("SC", txt_df, "F", txt_p_dot_val)  # TODO translation
-        #}
+        names(aov.cov)<-c("SC", txt_df, "F", txt_p_dot_val) 
         
         Resultats[[.ez.anova.msg("title",32)]][[paste0(.ez.anova.msg("title",33), cov[i])]]<-aov.cov
         if(i==1) {paste(cov[1],"*")->cov2} else {paste0(cov2, cov[i],"*")->cov2}
       }
       aov(as.formula(paste0(DV, "~", cov2,pred.ind)), data=data)->aov.cov
       Anova(aov.cov, type="III")->aov.cov
-      #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-        names(aov.cov)<-c("SC", txt_df, "F", txt_p_dot_val) # TODO translation
-      #}
+      names(aov.cov)<-c("SC", txt_df, "F", txt_p_dot_val)
       Resultats[[.ez.anova.msg("title",32)]][[.ez.anova.msg("title",34)]]<-aov.cov
       
     }
@@ -780,9 +760,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
       paste0(DV, "~",pred.ind)->modele2
       Levene<-leveneTest(as.formula(modele2),data=data) # test de Levene pour homogeneite des variances
       Levene<-round(unlist(Levene)[c(1,2,3,5)],3)
-      #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-        names(Levene)<-c(txt_df1,txt_df2,"F",txt_p_dot_val) # TODO translation
-    #}
+      names(Levene)<-c(txt_df1,txt_df2,"F",txt_p_dot_val)
       Resultats[[.ez.anova.msg("title",35)]]<- Levene
     }
     
@@ -803,26 +781,21 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
     if(!is.null(within) && any( sapply(data[,c(unlist(within))],nlevels)>2)) {
       aov.out2b<-round(aov.out2$sphericity.test,5)
       aov.out2b<-matrix(aov.out2b, ncol=2)
-      dimnames(aov.out2b)<-list(dimnames(aov.out2$sphericity.test)[[1]], c("Stat", txt_p_dot_val)) # TODO translation
+      dimnames(aov.out2b)<-list(dimnames(aov.out2$sphericity.test)[[1]], c("Stat", txt_p_dot_val))
       Resultats[[.ez.anova.msg("title",36)]]<-aov.out2b
     }
 
     aov.out3<-aov.out[[1]]
     aov.out3<-data.frame(aov.out3)
-#    aov.out3[,6]<-round.ps(aov.out3[,6])
-    #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-      names(aov.out3)<-c(txt_df_num, txt_df_denom, "CME", "F", ES, txt_p_dot_val ) # TODO translation
-    #}
+    names(aov.out3)<-c(txt_df_num, txt_df_denom, "CME", "F", ES, txt_p_dot_val )
     omega.out<-effectsize::omega_squared(aov.out$Anova)
     aov.out3<-cbind(aov.out3, omega.2=omega.out[match(rownames(aov.out3), omega.out$Parameter),2])
     
     Resultats[[.ez.anova.msg("title",37)]]<- aov.out3
     if(!is.null(within) && any( sapply(data[,c(unlist(within))],nlevels)>2)) {
       GG.HF<-data.frame(round(aov.out2$pval.adjustments,5))
-      #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-        names(GG.HF)<-c("GG.eps", "GG.valeur.p","HF.eps", txt_hf_p_value) # TODO translation
-      #}
-      Resultats$"Correction : Greenhouse-Geisser &  Hyunh-Feldt"<-GG.HF} # TODO translation
+      names(GG.HF)<-c("GG.eps", txt_gg_p_value,"HF.eps", txt_hf_p_value)
+      Resultats[[txt_greenhouse_geisser_huynn_feldt_correction]]<-GG.HF}
     if(length(between)==1 & is.null(within) & is.null(cov)) {
       Welch<-oneway.test(as.formula(paste(DV,"~", between)),data=data)
       Welch<-round(data.frame("F"=Welch$statistic,"num"=Welch$parameter[1],"denom"=Welch$parameter[2],"p"=Welch$p.value),4)
@@ -837,7 +810,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
     if(!is.list(contrasts) && any(contrasts %in% c(txt_pairwise,  txt_comparison_two_by_two ))){
       pair<-pairs(em.out, adjust=p.adjust)
       pair<-summary(pair)
-      names(pair)[which(names(pair)=="p.value")]<-txt_p_dot_val # TODO translation
+      names(pair)[which(names(pair)=="p.value")]<-txt_p_dot_val
       Resultats[[.ez.anova.msg("title",39)]]<-pair
     }
     
@@ -896,9 +869,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
        round( ifelse(table.cont$d.Cohen==T, (2*table.cont$t.ratio)/(nlevels(data[,id])^0.5), table.cont$t.ratio/(nlevels(data[,id])^0.5)),4)->table.cont$d.Cohen}else{
           round(table.cont$t.ratio/((nlevels(data[,id]))^0.5),4)->table.cont$d.Cohen}
       
-      #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-        names(table.cont)<-c(txt_contrast,txt_estimation, txt_error_dot_standard_short, txt_df,"t", txt_p_dot_val, txt_r_square, "d Cohen") # TODO translation
-      #  }
+        names(table.cont)<-c(txt_contrast,txt_estimation, txt_error_dot_standard_short, txt_df,"t", txt_p_dot_val, txt_r_square, "d Cohen")
 
     
       
@@ -950,23 +921,15 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
         
         round(Table.contrasts,4)->Table.contrasts
         data.frame(Table.contrasts)->Table.contrasts  
-        #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-          names(Table.contrasts)<-c(txt_estimator, txt_df,"t", txt_p_dot_val) # TODO translation
-         Table.contrasts$t^2/(Table.contrasts$t^2+Table.contrasts$ddl)->Table.contrasts$R.2
-          round(Table.contrasts$t/(nlevels(data[,id]))^0.5,4)->Table.contrasts$D.Cohen 
-        #}else {
-        #  names(Table.contrasts)<-c("estimate", "df","t", "p.value")
-        # Table.contrasts$t^2/(Table.contrasts$t^2+Table.contrasts$df)->Table.contrasts$R.2
-        #  round(Table.contrasts$t/(nlevels(data[,id]))^0.5,4)->Table.contrasts$D.Cohen 
-        #}
+        names(Table.contrasts)<-c(txt_estimator, txt_df,"t", txt_p_dot_val)
+        Table.contrasts$t^2/(Table.contrasts$t^2+Table.contrasts$ddl)->Table.contrasts$R.2
+        round(Table.contrasts$t/(nlevels(data[,id]))^0.5,4)->Table.contrasts$D.Cohen 
         dimnames(Table.contrasts)[[1]]<-table.cont[,1]
         Resultats[[.ez.anova.msg("title",40)]][[.ez.anova.msg("title",43)]]<-Table.contrasts
-        
-        
       } 
-      
     }
   }
+
   ##### Bayes 
   if(any(param %in% c("bayes",txt_bayesian_factors, txt_bayesian_factors)) )  {
     modeleBF<-paste0(DV,"~")
@@ -1001,9 +964,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
     if(!is.null(between)){
       kruskal.test(as.formula( paste0(DV, "~",between[1])), data = data)->KW
       round(data.frame(KW$statistic,KW$parameter,KW$p.value),4)->KW
-      #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-        names(KW)<-c("H",txt_df,txt_p_dot_val)
-      #}
+      names(KW)<-c("H",txt_df,txt_p_dot_val)
       round((KW$H-nlevels(data[,between])+1)/(length(data[,1])-nlevels(data[,between])),4)->eta
       if(eta<0.0001) "<0.001"->KW$eta.2.H else KW$eta.2.H
       KW$espilon.2<-round(KW$H/((length(data[,1])^2-1)/(length(data[,1])+1)),4)
@@ -1020,9 +981,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
       friedman<-friedman.test(as.formula(paste0(DV,"~", within[[1]], "|", id )),data=data)
       friedman<-round(data.frame(friedman$statistic,friedman$parameter,friedman$p.value),4)
       friedman$W.de.Kendall<-round(friedman[,1]/(nrow(data)*(nlevels(data[,unlist(within)])-1)),4)
-      #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-        names(friedman)<-c(txt_chi_dot_squared,txt_df,txt_p_dot_val, txt_kendall_w) # TODO translation
-      #}else { names(friedman)<-c(txt_chi_dot_squared,"df","p.value","Kendall's W") }
+      names(friedman)<-c(txt_chi_dot_squared,txt_df,txt_p_dot_val, txt_kendall_w)
       Resultats[[.ez.anova.msg("title",45)]][[.ez.anova.msg("title",47)]]<-friedman
       ans<-frdAllPairsExactTest(y=data[,DV],groups=data[,within], blocks=data[,id], p.adjust = p.adjust)
       comp<-expand.grid(dimnames(ans$p.value))
@@ -1032,8 +991,6 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
        F.MC<-F.MC[complete.cases(F.MC),]
 #      F.MC$p<-round.ps(F.MC$p)
       Resultats[[.ez.anova.msg("title",45)]][[.ez.anova.msg("title",48)]]<-F.MC
-      
-      
     }
   }
   
@@ -1043,18 +1000,14 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
       split(data[,DV], data[,between])->robuste
       try(unlist(WRS::med1way(robuste,iter = n.boot)), silent=T)->mediane
       if(class(mediane)!='try-error'){
-        #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-          names(mediane)<-c("Test", txt_critical_dot_val,txt_p_dot_val) # TODO translation
-        #}
+        names(mediane)<-c("Test", txt_critical_dot_val,txt_p_dot_val)
         Resultats[[.ez.anova.msg("title",50)]][[.ez.anova.msg("title",51)]]<-round(mediane,4)
         # revoir
         if(is.list(contrasts)){
           contrasts<-contrasts[[1]]
           cont<-WRS::medpb(robuste,alpha=.05,nboot=n.boot,con=contrasts,bhop=FALSE)
-          #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-            dimnames(cont$output)[[2]]<-c("Numero.contraste",txt_contrast_dot_val,
-                                          txt_p_dot_val,txt_critical_p_corrected,txt_ci_inferior_limit_dot,txt_ci_superior_limit_dot) # TODO translation
-          #}
+          dimnames(cont$output)[[2]]<-c("Numero.contraste",txt_contrast_dot_val,
+                                          txt_p_dot_val,txt_critical_p_corrected,txt_ci_inferior_limit_dot,txt_ci_superior_limit_dot)
           
           Resultats[[.ez.anova.msg("title",50)]][[.ez.anova.msg("title",42)]]<-cont$output
         }
@@ -1071,11 +1024,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
         WRS2::t1way(as.formula(paste0(DV, "~",between)), tr=.2,data=data)->AR1
         WRS2::t1waybt(as.formula(paste0(DV, "~",between)), tr=.2, nboot=n.boot,data=data)->AR2
         data.frame(AR1[[2]],AR1[[3]],AR1[[1]],AR2[[2]],AR2[[3]],AR2[[4]], AR2[[5]])->AR1
-        #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-          names(AR1)<-c(txt_df_num,txt_df_denom,"Stat",txt_p_dot_val,"Var.expliquee","Taille.effet",txt_bootstrap_dot_number ) # TODO translation
-        #}else {
-        #  names(AR1)<-c("df.num","df.denom","Stat","p.value","Var.explained","effect size","N.bootstrap" )
-        #}
+        names(AR1)<-c(txt_df_num,txt_df_denom,"Stat",txt_p_dot_val,txt_var_explained_dot,txt_effect_size_dot,txt_bootstrap_dot_number )
         
         
         Resultats[[.ez.anova.msg("title",52)]][[.ez.anova.msg("title",51)]]<-AR1
@@ -1085,11 +1034,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
         try(WRS::mcppb20(robuste, tr=.2, nboot=n.boot, con=contrasts),silent=T)->cont2
         if(class(cont)!= 'try-error') {
           cont<-data.frame(cont$psihat[,2],cont$test[,4],cont$test[,5],cont$test[,2],cont$test[,3],cont2$psihat[,4],cont2$psihat[,5],cont2$psihat[,6])
-          #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-            names(cont)<-c(txt_contrast_dot_val,txt_error_dot_standard,txt_df,"test",txt_critical_dot_threshold,txt_ci_inferior_limit_dot,txt_ci_superior_limit_dot,txt_p_dot_val) # TODO translation
-          #}else {
-          #  names(cont)<-c("estimate","se","df","test","critic","lower.lim.CI","upper.lim.CI","p.value")
-          #}
+          names(cont)<-c(txt_contrast_dot_val,txt_error_dot_standard,txt_df,"test",txt_critical_dot_threshold,txt_ci_inferior_limit_dot,txt_ci_superior_limit_dot,txt_p_dot_val)
           Resultats[[.ez.anova.msg("title",52)]][[.ez.anova.msg("title",42)]] <-cont
         }
         
@@ -1105,9 +1050,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
       try( WRS2::t2way(as.formula(paste0(DV, "~",between[1],"*",between[2])), data=data, tr = 0.2), silent=T)->T2
       if(class(T2)!='try-error'){
         T2<-matrix(unlist(T2[c(1:6)]), ncol=2, byrow=T)
-        #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-          dimnames(T2)[[2]]<-c(txt_value, txt_p_dot_val)
-        #}
+        dimnames(T2)[[2]]<-c(txt_value, txt_p_dot_val)
         c(names(data[,between]), paste(names(data[,between])[1],":",names(data[,between])[2]))->dimnames(T2)[[1]]
         Resultats[[.ez.anova.msg("title",52)]][[.ez.anova.msg("title",51)]]<-T2
       }
@@ -1161,12 +1104,7 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
       ANOVA.tr<-try( WRS2::rmanova(data$value,data[,within[[1]]] ,data[,id]), silent=T)
       if(class(ANOVA.tr)!='try-error'){
         
-        #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-          ANOVA.tr<-round(data.frame(txt_test_dot_val= ANOVA.tr$test,txt_df1=ANOVA.tr$df1, txt_df2=ANOVA.tr$df2,txt_p_dot_val=ANOVA.tr$p.value),4)
-          
-        #}else {
-        #  ANOVA.tr<-round(data.frame("Test"= ANOVA.tr$test,"df1"=ANOVA.tr$df1, "df2"=ANOVA.tr$df2,"p.value"=ANOVA.tr$p.value),4)
-        #}
+        ANOVA.tr<-round(data.frame(txt_test_dot_val= ANOVA.tr$test,txt_df1=ANOVA.tr$df1, txt_df2=ANOVA.tr$df2,txt_p_dot_val=ANOVA.tr$p.value),4)
         
         Resultats[[.ez.anova.msg("title",52)]][[.ez.anova.msg("title",51)]]<-ANOVA.tr
         if((nlevels(data[,within[[1]]]))>2) {
@@ -1190,20 +1128,11 @@ if(reshape.data) Resultats$call.reshape<-as.character(ez.history[[length(ez.hist
         WRS2::sppba(modeleR, data[,id], data=data, est = "mom", avg = TRUE, nboot = n.boot, MDIS = FALSE)->MoMa 
         WRS2::sppbb(modeleR, data[,id], data=data, est = "mom", nboot = n.boot)->MoMb
         WRS2::sppbi(modeleR, data[,id], data=data, est = "mom", nboot = n.boot)->MoMi 
-        #if(grepl("French",Sys.setlocale()) | grepl("fr",Sys.setlocale())){
-          #MoM<-data.frame("effet"= c(between,within[[1]],"interaction"), txt_p_dot_val=c(MoMa$p.value,MoMb$p.value, MoMi$p.value) )
-          MoM<-data.frame("effet"= c(between,within[[1]],"interaction"), txt_p_dot_val=c(MoMa$p.value,MoMb$p.value, MoMi$p.value) )
-	  names(MoM) <- c(txt_effect,txt_p_dot_val)
-          
-        #}else {
-        #  MoM<-data.frame("effect"= c(between,within[[1]],"interaction"), "p.value"=c(MoMa$p.value,MoMb$p.value, MoMi$p.value) )
-        #}
-        
+        MoM<-data.frame("effet"= c(between,within[[1]],"interaction"), txt_p_dot_val=c(MoMa$p.value,MoMb$p.value, MoMi$p.value) )
+	names(MoM) <- c(txt_effect,txt_p_dot_val)
         Resultats[[.ez.anova.msg("title",54)]][[.ez.anova.msg("title",51)]]  <-MoM
       }else Resultats[[.ez.anova.msg("title",10)]]<-.ez.anova.msg("msg",33)
-      
     }
-    
   }
   Resultats[["data"]]<-data
   Resultats[["aov.plus.in"]]<-aov.plus.in

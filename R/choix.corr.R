@@ -32,15 +32,10 @@ choix.corr <-
               txt_compare_two_correlations,
               txt_other_correlations), preselect=NULL, multiple = FALSE, title=ask_which_analysis)$res->choix
     if(length(choix)==0) return(analyse())
-    #switch(choix,
-    #       txt_detailed_corr_analysis=corr.complet(html=html)->Resultats,
-    #       txt_correlations_matrix= corr.matrice(html=html)->Resultats,
-    #       txt_compare_two_correlations= comp.corr(html=html)->Resultats,
-    #       txt_other_correlations= tetrapoly(html=html)->Resultats
-    #)
-           if(choix==txt_detailed_corr_analysis) corr.complet(html=html)->Resultats
-           if(choix==txt_correlations_matrix) corr.matrice(html=html)->Resultats
-           if(choix==txt_compare_two_correlations) comp.corr(html=html)->Resultats
-           if(choix==txt_other_correlations) tetrapoly(html=html)->Resultats
+
+    if(choix==txt_detailed_corr_analysis) corr.complet(html=html)->Resultats
+    if(choix==txt_correlations_matrix) corr.matrice(html=html)->Resultats
+    if(choix==txt_compare_two_correlations) comp.corr(html=html)->Resultats
+    if(choix==txt_other_correlations) tetrapoly(html=html)->Resultats
     return(Resultats)
   }

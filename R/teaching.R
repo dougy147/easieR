@@ -24,30 +24,6 @@ teaching <-
                        txt_understanding_heterogenous_variance_effects), preselect=NULL, multiple = FALSE, title=ask_what_do_you_want)$res
     if(length(choix)==0) return(easieR())
 
-    #switch(choix,
-    #       txt_understanding_confidance_interval=ci.examp(), # peut etre completer par des arguments
-    #       txt_understanding_central_limit_theorem=tcl(),
-    #       txt_understanding_prev_sens_specificity= plotFagan2(),
-    #       txt_understanding_bayesian_inference=plotFagan(),
-    #       txt_understanding_likelihood=mle.demo() , #des arguments peuvent etre utilises
-    #       txt_understanding_alpha_and_power=run.power.examp(hscale=1.5, vscale=1.5, wait=FALSE),
-    #       txt_understanding_corr = put.points.demo(),
-    #       txt_understanding_heterogenous_variance_effects={
-    #         writeLines("Avec deux moyennes egales, ou pratiquement egales, le taux d'erreurs doit etre de 5%.
-    #                    Modifiez progressivement l'ecart entre les ecart-types et voyez comment le taux d'erreur alpha va etre modifie")
-    #         run.Pvalue.norm.sim()
-    #       },
-    #       txt_understanding_prev_sens_specificity_2= roc.demo(),
-    #       txt_understanding_corr_2=run.cor2.examp(),
-    #       txt_understanding_negative_positive_predic_power= {
-    #         for(i in seq(1,11,2)) {
-    #           SensSpec.demo(sens=0.95, spec=0.99, prev=0.01, step=i) # on peut modifier sensibilite et specificite
-    #           if( interactive() ) {
-    #             readline("Press Enter to continue")
-    #           }
-    #         }
-    #       }
-    #)
            if (choix==txt_understanding_confidance_interval) ci.examp() # peut etre completer par des arguments
            if (choix==txt_understanding_central_limit_theorem) tcl()
            if (choix==txt_understanding_prev_sens_specificity) plotFagan2()
