@@ -1,6 +1,6 @@
 # Presentation of easieR (English/French below)
 
-easieR is R metapckage. The aim is to provide a GUI able to perform classical statistical analyses. However, easieR is more flexible than most R GUI given that it can also be used directly in command line : each individual function can be used either with a GUI or with command line. Moreover, there are a lot of possibilities with R, but each author print their results differently, which might cause discomfort to beginners. easieR avoid this problem by providing a nice (Rmarkdown) standard presentation for all the analyses. easieR can progress quite quickly since the functions is based on the functions developed in other R packages.
+easieR is R metapackage. The aim is to provide a GUI able to perform classical statistical analyses. However, easieR is more flexible than most R GUI given that it can also be used directly in command line : each individual function can be used either with a GUI or with command line. Moreover, there are a lot of possibilities with R, but each author print their results differently, which might cause discomfort to beginners. easieR avoid this problem by providing a nice (Rmarkdown) standard presentation for all the analyses. easieR can progress quite quickly since the functions is based on the functions developed in other R packages.
 
 Concerning the presentation, easieR systematically prints : descriptive statistics, assumptions, the main analysis, and effect sizes. For each analysis, it is possible to obtain less common analyses (e.g., Wilcox test instead of t test) and identify and remove these outliers automatically. This approach aims to increase robustness of analyses and improve replication of results.
 
@@ -11,19 +11,19 @@ easieR has many capabilities for the moment : import/export data, sort, select, 
 It is possible to split analyses by group (regressions, correlations) for some analyses. Plots are also automatically generated, most often using ggplot2.
 
 
-
 ## Evolutions and correction
-The English version is under development. 
+The English version is under development (see `./R/lang_en_EN.R`). 
+easieR already allow switching language (easieR() > Interface > Choose language). 
+File `./R/lang_en_EN.R` contain english messages to be displayed, but need proper review.
 
 ## The most important
 Most functions works quite well, and many new functions will be developed soon but if there are bugs, just let me know by posting in the issues part of this github repository.
 
 easieR can be used either by the GUI and in command lines. For now, easieR is not a package available on CRAN. Thus, it requires  to follow several steps for the installation. 
 
-**Step 0** : (Linux only) install prerequisites
+**Step 0** : (Linux only) prerequisites
 
-For Linux users, ensure to have `tcl`, `tk` and `glpk` installed on your system. Refer to your distribution packages repositories to install them. 
-For some dialog boxes, you may also want to install `yad`.
+For Linux users, ensure to have `tcl`, `tk`, `glpk` and `yad` (optional but recommended for dialog boxes) installed on your system. Refer to your distribution packages repositories to install them. 
 
 **Step 1** : open R and install *devtools*. 
 
@@ -31,9 +31,10 @@ For some dialog boxes, you may also want to install `yad`.
 install.packages("devtools",dependencies = TRUE, repos = "https://mirror.ibcp.fr/pub/CRAN")
 ```
 
-For Linux users, `stringi` must be installed to ensure proper `devtools` install.
+For Linux users, `stringi` could require to be installed before `devtools`.
 
 ```{r eval=FALSE}
+# If installing devtools fails because of stringi:
 install.packages("stringi", repos = "https://mirror.ibcp.fr/pub/CRAN")
 ```
 
@@ -57,14 +58,6 @@ print("##Le chargement a nécessité le package : devtools")
 ```
 
 It is also possible that nothing is printed. Do not worry.
-
-For Linux users, if the `stringi` package causes trouble during `devtools` installation, then install it first before trying installing `devtools` again as follows:
-
-```{r eval=FALSE}
-install.packages("stringi", repos = "https://mirror.ibcp.fr/pub/CRAN")
-install.packages("devtools",dependencies = TRUE, repos = "https://mirror.ibcp.fr/pub/CRAN")
-```
-
 
 **Step 2**: the installation of easieR
 
@@ -119,10 +112,9 @@ devtools::install_github("nicolasstefaniak/easier", type="binary", dependencies=
 
 easieR est un package qui peut être utilisé en boîte de dialogue (GUI) ou en ligne de commande. Ce document expliquera comment l'utiliser d'une manière ou d'une autre. Cependant, pour le moment, easieR n'est pas un package disponible sur le CRAN. Il est donc nécessaire de passer par quelques étapes intermédiaires. Pour s'assurer d'une installation correcte de easieR, il faut suivre **les étapes suivantes**.  
 
-**Étape 0** : (Linux uniquement) installer les pré-requis à easieR et *devtools*
+**Étape 0** : (Linux uniquement) installer les pré-requis
 
-Pour les utilisateurs Linux, assurez-vous que les paquets suivants soient installés sur votre système : `tcl`, `tk` et `glpk`. Référez-vous au gestionnaire de paquets de votre distribution.
-Pour l'affichage de certaines boîtes de dialogues, l'installation de `yad` peut-être nécessaire.
+Pour les utilisateurs Linux, assurez-vous que les paquets suivants soient installés sur votre système : `tcl`, `tk`, `glpk` et `yad` (optionnel mais recommandé pour un bon affichage des boîtes de dialogue). Référez-vous au gestionnaire de paquets de votre distribution.
 
 **Etape 1** : tout d'abord, il faut  ouvrir R et installer le package *devtools* de la manière suivante. 
 
@@ -131,9 +123,10 @@ install.packages("devtools",dependencies = TRUE, repos = "https://mirror.ibcp.fr
 ```
 
 Pour les utilisateurs Linux, si le paquet `stringi` pose problème lors de l'installation de `devtools`, installez-le indépendemment puis relancer l'installation de `devtools` comme suit:
+
 ```{r eval=FALSE}
+# Si l'installation de devtools échoue en raison d'un problème avec stringi:
 install.packages("stringi", repos = "https://mirror.ibcp.fr/pub/CRAN")
-install.packages("devtools",dependencies = TRUE, repos = "https://mirror.ibcp.fr/pub/CRAN")
 ```
 
 Normalement, le package « devtools » est à présent installé. Il faut le charger. Pour charger un package, on utilise la fonction <code>library</code>. Une fois que le package est chargé, vous pouvez l’utiliser pendant toute la durée de la session sans devoir le charger à nouveau. Donc, pour charger le package *devtools*, il faut taper :
@@ -238,7 +231,9 @@ Au niveau des analyses, easieR permet de réaliser :
  
 
 # Evolutions et correction
-Une version anglophone de easieR va être développée.
+Une version anglophone de easieR va être développée. 
+easieR peut d'ores et déjà changer la langue utilisée (easieR() > Interface > Choisir la langue). 
+Le fichier `./R/lang_en_EN.R` doit être mis à jour pour contenir des messages en anglais correct.
 
 
 

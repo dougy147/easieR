@@ -7,12 +7,10 @@ https://theeasierproject.wordpress.com/2017/05/05/comment-installer-easier/
 For the installation of easieR, you must :
 
 1) install the 'devtools' package and load it 
-<pre class="prettyprint lang-">
+<pre class="prettyprint lang-r">
 install.packages("devtools")
 library("devtools")
 </pre>
-
-If `devtools` cannot install because of `stringi`, launch `install.packages("stringi")` before installing `devtools`.
 
 2) install easieR
 <pre class="prettyprint lang-r">
