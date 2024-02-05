@@ -10,7 +10,7 @@ corr.matrice <-
     # param :  one or both among "H0" (null hypoethesis testing) et "FB"(bayesian factors)
     # save : logical. Must the analyses be saved ?
     # outlier : One among   c(txt_complete_dataset, txt_without_outliers)
-    # rscale : numeric. If not null, bayesian factors are computed. Can also be "moyen", "large", "ultralarge"
+    # rscale : numeric. If not null, bayesian factors are computed. Can also be "moyen", txt_large, txt_ultrawide
     # info : logical. Must information be displayed in dialog box interface.
     # correction : character. Probability adjustement. See p.adjust for list of possibilities
     # out.m : 1 for deleting one observation at the time in outlier detection. 2 for all at the same time.
@@ -142,7 +142,7 @@ corr.matrice <-
       }
 
 
-      if((dial)|| !is.null(rscale) & ((is.numeric(rscale) & (rscale<0.1 | rscale>2)) || (!is.numeric(rscale) & rscale%in% c("moyen", "large", "ultralarge")==F))) {
+      if((dial)|| !is.null(rscale) & ((is.numeric(rscale) & (rscale<0.1 | rscale>2)) || (!is.numeric(rscale) & rscale%in% c("moyen", txt_large, txt_ultrawide)==F))) {
         if(info) writeLines(ask_null_hypothesis_tests_or_bayesian_factors)
         param<-dlgList(c(txt_bayesian_factors,txt_null_hypothesis_tests), preselect=c(txt_bayesian_factors,txt_null_hypothesis_tests), multiple = T, title=ask_statistical_approach)$res
         if(length(param)==0) { Resultats<-corr.matrice.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, save=NULL, info=T, group=NULL,
@@ -152,13 +152,13 @@ corr.matrice <-
         if(any(param==txt_bayesian_factors) | any(param=="FB")){
           if(info) writeLines(ask_cauchy_apriori_distribution)
 
-          rscale<-dlgList(c("moyen", "large", "ultralarge"), preselect="moyen", multiple = F, title=ask_distribution_type)$res
+          rscale<-dlgList(c("moyen", txt_large, txt_ultrawide), preselect="moyen", multiple = F, title=ask_distribution_type)$res
           if(length(rscale)==0) {
             Resultats<-corr.matrice.in(X=NULL, Y=NULL, data=NULL, param=NULL, outlier=NULL, save=NULL, info=T, group=NULL,
                                        n.boot=NULL, rscale=0.353)
             return(Resultats)
           }
-          ifelse(rscale=="moyen", rscale<-2^0.5/4, ifelse(rscale=="large", rscale<-0.5, ifelse(rscale=="ultralarge", rscale<-2^0.5/2, rscale<-rscale)))} else rscale<-NULL
+          ifelse(rscale=="moyen", rscale<-2^0.5/4, ifelse(rscale==txt_large, rscale<-0.5, ifelse(rscale==txt_ultrawide, rscale<-2^0.5/2, rscale<-rscale)))} else rscale<-NULL
       }
 
       if(any(param==txt_null_hypothesis_tests) |any(param=="H0")){
@@ -213,8 +213,8 @@ corr.matrice <-
 
     corr.matrice.out<-function(data, X, Y, Z, p.adjust, method,save, rscale, n.boot, param){
       Resultats<-list()
-      Resultats$txt_descriptive_statistics<-.stat.desc.out(X=c(X,Y,Z), groupes=NULL, data=data, tr=.1, type=3, plot=F)
-      Resultats$txt_multivariate_normality<-.normalite(data, c(X,Y,Z))
+      Resultats[[txt_descriptive_statistics]]<-.stat.desc.out(X=c(X,Y,Z), groupes=NULL, data=data, tr=.1, type=3, plot=F)
+      Resultats[[txt_multivariate_normality]]<-.normalite(data, c(X,Y,Z))
 
       if(is.null(Z)){
         if(is.null(Y)) { Y1<-NULL
@@ -227,7 +227,7 @@ corr.matrice <-
         corr.test(x=X1, y=Y1, use = txt_pairwise,method=method,adjust=p.adjust, alpha=.05,ci=TRUE)->matrice
         r1<-round(matrice$r,3)
         if(is.null(Y)) r1[which(lower.tri(r1, diag = T))]<-"-"
-        Resultats$txt_correlations_matrix<-as.data.frame(r1)
+        Resultats[[txt_correlations_matrix]]<-as.data.frame(r1)
 
       } else{
         data[,c(X,Z)]->d2
@@ -237,12 +237,12 @@ corr.matrice <-
         r1<-round(matrice$r, 3)
         class(r1)<-"matrix"
         r1[which(lower.tri(r1, diag = T))]<-"-"
-        Resultats$txt_partial_correlations_matrix <-as.data.frame(r1)
+        Resultats[[txt_partial_correlations_matrix]] <-as.data.frame(r1)
       }
 
       class(r1)<-"matrix"
       dimnames(r1)[[1]]<-paste(dimnames(r1)[[1]], "r")
-      matrice$n->Resultats$txt_sample_size
+      matrice$n->Resultats[[txt_sample_size]]
 
       if(any(param=="H0")|any(param==txt_null_hypothesis_tests)) {
 	      paste(desc_applied_correction_is,p.adjust)->Resultats$Correction[1]
@@ -251,14 +251,14 @@ corr.matrice <-
 		r2<-round(matrice$p.adj,3)
 	}
         class(r2)<-c("matrix", "p.value") # TODO translation?
-        Resultats$txt_probability_matrix<-r2
+        Resultats[[txt_probability_matrix]]<-r2
         dimnames(r2)[[1]]<-paste0(dimnames(r2)[[1]], ".p")
         if(is.null(Y)) r2[which(lower.tri(r2, diag = T))]<-NA
         r1<-rbind(r1,r2)
       }
       if(method=="kendall") {
         r2<-round(sin(0.5*pi*matrice$r)^2,3) # from David A. Walker 2003 JMASM9: Converting Kendall's Tau For Correlational Or Meta-Analytic Analyses
-        Resultats$txt_information<-desc_effect_size_by_walker
+        Resultats[[txt_information]]<-desc_effect_size_by_walker
       } else r2<-round(matrice$r^2,3)
 
 
@@ -271,12 +271,12 @@ corr.matrice <-
         r3<-format(r3, scientific=T)
         if(is.null(Y)) r3[which(lower.tri(r3, diag = T))]<-"-"
         dimnames(r3)[[1]]<-paste0(dimnames(r3)[[1]], ".FB")
-        Resultats$txt_bayesian_factors<-as.data.frame(r3)
+        Resultats[[txt_bayesian_factors]]<-as.data.frame(r3)
         r1<-rbind(r1, r3)
       }
       class(r2)<-"matrix"
       if(is.null(Y)) r2[which(lower.tri(r2, diag = T))]<-"-"
-      Resultats$"matrice des r.deux" <-as.data.frame(r2) # TODO translation
+      Resultats[[txt_r_squared_matrix]] <-as.data.frame(r2) # TODO translation
       dimnames(r2)[[1]]<-paste(dimnames(r2)[[1]], "r^2")
       r1<-rbind(r1, r2)
       r1<-data.frame(r1)
@@ -287,12 +287,12 @@ corr.matrice <-
       r1[is.na(r1)]<-"-"
 		    }
       nice.mat<-list()
-      nice.mat$txt_correlations_matrix<-(r1)
+      nice.mat[[txt_correlations_matrix]]<-(r1)
       if(html) try(ez.html(nice.mat), silent =T)
 
 
-      if(is.null(Y) & is.null(Z) & (!is.null(n.boot) && n.boot > 100)) round(cor.ci(data[,X], n.iter=n.boot, plot=FALSE)$ci,4)->Resultats$txt_confidence_interval_estimated_by_bootstrap else  round(matrice$ci,4)->Resultats$txt_confidence_interval
-      names(Resultats[[length(Resultats)]])<-c("lim.inf","r","lim.sup","valeur.p") # TODO translation
+      if(is.null(Y) & is.null(Z) & (!is.null(n.boot) && n.boot > 100)) round(cor.ci(data[,X], n.iter=n.boot, plot=FALSE)$ci,4)->Resultats[[txt_confidence_interval_estimated_by_bootstrap]] else  round(matrice$ci,4)->Resultats[[txt_confidence_interval]]
+      names(Resultats[[length(Resultats)]])<-c(txt_inferior_limit,"r",txt_ci_superior_limit,txt_p_dot_val) # TODO translation
 
       return(Resultats)
 
@@ -333,11 +333,11 @@ corr.matrice <-
 	    #print(Y) # <- missing
 	    #print(Z)
       inf<-VI.multiples(data, X=c(X,Y,Z))
-      Resultats$txt_labeled_outliers<-inf$txt_labeled_outliers
+      Resultats[[txt_labeled_outliers]]<-inf[[txt_labeled_outliers]]
       data<-inf$data
     }
 
-    Resultats$txt_correlations_matrix<-corr.matrice.out(data=data, X=X, Y=Y, Z=Z, p.adjust=p.adjust, method=method,save=save,
+    Resultats[[txt_correlations_matrix]]<-corr.matrice.out(data=data, X=X, Y=Y, Z=Z, p.adjust=p.adjust, method=method,save=save,
 							   rscale=rscale, n.boot=n.boot, param=param)
 
 
@@ -374,7 +374,7 @@ corr.matrice <-
 
 
     if(save) save(Resultats=Resultats, choix=paste(txt_correlation_is, method), env=.e)
-    ref1(packages)->Resultats$txt_references
+    ref1(packages)->Resultats[[txt_references]]
     if(html) try(ez.html(Resultats), silent=T)
     return(Resultats)
     }

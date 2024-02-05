@@ -20,12 +20,12 @@ comp.corr <-
     }
 
     if(exists("r") && length(r$p)!=0 && !is.na(r$p)) {
-      Resultats$txt_comparison_of_two_correlations<-r
+      Resultats[[txt_comparison_of_two_correlations]]<-r
       Resultats$call<-paste("comp.corr(xy=", xy, ",xz=", xz, ",yz=",yz, ",n=", n, ",n2=", n2, ",twotailed=",twotailed, ")")
       data1<-data.frame()
       .add.history(data=data1, command=Resultats$call, nom=paste(txt_comparisons_XY, xy, txt_and_YZ, yz ))
       .add.result(Resultats=Resultats, name =paste(txt_correlations_comparison, Sys.time() ))
-      Resultats$txt_references<-ref1(packages)
+      Resultats[[txt_references]]<-ref1(packages)
       return(Resultats)
     } else{
       type<- dlgList(c(txt_apparied_correlations, txt_independant_correlations), preselect=FALSE, multiple = FALSE, title=txt_compare_two_correlations)$res

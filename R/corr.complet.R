@@ -106,9 +106,9 @@ corr.complet <-
       boot_BPSP<-function(data,i)cor(data[ , X][i], data[ , Y1][i], use="complete.obs", method="pearson")
       boot_SpearmanSP<-function(data,i)cor(data[ ,X][i], data[ , Y1][i], use="complete.obs", method="spearman")
       list()->Resultats
-      Resultats$txt_descriptive_statistics<-.stat.desc.out(X=c(X,Y,Z), groupes=NULL, data=data, tr=.1, type=3, plot=T)
+      Resultats[[txt_descriptive_statistics]]<-.stat.desc.out(X=c(X,Y,Z), groupes=NULL, data=data, tr=.1, type=3, plot=T)
       if(!is.null(group)) {
-	      Resultats$txt_descriptive_statistics_by_group<-.stat.desc.out(X=c(X,Y,Z), groupes=group, data=data, tr=.1, type=3, plot=T)
+	      Resultats[[txt_descriptive_statistics_by_group]]<-.stat.desc.out(X=c(X,Y,Z), groupes=group, data=data, tr=.1, type=3, plot=T)
       }
 
       if(choix== txt_correlations) {
@@ -136,7 +136,7 @@ corr.complet <-
       resid(lm.r)->data$'residus' # recuperation du residu sur le modele lineaire
 
       if(any(param=="Bayes") | any(param==txt_bayesian_factors) | any(param=="param") | any(param==txt_param_tests))  {
-        Resultats$txt_normality_tests<-.normalite(data=data, X='residus', Y=NULL)
+        Resultats[[txt_normality_tests]]<-.normalite(data=data, X='residus', Y=NULL)
         graphiques<-list()
         p<-ggplot(data)
         p<-p+ eval(parse(text=paste0("aes(x=", X,", y=", Y,")"))) + geom_point()
@@ -159,21 +159,24 @@ corr.complet <-
           }
           graphiques[[2]]<-p1
         }
-        Resultats$txt_param_tests$Graphiques<-graphiques
+        #Resultats[[txt_param_tests]]$Graphiques<-graphiques
+        Resultats[[txt_param_tests]][[txt_graphics]]<-graphiques
       }
 
       if(any(param=="param") | any(param==txt_param_tests)){
         if(choix!=txt_correlations) {
           cor.part<-rbind( pcor.test(data[,X], data[ ,Y], data[ , Z], method = "pearson")[1:3],
                            spcor.test(data[,X], data[ ,Y], data[ ,Z], method = "pearson")[1:3])
-          cor.part$estimate^2->cor.part$r.carre
+          #cor.part$estimate^2->cor.part$r.carre
+          cor.part$estimate^2->cor.part[[txt_r_dot_square]]
           round(cor.part, 4)->cor.part
           cor.part$ddl<-(pcor.test(data[,X], data[ ,Y], data[ , Z], method = "pearson")$n-2-length(Z))
-          dimnames(cor.part)<-list(c(txt_partial_corr_BP,txt_semi_BP), c("Correlation", "valeur.p", "test.t", "r.carre","ddl")) # TODO translation
-          Resultats$txt_partial_semi_BP<-cor.part
+          dimnames(cor.part)<-list(c(txt_partial_corr_BP,txt_semi_BP), c("Correlation", txt_p_dot_val, "test.t", txt_r_dot_square,txt_df)) # TODO translation
+          Resultats[[txt_partial_semi_BP]]<-cor.part
         } else {
           BP<-cor.test(data[, X1], data[ ,Y1], method = "pearson")
-          Resultats$txt_param_tests$txt_BP_correlation<-round(data.frame("r"=BP$estimate,"r.deux"=BP$estimate^2, "IC lim inf"=BP$conf.int[1],"IC lim sup"=BP$conf.int[2], "t"=BP$statistic, "ddl"=BP$parameter, "valeur.p"=BP$p.value),4) # TODO translation
+          Resultats[[txt_param_tests]][[txt_BP_correlation]]<-round(data.frame("r"=BP$estimate,txt_r_dot_two=BP$estimate^2, txt_ci_inferior_limit=BP$conf.int[1],txt_ci_superior_limit=BP$conf.int[2], "t"=BP$statistic, txt_df=BP$parameter, txt_p_dot_val=BP$p.value),4) # TODO translation
+          names(Resultats[[txt_param_tests]][[txt_BP_correlation]])<-c("r",txt_r_dot_two, txt_ci_inferior_limit,txt_ci_superior_limit, "t", txt_df, txt_p_dot_val) # TODO translation
         }
 
         if(!is.null(group)){
@@ -200,9 +203,9 @@ corr.complet <-
           dimnames(BPgroup)[[2]]<- c("BP.r", "BP.ddl", "BP.t", "BP.p")
           BPgroup<-data.frame(gr.l,BPgroup )
           if(choix!=txt_correlations) {
-		  Resultats$txt_param_tests$txt_partial_corr_BP_by_group<-BPgroup
+		  Resultats[[txt_param_tests]][[txt_partial_corr_BP_by_group]]<-BPgroup
 	  } else {
-		  Resultats$txt_BP_correlation_by_group<-BPgroup
+		  Resultats[[txt_BP_correlation_by_group]]<-BPgroup
 	  }
         }
       }
@@ -231,24 +234,29 @@ corr.complet <-
           }
           graphiques[[2]]<-p1
         }
-        Resultats$txt_non_parametric_test$Graphiques<-graphiques
+        #Resultats[[txt_non_parametric_test]]$Graphiques<-graphiques
+        Resultats[[txt_non_parametric_test]][[txt_graphics]]<-graphiques
 
         if(choix!=txt_correlations) {
           spear<-rbind( pcor.test(data[,X], data[ ,Y], data[ , Z], method = "spearman")[1:3],spcor.test(data[,X], data[ ,Y], data[ ,Z], method = "spearman")[1:3])
           tau<-rbind(pcor.test(data[,X], data[ ,Y], data[ , Z], method = "kendall")[1:3],spcor.test(data[,X], data[ ,Y], data[ , Z], method = "kendall")[1:3])
           spear<-round(spear,4)
           tau<-round(tau,4)
-          spear$estimate^2->spear$r.carre
+          #spear$estimate^2->spear$r.carre
+          spear$estimate^2->spear[[txt_r_dot_square]]
           round(spear, 4)->cor.part
-          dimnames(spear)<-list(c(txt_partial_rho,txt_semi_partial_rho), c("rho", "valeur.p", "t", "r.carre")) # TODO translation
-          Resultats$txt_non_parametric_test$txt_partial_semi_partial_rho<-spear
+          dimnames(spear)<-list(c(txt_partial_rho,txt_semi_partial_rho), c("rho", txt_p_dot_val, "t", txt_r_dot_square)) # TODO translation
+          Resultats[[txt_non_parametric_test]][[txt_partial_semi_partial_rho]]<-spear
           tau<-round(tau,4)
-          dimnames(tau)<-list(c(txt_kendall_partial_tau,txt_kendall_semipartial_tau), c("tau", "valeur.p", "z")) # TODO translation
-          Resultats$txt_non_parametric_test$txt_kendall_partial_semipartial_tau<-tau
+          dimnames(tau)<-list(c(txt_kendall_partial_tau,txt_kendall_semipartial_tau), c("tau", txt_p_dot_val, "z")) # TODO translation
+          Resultats[[txt_non_parametric_test]][[txt_kendall_partial_semipartial_tau]]<-tau
         } else { Spear<-cor.test(data[,X1], data[ ,Y1], method = "spearman", exact=T, continuity=T)
         cor.test(data[,X1], data[ ,Y1], method = "kendall")->Kendall
-        Resultats$txt_non_parametric_test$txt_rho<-round(data.frame("rho"=Spear$estimate,"rho.deux"=Spear$estimate^2,"S"=Spear$statistic,"valeur.p"=Spear$p.value),4)
-        round(data.frame("tau"=Kendall$estimate,"z"=Kendall$statistic,"valeur.p"=Kendall$p.value),4)->Resultats$txt_non_parametric_test$txt_kendall_tau}
+        Resultats[[txt_non_parametric_test]][[txt_rho]]<-round(data.frame("rho"=Spear$estimate,txt_rho_dot_square=Spear$estimate^2,"S"=Spear$statistic,txt_p_dot_val=Spear$p.value),4)
+        names(Resultats[[txt_non_parametric_test]][[txt_rho]])<-c("rho",txt_rho_dot_square,"S",txt_p_dot_val) # added translation
+        round(data.frame("tau"=Kendall$estimate,"z"=Kendall$statistic,txt_p_dot_val=Kendall$p.value),4)->Resultats[[txt_non_parametric_test]][[txt_kendall_tau]]
+        c("tau","z",txt_p_dot_val)->names(Resultats[[txt_non_parametric_test]][[txt_kendall_tau]]) # added translation
+	}
 
         if(!is.null(group)){
           if(choix==txt_correlations) {corr.g<-function(X2){ return(data.frame(Sp.r= cor.test(X2[, X1], X2[ ,Y1], method = "spearman")$estimate,
@@ -274,38 +282,42 @@ corr.complet <-
 		gr.l<-expand.grid(gr.l)
         }
         if(choix!=txt_correlations){
-          dimnames(BPgroup)[[2]]<- c("Spearman.rho", "Spearman.ddl", "Spearman.t", "Spearman.p") #TODO translation
+          dimnames(BPgroup)[[2]]<- c("Spearman.rho", txt_spearman_df, "Spearman.t", "Spearman.p") #TODO translation
           BPgroup<-data.frame(gr.l,BPgroup )
-          Resultats$txt_non_parametric_test$txt_partial_spearman_by_group<-BPgroup
+          Resultats[[txt_non_parametric_test]][[txt_partial_spearman_by_group]]<-BPgroup
         } else {
 		dimnames(BPgroup)[[2]]<- c( "Spearman.r", "Spearman.p", "Tau.Kendall.r", "Tau.Kendall.p") # TODO translation
         	BPgroup<-data.frame(gr.l,BPgroup )
-        	Resultats$txt_non_parametric_test$txt_spearman_kendall_corr_by_group<-BPgroup
+        	Resultats[[txt_non_parametric_test]][[txt_spearman_kendall_corr_by_group]]<-BPgroup
 	}
        }
       }
 
       if(any(param=="robust"| any(param==txt_robusts_tests_with_bootstraps))) {
         boot_BP_results<-boot(data, boot_BP, n.boot)
-        if(!is.null(Resultats$txt_param_tests$txt_BP_correlation)) {
-          try(Resultats$txt_param_tests$txt_BP_correlation$"Bca lim inf"<-round( boot.ci(boot_BP_results)$bca[,4],4), silent=T)
-          try(Resultats$txt_param_tests$txt_BP_correlation$"Bca lim sup"<-round( boot.ci(boot_BP_results)$bca[,5],4),silent=T)
-        } else if(!is.null(Resultats$txt_param_tests$txt_partial_semi_BP)) {
+        if(!is.null(Resultats[[txt_param_tests]][[txt_BP_correlation]])) {
+          try(Resultats[[txt_param_tests]][[txt_BP_correlation]][[txt_bca_inferior_limit]]<-round( boot.ci(boot_BP_results)$bca[,4],4), silent=T)
+          try(Resultats[[txt_param_tests]][[txt_BP_correlation]][[txt_bca_superior_limit]]<-round( boot.ci(boot_BP_results)$bca[,5],4),silent=T)
+        } else if(!is.null(Resultats[[txt_param_tests]][[txt_partial_semi_BP]])) {
           boot_BPSP_results<-boot(data, boot_BPSP, n.boot)
-          try(Resultats$txt_param_tests$txt_partial_semi_BP$"Bca lim inf"<-round( c(boot.ci(boot_BP_results)$bca[,4], boot.ci(boot_BPSP_results)$bca[,4]),4),silent=T)
-          try(Resultats$txt_param_tests$txt_partial_semi_BP$"Bca lim sup"<-round( c(boot.ci(boot_BP_results)$bca[,5], boot.ci(boot_BPSP_results)$bca[,5]) ,4), silent=T)
-        } else try(Resultats$txt_robust_analysis$txt_bootstrap_on_BP<-round(data.frame("Bca.lim.inf"= boot.ci(boot_BP_results)$bca[,4], " Bca.lim.sup"=boot.ci(boot_BP_results)$bca[,5] ), 4),silent=T)
+          try(Resultats[[txt_param_tests]][[txt_partial_semi_BP]][[txt_bca_inferior_limit]]<-round( c(boot.ci(boot_BP_results)$bca[,4], boot.ci(boot_BPSP_results)$bca[,4]),4),silent=T)
+          try(Resultats[[txt_param_tests]][[txt_partial_semi_BP]][[txt_bca_superior_limit]]<-round( c(boot.ci(boot_BP_results)$bca[,5], boot.ci(boot_BPSP_results)$bca[,5]) ,4), silent=T)
+        #} else try(Resultats[[txt_robust_analysis]][[txt_bootstrap_on_BP]]<-round(data.frame(txt_bca_inferior_limit= boot.ci(boot_BP_results)$bca[,4], txt_bca_superior_limit=boot.ci(boot_BP_results)$bca[,5] ), 4),silent=T)
+        } else {
+		try(Resultats[[txt_robust_analysis]][[txt_bootstrap_on_BP]]<-round(data.frame(txt_bca_inferior_limit= boot.ci(boot_BP_results)$bca[,4], txt_bca_superior_limit=boot.ci(boot_BP_results)$bca[,5] ), 4),silent=T)
+		try(names(Resultats[[txt_robust_analysis]][[txt_bootstrap_on_BP]])<-c(txt_bca_inferior_limit, txt_bca_superior_limit))
+	}
 
         if(any(param=="non param")| any(param==txt_non_parametric_test)) {
           boot_Spearman_results<-boot(data, boot_Spearman, n.boot)
-          if(!is.null(Resultats$txt_non_parametric_test$txt_rho)) {
-            try(Resultats$txt_non_parametric_test$txt_rho$"Bca lim inf"<-round( boot.ci(boot_Spearman_results)$bca[,4],4), silent=T)
-            try(Resultats$txt_non_parametric_test$txt_rho$"Bca lim sup"<-round( boot.ci(boot_Spearman_results)$bca[,5],4), silent=T)
+          if(!is.null(Resultats[[txt_non_parametric_test]][[txt_rho]])) {
+            try(Resultats[[txt_non_parametric_test]][[txt_rho]][[txt_bca_inferior_limit]]<-round( boot.ci(boot_Spearman_results)$bca[,4],4), silent=T)
+            try(Resultats[[txt_non_parametric_test]][[txt_rho]][[txt_bca_superior_limit]]<-round( boot.ci(boot_Spearman_results)$bca[,5],4), silent=T)
           } else{
             boot_SpearmanSP_results<-boot(data, boot_SpearmanSP, n.boot)
 
-            try(Resultats$txt_non_parametric_test$txt_partial_semi_partial_rho$"Bca lim inf"<-round(c( boot.ci(boot_Spearman_results)$bca[,4], boot.ci(boot_SpearmanSP_results)$bca[,4]),4), silent=T)
-            try(Resultats$txt_non_parametric_test$txt_partial_semi_partial_rho$"Bca lim sup"<-round(c( boot.ci(boot_Spearman_results)$bca[,5], boot.ci(boot_SpearmanSP_results)$bca[,5]),4), silent=T)
+            try(Resultats[[txt_non_parametric_test]][[txt_partial_semi_partial_rho]][[txt_bca_inferior_limit]]<-round(c( boot.ci(boot_Spearman_results)$bca[,4], boot.ci(boot_SpearmanSP_results)$bca[,4]),4), silent=T)
+            try(Resultats[[txt_non_parametric_test]][[txt_partial_semi_partial_rho]][[txt_bca_superior_limit]]<-round(c( boot.ci(boot_Spearman_results)$bca[,5], boot.ci(boot_SpearmanSP_results)$bca[,5]),4), silent=T)
           }
 
         }
@@ -317,15 +329,17 @@ corr.complet <-
         sample<-posterior(BF, iterations = ifelse(is.null(n.boot), 1000, n.boot))
         BF<-extractBF(BF, onlybf=F)
         BF<-data.frame(txt_bayesian_factor=c(ifelse(BF$bf>10000,">10000", round(BF$bf,5)),
-                                            ifelse(1/BF$bf>10000, ">10000", round((1/BF$bf),5))), "Erreur"=round(c( BF$error, BF$error),5))
+                                            ifelse(1/BF$bf>10000, ">10000", round((1/BF$bf),5))), txt_error=round(c( BF$error, BF$error),5))
+	names(BF)<-c(txt_bayesian_factor,txt_error) # added translation
 
         dimnames(BF)[[1]]<-c(txt_supports_alternative, txt_supports_null)
         # what is the t-value for the data?
         r2Val <-cor.test(data[,X1],data[,Y1])$estimate
         BF$r<-r2Val
         r2Val<-r2Val^2
-        BF$r.carre<-r2Val
-        Resultats$txt_bayesian_factors$txt_bayesian_factors_for_BP<-BF
+        #BF$r.carre<-r2Val
+        BF[[txt_r_dot_square]]<-r2Val
+        Resultats[[txt_bayesian_factors]][[txt_bayesian_factors_for_BP]]<-BF
 
         if(any(param=="non param")| any(param==txt_non_parametric_test)) {
           data2<-sapply(data[,c(X,Y,Z)], rank, ties.method="average", na.last="keep")
@@ -340,9 +354,11 @@ corr.complet <-
           BFS<-regressionBF(modele, data=data2, rscaleCont=rscale )
           BFS<-extractBF(BFS, onlybf=F)
           BFS<-data.frame(txt_bayesian_factor=c(ifelse(BFS$bf>10000,">10000", round(BFS$bf,5)),
-                                               ifelse(1/BFS$bf>10000, ">10000", round((1/BFS$bf),5))), "Erreur"=round(c( BFS$error, BF$error),5))
+                                               ifelse(1/BFS$bf>10000, ">10000", round((1/BFS$bf),5))), txt_error=round(c( BFS$error, BF$error),5))
+
+	  names(BFS)<-c(txt_bayesian_factor,txt_error) # added translation
           dimnames(BFS)[[1]]<-c(txt_supports_alternative, txt_supports_null)
-          Resultats$txt_bayesian_factors$txt_bayesian_factors_for_spearman<-BFS
+          Resultats[[txt_bayesian_factors]][[txt_bayesian_factors_for_spearman]]<-BFS
 
         }
 
@@ -350,7 +366,11 @@ corr.complet <-
 
           corr.g<-function(X2){  BF<-regressionBF(modele, X2, rscaleCont=rscale ,progress=F)
           BF<-extractBF(BF, onlybf=F)
-          return(data.frame(txt_bayesian_factor=round(BF$bf,5), "Erreur"=round(BF$error,5)))}
+          #return(data.frame(txt_bayesian_factor=round(BF$bf,5), txt_error=round(BF$error,5)))
+          current_df <- data.frame(txt_bayesian_factor=round(BF$bf,5), txt_error=round(BF$error,5))
+	  names(current_df) <- c(txt_bayesian_factor,txt_error)
+          return(current_df)
+	  }
 
           BPgroup<-by(data=data, INDICES=data[,group], FUN=corr.g)
           BPgroup<-round(matrix(unlist(BPgroup), ncol=2, byrow=T), 4)
@@ -363,9 +383,9 @@ corr.complet <-
             BFgroupS<-by(data=data2, INDICES=data[,group], FUN=corr.g)
             BFgroupS<-matrix(unlist(BFgroupS), ncol=2, byrow=T)
             BPgroup<-cbind(BPgroup, BFgroupS)
-            names(BPgroup)<-c(group, "FB.BP","Erreur.BP", "FB.Spearman", "Erreur.Spearman")
+            names(BPgroup)<-c(group, "FB.BP",txt_error_BP, "FB.Spearman", txt_error_spearman)
           }
-          BPgroup->Resultats$txt_bayesian_factors$txt_bayesian_factor_by_group
+          BPgroup->Resultats[[txt_bayesian_factors]][[txt_bayesian_factor_by_group]]
         }
 
         plot(sample)
@@ -378,9 +398,9 @@ corr.complet <-
         }
 
         SBF<-data.frame("n"=rep(5:length(data[,X]), each=3 ),"BF"= bfs,
-                        "rscale"=as.factor(rep(c("moyen - 0.353", "large - 0.5", "ultra large - 0.707"), length.out= 3*(length(data[,X])-4) ))) # TODO translation
+                        "rscale"=as.factor(rep(c("moyen - 0.353", txt_large_half, txt_ultrawide_val), length.out= 3*(length(data[,X])-4) ))) # TODO translation
         SBF$rscale<-relevel(SBF$rscale, ref=2)
-        Resultats$txt_bayesian_factors_sequential<-.plotSBF(SBF)
+        Resultats[[txt_bayesian_factors_sequential]]<-.plotSBF(SBF)
 
         ##### Debut du graphique  Bayes Factor Robustness Check
 
@@ -465,7 +485,7 @@ corr.complet <-
       data1<-data[complete.cases(data[,c(Y1,X1,Z)]),]
       R1<-list()
       if(any(outlier%in%  c(txt_complete_dataset, "complete"))){
-        R1$txt_complete_dataset<-corr.complet.out(X=X1, Y=Y1,Z=Z, data=data1, choix=choix, group=group, param=param, n.boot=n.boot, rscale=rscale)
+        R1[[txt_complete_dataset]]<-corr.complet.out(X=X1, Y=Y1,Z=Z, data=data1, choix=choix, group=group, param=param, n.boot=n.boot, rscale=rscale)
       }
       if(any(outlier%in%c(txt_identifying_outliers,"id"))|
          any(outlier%in%c(txt_without_outliers, "removed"))){
@@ -475,14 +495,15 @@ corr.complet <-
         critere<-ifelse(is.null(z), "Grubbs", "z")
         valeurs.influentes(X='residu', critere=critere,z=z, data=data1)->influentes
       }
-      if(any(outlier%in% c("id",txt_identifying_outliers))){influentes->R1$txt_outliers_values}
+      if(any(outlier%in% c("id",txt_identifying_outliers))){influentes->R1[[txt_outliers_values]]}
       if(any(outlier%in%c("removed", txt_without_outliers))) {
         #if(length(influentes$'observations influentes')!=0 |
-        #if(length(influentes$txt_outliers)!=0 |
-        if(influentes$txt_outliers_synthesis$Synthese[1]!=0 |
+        #if(length(influentes[[txt_outliers]])!=0 |
+        #if(influentes[[txt_outliers_synthesis]]$Synthese[1]!=0 |
+        if(influentes[[txt_outliers_synthesis]][[txt_synthesis]][1]!=0 |
            ! any(outlier %in% c(txt_complete_dataset,"complete"))){
-          get("nettoyees", envir=.GlobalEnv)->nettoyees
-          R1$txt_without_outliers<-corr.complet.out(X=X1, Y=Y1,Z=Z, data=nettoyees, choix=choix, group=group, param=param, n.boot=n.boot, rscale=rscale)
+          get('nettoyees', envir=.GlobalEnv)->nettoyees
+          R1[[txt_without_outliers]]<-corr.complet.out(X=X1, Y=Y1,Z=Z, data=nettoyees, choix=choix, group=group, param=param, n.boot=n.boot, rscale=rscale)
         }
       }
       Resultats[[i]]<-R1
@@ -510,7 +531,7 @@ corr.complet <-
 
     if(save){ try(ez.html(Resultats, html=F), silent=T) }
 
-    ref1(packages)->Resultats$txt_references
+    ref1(packages)->Resultats[[txt_references]]
     if(html) try(ez.html(Resultats), silent=T)
     ### Obtenir les Resultats
     return(Resultats)

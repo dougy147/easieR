@@ -335,7 +335,7 @@ ez.reshape<-function(data=NULL, varying = NULL, v.names = NULL,
 LCS <- function (a, b) {
   m <- length(a)
   n <- length(b)
-  if (m == 0 || n == 0) stop ("vector of length zero")
+  if (m == 0 || n == 0) stop (txt_vector_length_zero)
 
   # creates a table
   M <- matrix(nrow = m + 1, ncol = n + 1)

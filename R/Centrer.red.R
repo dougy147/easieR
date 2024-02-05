@@ -25,7 +25,7 @@ Centrer.red <-
     for(i in 1:length(choix)){
       if(choix[i]==txt_center) {S<-FALSE
       nn<-txt_center}else {S<-TRUE
-      nn<-"centrer.reduite"} # TODO translation
+      nn<-txt_centered_dot_reduced} # TODO translation
       scale(data[,X], scale=S)->centree
       matrix(centree, ncol=length(X))->centree
       if(choix[i]==txt_superior_proba|choix[i]==txt_inferior_proba){

@@ -52,7 +52,7 @@ VI.multiples <-
                       preselect=c(txt_suppress_all_outliers), multiple = FALSE, title=ask_how_to_remove)$res
       if(length(suppr)==0) return(NULL)
       if(suppr==txt_suppress_all_outliers) {data[which(data$D.Mahalanobis<seuil),]->data
-        outliers->Resultats$txt_labeled_outliers}else{
+        outliers->Resultats[[txt_labeled_outliers]]}else{
           suppression<-"yes"
           outliers<-data.frame()
           while(suppression=="yes"){
@@ -65,7 +65,7 @@ VI.multiples <-
 
             }
           }
-          Resultats$txt_labeled_outliers<-outliers
+          Resultats[[txt_labeled_outliers]]<-outliers
         }
     }
     Resultats$data<-data

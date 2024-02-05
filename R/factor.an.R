@@ -71,7 +71,7 @@ factor.an <-
 
       if(outlier==txt_without_outliers){
         inf<-VI.multiples(data,X)
-        Resultats$txt_labeled_outliers<-inf$txt_labeled_outliers
+        Resultats[[txt_labeled_outliers]]<-inf[[txt_labeled_outliers]]
         data<-inf$data
       }
 
@@ -79,17 +79,17 @@ factor.an <-
 
       if(dial){
         if(info) writeLines(ask_variables_type_correlations)
-        if(length(unique(unlist(data[,X])))<9) {type<-dlgList(c(txt_dichotomic_ordinal,"continues", "mixte"), preselect=NULL, multiple = FALSE, title=ask_variables_type)$res}else {
-          type<-dlgList(c("continues", "mixte"), preselect=NULL, multiple = FALSE, title=ask_variables_type)$res
+        if(length(unique(unlist(data[,X])))<9) {type<-dlgList(c(txt_dichotomic_ordinal,txt_continuous, "mixte"), preselect=NULL, multiple = FALSE, title=ask_variables_type)$res}else {
+          type<-dlgList(c(txt_continuous, "mixte"), preselect=NULL, multiple = FALSE, title=ask_variables_type)$res
         }
 
         if(length(type)==0) {Resultats<-fa.in()
         return(Resultats)}
-      } else{if(is.null(ord)) type<-"continues" else type<-txt_dichotomic_ordinal
+      } else{if(is.null(ord)) type<-txt_continuous else type<-txt_dichotomic_ordinal
       }
 
 
-      if(type=="continues"){ methode<-c("ml")
+      if(type==txt_continuous){ methode<-c("ml")
       cor<-"cor"
       Matrice<-corr.test(data[,X], method="pearson")$r }else {
         cor<-"poly"
@@ -112,28 +112,28 @@ factor.an <-
       Matrice1 <- mat.sort(Matrice)
       if(length(X)>30) numbers<-F else numbers<-T
       try(cor.plot(Matrice1, show.legend=FALSE, main=txt_correlations_matrix_afe, labels=NULL, n.legend=0, MAR=TRUE, numbers=numbers,cex=1), silent=T)
-      round(Matrice,3)->Resultats$txt_correlations_matrix
+      round(Matrice,3)->Resultats[[txt_correlations_matrix]]
       round(unlist(cortest.bartlett(data[,X])),4)->bartlett
-      names(bartlett)<-c("chi.carre","valeur.p","ddl")
+      names(bartlett)<-c(txt_chi_dot_squared,txt_p_dot_val,txt_df)
       ### doit etre significatif (attention depend de la taille de l echantillon)
-      bartlett->Resultats$txt_adequation_measurement_of_matrix$txt_barlett_test
+      bartlett->Resultats[[txt_adequation_measurement_of_matrix]][[txt_barlett_test]]
       KMO1<-KMO(Matrice)
       if(any(is.na(KMO1))) {msgBox(desc_kmo_on_matrix_could_not_be_obtained_trying)
         Matrice<-cor.smooth(Matrice)
         KMO1<-KMO(Matrice)}
       if(any(is.na(KMO1))) {
         msgBox(desc_kmo_on_matrix_could_not_be_obtained)
-        Resultats$txt_adequation_measurement_of_matrix$txt_kaiser_meyer_olkin_index<-desc_kmo_could_not_be_computed_verify_matrix
+        Resultats[[txt_adequation_measurement_of_matrix]][[txt_kaiser_meyer_olkin_index]]<-desc_kmo_could_not_be_computed_verify_matrix
       } else {
-        round(KMO1$MSA,3)->Resultats$txt_adequation_measurement_of_matrix$txt_kaiser_meyer_olkin_index ### doit etre superieur a 0.5 sinon la matrice ne convient pas pour analyse factorielle. Dans lÃÂÃÂideal, avoir au moins 0.8. Si des X presentent un KMO<0.5, on peut envisager de les supprimer.
-        round(KMO1$MSAi,3)->Resultats$txt_adequation_measurement_of_matrix$'Indice de Kaiser-Meyer-Olkin par item'
-        round(det(Matrice),5)->Resultats$txt_adequation_measurement_of_matrix$txt_correlation_matrix_determinant
-        Resultats$txt_adequation_measurement_of_matrix$txt_correlation_matrix_determinant_information<-desc_multicolinearity_risk
+        round(KMO1$MSA,3)->Resultats[[txt_adequation_measurement_of_matrix]][[txt_kaiser_meyer_olkin_index]] ### doit etre superieur a 0.5 sinon la matrice ne convient pas pour analyse factorielle. Dans lÃÂÃÂideal, avoir au moins 0.8. Si des X presentent un KMO<0.5, on peut envisager de les supprimer.
+        round(KMO1$MSAi,3)->Resultats[[txt_adequation_measurement_of_matrix]]$'Indice de Kaiser-Meyer-Olkin par item'
+        round(det(Matrice),5)->Resultats[[txt_adequation_measurement_of_matrix]][[txt_correlation_matrix_determinant]]
+        Resultats[[txt_adequation_measurement_of_matrix]][[txt_correlation_matrix_determinant_information]]<-desc_multicolinearity_risk
       }
 
 
       if(dial){
-        print(Resultats$txt_adequation_measurement_of_matrix)
+        print(Resultats[[txt_adequation_measurement_of_matrix]])
         print(desc_kmo_must_strictly_be_more_than_a_half)
         cat (txt_press_enter_to_continue)
         line <- readline()
@@ -154,7 +154,7 @@ factor.an <-
       eigen(Matrice)$values->eigen
       parallel(length(data[,1]), length(X), 100)->P1
       nScree(x =eigen, aparallel=P1$eigen$mevpea)->result
-      result->Resultats$txt_parallel_analysis
+      result->Resultats[[txt_parallel_analysis]]
       plotnScree(result)
       if(dial | is.null(nF) | !is.numeric(nF)) {
         msgBox(paste(txt_factors_to_keep_accord_to_parallel_analysis_is,result$Components$nparallel, txt_factors ))
@@ -293,7 +293,7 @@ factor.an <-
 
     fa.out<-function(Matrice, data, X, nF, methode, rotation, sat, scor.fac, n.boot, nom, hier=FALSE, cor="cor", nfact2){
 
-      if( cor=="cor") { Resultats$txt_multivariate_normality<-.normalite(data, X)} else cor<-"mixed"
+      if( cor=="cor") { Resultats[[txt_multivariate_normality]]<-.normalite(data, X)} else cor<-"mixed"
       if(n.boot==1) {
         FA.results<-fa(Matrice,nfactors= nF, n.obs=length(data[,1]),fm=methode, rotate=rotation, n.iter=1) # realise l AFE
       } else {
@@ -315,9 +315,10 @@ factor.an <-
       loadfa<-round(as(FA.results$loadings, "matrix"),3)
       loadfa[which(abs(loadfa)<sat)]<-" "
       data.frame("communaute"=round(FA.results$communality,3),
-                 "specifite"=round(FA.results$uniquenesses,3),
+                 txt_specificity=round(FA.results$uniquenesses,3),
                  txt_complexity=round(FA.results$complexity,2))->communaute
-      Resultats$desc_standardized_saturation_on_correlation_matrix<-data.frame(loadfa, communaute)
+      c("communaute", txt_specificity, txt_complexity)->names(communaute)
+      Resultats[[desc_standardized_saturation_on_correlation_matrix]]<-data.frame(loadfa, communaute)
 
       var.ex <- round(FA.results$Vaccounted,3)
       if(nF>1){dimnames(var.ex)[[1]]<-c(txt_saturations_sum_of_squares, txt_explained_variance_ratio,
@@ -325,13 +326,13 @@ factor.an <-
                                         txt_cumulated_explaination_ratio)} else {
                                           dimnames(var.ex)[[1]]<-c(txt_saturations_sum_of_squares, txt_explained_variance_ratio)
                                         }
-      Resultats$txt_explained_variance<-var.ex
+      Resultats[[txt_explained_variance]]<-var.ex
 
       paste("ML",1:nF)->noms1
       if(nF>1 & rotation=="oblimin"){
         round(FA.results$Phi, 3)->cor.f
-        Resultats$txt_correlations_between_factors<-cor.f}
-      paste(txt_mean_complexity_is, round(mean(FA.results$complexity),3), txt_this_tests_if, nF, txt_sufficient_factors )-> Resultats$txt_mean_complexity
+        Resultats[[txt_correlations_between_factors]]<-cor.f}
+      paste(txt_mean_complexity_is, round(mean(FA.results$complexity),3), txt_this_tests_if, nF, txt_sufficient_factors )-> Resultats[[txt_mean_complexity]]
       if(length(X)>5){
         round(matrix(c(FA.results$null.chisq, FA.results$null.dof,FA.results$null.model,
                        FA.results$dof, FA.results$objective, FA.results$RMSEA,
@@ -344,13 +345,13 @@ factor.an <-
           txt_chi_squared_likelihood_max, txt_max_likelihood_chi_squared_proba_value, desc_total_observations)->dimnames(stats)[[1]]
 
         txt_values->dimnames(stats)[[2]]
-        stats->Resultats$txt_adequation_adjustement_indexes
+        stats->Resultats[[txt_adequation_adjustement_indexes]]
         if(all(FA.results$R2<1)){
           round(rbind((FA.results$R2)^0.5,FA.results$R2,2*FA.results$R2-1),2)->stats
           dimnames(stats)[[1]]<-c(txt_correlation_between_scores_and_factors, txt_multiple_r_square_of_factors_scores,
                                   txt_min_correlation_between_scores_and_factors)
           dimnames(stats)[[2]]<-noms1
-          stats->Resultats$txt_correlation_between_scores_and_factors
+          stats->Resultats[[txt_correlation_between_scores_and_factors]]
         }
 
         if(n.boot>1) {
@@ -359,10 +360,10 @@ factor.an <-
             cbind(round(FA.results$cis$ci[,i],3),
                   round(as(FA.results$loadings, "matrix"),3)[,i],
                   round(FA.results$cis$ci[,i+nF],3))->IC2
-            dimnames(IC2)[[2]]<-c("lim.inf", dimnames(FA.results$loadings)[[2]][i],"lim.sup")
+            dimnames(IC2)[[2]]<-c(txt_inferior_limit, dimnames(FA.results$loadings)[[2]][i],txt_ci_superior_limit)
             cbind(IC, IC2)->IC
           }
-          IC->Resultats$txt_confidence_interval_of_saturations_on_bootstrap
+          IC->Resultats[[txt_confidence_interval_of_saturations_on_bootstrap]]
         }
       }
       print(fa.diagram(FA.results))#representation graphique des saturations}
@@ -383,7 +384,7 @@ factor.an <-
 
       if(hier) {
         if(cor!="cor") poly<-TRUE else poly<-FALSE
-        Resultats$txt_hierarchical_factorial_analysis$Omega<-psych::omega(data[,X], nfactors=nF, n.iter=n.boot,fm=methode, poly=poly, flip=T, digits=3, sl=T, plot=T, n.obs=length(data[,1]), rotate=rotation)
+        Resultats[[txt_hierarchical_factorial_analysis]]$Omega<-psych::omega(data[,X], nfactors=nF, n.iter=n.boot,fm=methode, poly=poly, flip=T, digits=3, sl=T, plot=T, n.obs=length(data[,1]), rotate=rotation)
         multi<-fa.multi(Matrice, nfactors=nF, nfact2=nfact2, n.iter=1,fm=methode, n.obs=length(data[,1]), rotate=rotation)
         multi$f2->FA.results
 
@@ -391,9 +392,10 @@ factor.an <-
         loadfa<-round(as(FA.results$loadings, "matrix"),3)
         loadfa[which(abs(loadfa)<sat)]<-" "
         data.frame("communaute"=round(FA.results$communality,3),
-                   "specifite"=round(FA.results$uniquenesses,3),
+                   txt_specificity=round(FA.results$uniquenesses,3),
                    txt_complexity=round(FA.results$complexity,2))->communaute
-        Resultats$txt_hierarchical_factorial_analysis$desc_standardized_saturation_on_correlation_matrix<-data.frame(loadfa, communaute)
+        c("communaute", txt_specificity, txt_complexity)->names(communaute)
+        Resultats[[txt_hierarchical_factorial_analysis]][[desc_standardized_saturation_on_correlation_matrix]]<-data.frame(loadfa, communaute)
 
         var.ex <- round(FA.results$Vaccounted,3)
         if(nfact2>1){dimnames(var.ex)[[1]]<-c(txt_saturations_sum_of_squares, txt_explained_variance_ratio,
@@ -401,11 +403,11 @@ factor.an <-
                                               txt_cumulated_explaination_ratio)} else {
                                                 dimnames(var.ex)[[1]]<-c(txt_saturations_sum_of_squares, txt_explained_variance_ratio)
                                               }
-        Resultats$txt_hierarchical_factorial_analysis$txt_explained_variance<-var.ex
+        Resultats[[txt_hierarchical_factorial_analysis]][[txt_explained_variance]]<-var.ex
 
         paste("ML",1:nfact2)->noms1
 
-        paste(txt_mean_complexity_is, round(mean(FA.results$complexity),3), txt_this_tests_if, nF, txt_sufficient_factors )-> Resultats$txt_mean_complexity
+        paste(txt_mean_complexity_is, round(mean(FA.results$complexity),3), txt_this_tests_if, nF, txt_sufficient_factors )-> Resultats[[txt_mean_complexity]]
 
         round(matrix(c( FA.results$null.dof,FA.results$null.model,
                         FA.results$dof, FA.results$objective,
@@ -415,13 +417,13 @@ factor.an <-
            txt_adequation_outside_diagonal)->dimnames(stats)[[1]]
 
         txt_values->dimnames(stats)[[2]]
-        stats->Resultats$txt_hierarchical_factorial_analysis$txt_adequation_adjustement_indexes
+        stats->Resultats[[txt_hierarchical_factorial_analysis]][[txt_adequation_adjustement_indexes]]
         if(all(FA.results$R2<1)){
           round(rbind((FA.results$R2)^0.5,FA.results$R2,2*FA.results$R2-1),2)->stats
           dimnames(stats)[[1]]<-c(txt_correlation_between_scores_and_factors, txt_multiple_r_square_of_factors_scores,
                                   txt_min_correlation_between_scores_and_factors)
           dimnames(stats)[[2]]<-noms1
-          stats->Resultats$txt_hierarchical_factorial_analysis$txt_correlation_between_scores_and_factors
+          stats->Resultats[[txt_hierarchical_factorial_analysis]][[txt_correlation_between_scores_and_factors]]
           fa.multi.diagram(multi)
         }
       }
@@ -438,9 +440,10 @@ factor.an <-
       loadfa<-round(as(PCA$loadings, "matrix"),3)
       loadfa[which(abs(loadfa)<sat)]<-" "
       data.frame("communaute"=round(PCA$communality,3),
-                 "specifite"=round(PCA$uniquenesses,3),
+                 txt_specificity=round(PCA$uniquenesses,3),
                  txt_complexity=round(PCA$complexity,2))->communaute
-      Resultats$desc_standardized_saturation_on_correlation_matrix<-data.frame(loadfa, communaute)
+      c("communaute", txt_specificity, txt_complexity)->names(communaute)
+      Resultats[[desc_standardized_saturation_on_correlation_matrix]]<-data.frame(loadfa, communaute)
       var.ex<-round(PCA$Vaccounted,3)
 
       if(nF>1){dimnames(var.ex)[[1]]<-c(txt_saturations_sum_of_squares, txt_explained_variance_ratio,
@@ -448,12 +451,12 @@ factor.an <-
                                         txt_cumulated_explaination_ratio)} else {
                                           dimnames(var.ex)[[1]]<-c(txt_saturations_sum_of_squares, txt_explained_variance_ratio)
                                         }
-      Resultats$txt_explained_variance<-var.ex
+      Resultats[[txt_explained_variance]]<-var.ex
 
       paste("TC",1:nF)->noms1
       if(nF>1 & rotation=="oblimin"){  round(PCA$r.scores,3)->cor.f
-        Resultats$txt_correlations_between_factors<-cor.f}
-      paste(txt_mean_complexity_is, mean(PCA$complexity), txt_this_tests_if, nF, txt_sufficient_factors )-> Resultats$txt_mean_complexity
+        Resultats[[txt_correlations_between_factors]]<-cor.f}
+      paste(txt_mean_complexity_is, mean(PCA$complexity), txt_this_tests_if, nF, txt_sufficient_factors )-> Resultats[[txt_mean_complexity]]
       round(matrix(c(PCA$null.dof,PCA$null.model,
                      PCA$dof, PCA$objective,
                      PCA$rms, PCA$fit.off,
@@ -465,7 +468,7 @@ factor.an <-
         txt_chi_squared_likelihood_max, txt_max_likelihood_chi_squared_proba_value, desc_total_observations)->dimnames(stats)[[1]]
 
       txt_values->dimnames(stats)[[2]]
-      stats->Resultats$txt_adequation_adjustement_indexes
+      stats->Resultats[[txt_adequation_adjustement_indexes]]
       if(scor.fac){
         Scores.fac<-c()
         sapply(data[,X], scale)->centrees
@@ -509,18 +512,18 @@ factor.an <-
     cor<-fa.options$cor
     hier<-fa.options$hier
     nfact2<-fa.options$nfact2
-    Resultats$txt_correlations_matrix<-fa.options$txt_correlations_matrix
-    Resultats$txt_adequation_measurement_of_matrix<-fa.options$txt_adequation_measurement_of_matrix
-    Resultats$txt_parallel_analysis<-fa.options$txt_parallel_analysis
+    Resultats[[txt_correlations_matrix]]<-fa.options[[txt_correlations_matrix]]
+    Resultats[[txt_adequation_measurement_of_matrix]]<-fa.options[[txt_adequation_measurement_of_matrix]]
+    Resultats[[txt_parallel_analysis]]<-fa.options[[txt_parallel_analysis]]
 
 
 
     if(fa.options$choix==  txt_factorial_exploratory_analysis |choix=="afe"){
-      Resultats$txt_factorial_analysis<-fa.out(Matrice=Matrice, data=data, X=X, nF=nF, methode=methode, rotation=rotation, sat=sat,
+      Resultats[[txt_factorial_analysis]]<-fa.out(Matrice=Matrice, data=data, X=X, nF=nF, methode=methode, rotation=rotation, sat=sat,
                                               scor.fac=scor.fac, n.boot=n.boot, nom=nom, hier=hier, cor=cor, nfact2=nfact2)  }
 
     if(fa.options$choix==  txt_principal_component_analysis |choix=="acp"){
-      Resultats$txt_principal_component_analysis<-acp.out(Matrice=Matrice, data=data, X=X, nF=nF, methode=methode, rotation=rotation, sat=sat, scor.fac=scor.fac, nom=nom)
+      Resultats[[txt_principal_component_analysis]]<-acp.out(Matrice=Matrice, data=data, X=X, nF=nF, methode=methode, rotation=rotation, sat=sat, scor.fac=scor.fac, nom=nom)
     }
 
 
@@ -537,7 +540,7 @@ factor.an <-
 
 
     if(fa.options$sauvegarde) save(Resultats=Resultats, choix=fa.options$choix, env=.e)
-    ref1(packages)->Resultats$desc_references
+    ref1(packages)->Resultats[[desc_references]]
     if(html) ez.html(Resultats)
     return(Resultats)
 

@@ -118,7 +118,7 @@ regressions <-
       variables<-terms(as.formula(modele))
       variables<-as.character( attributes(variables)$variables)[-1]
       pred<-attributes(terms(as.formula(modele)))$term.labels
-      Resultats$txt_descriptive_statistics<-.stat.desc.out(X=variables, groupes=NULL, data=dtrgeasieR, tr=.1, type=3, plot=T)
+      Resultats[[txt_descriptive_statistics]]<-.stat.desc.out(X=variables, groupes=NULL, data=dtrgeasieR, tr=.1, type=3, plot=T)
 
        if(scale==T || scale==txt_center) {
          Resultats$info<-desc_centered_data_schielzeth_recommandations
@@ -143,30 +143,30 @@ regressions <-
       }
       assign("lm.r1",lm.r1, env= .GlobalEnv)
       resid(lm.r1)->dtrgeasieR$residu
-      Resultats$txt_normality_tests<-.normalite(data=dtrgeasieR, X='residu', Y=NULL)
+      Resultats[[txt_normality_tests]]<-.normalite(data=dtrgeasieR, X='residu', Y=NULL)
       if(length(pred)>1)  {
         cont<-variables[which(!sapply(dtrgeasieR[,variables],class)%in%c("factor","character"))]
-        Resultats$txt_multivariate_normality<-.normalite(data=dtrgeasieR, X=cont, Y=NULL)
+        Resultats[[txt_multivariate_normality]]<-.normalite(data=dtrgeasieR, X=cont, Y=NULL)
         ols_plot_resid_fit(lm.r1)
         FIV<-ols_coll_diag(lm.r1) # calcul du facteur d inflation de la variance
         FIV[[1]]<-data.frame(FIV[[1]])
         names(FIV)<-c(txt_multicolinearity_test, txt_proper_values_index)
         names(FIV$`Test de multicolinearite`)<-c(txt_variables, txt_tolerance, "FIV")
-        Resultats$txt_multicolinearity_tests<-FIV$`Test de multicolinearite`
+        Resultats[[txt_multicolinearity_tests]]<-FIV$`Test de multicolinearite`
         if(any(FIV$`Test de multicolinearite`$Tolerance==0)) {
           msgBox(desc_instable_model_high_multicolinearity)
           return(Resultats)
         }
 
-        Resultats$txt_linearity_graph_between_predictors_and_dependant_variable<-ols_plot_comp_plus_resid(lm.r1)
-        Resultats$txt_proper_values_index<-FIV$`Indice des valeurs propres`
+        Resultats[[txt_linearity_graph_between_predictors_and_dependant_variable]]<-ols_plot_comp_plus_resid(lm.r1)
+        Resultats[[txt_proper_values_index]]<-FIV$`Indice des valeurs propres`
         dwt(lm.r1, simulate=TRUE, method= "normal", reps=500)->DWT.results
-        Resultats$txt_durbin_watson_test_autocorr<-round(data.frame(txt_autocorrelation=DWT.results[[1]],
-                                                                               txt_dw_statistic=DWT.results[[2]],"valeur.p"=DWT.results[[3]]),4)
+        Resultats[[txt_durbin_watson_test_autocorr]]<-round(data.frame(txt_autocorrelation=DWT.results[[1]],
+                                                                               txt_dw_statistic=DWT.results[[2]],txt_p_dot_val=DWT.results[[3]]),4)
 
         var.err<-ols_test_breusch_pagan(lm.r1, rhs=T)
 
-        Resultats$txt_breusch_pagan_test<-data.frame(chi=var.err$bp,
+        Resultats[[txt_breusch_pagan_test]]<-data.frame(chi=var.err$bp,
                                                                                                                  ddl=length(var.err$preds), valeur.p=var.err$p)
 
         try(ceresPlots(lm.r1, main=txt_ceres_graph_linearity), silent=T)
@@ -199,7 +199,7 @@ regressions <-
                                 r.carre.adj=ols.out$adjr,
                                 Method=ifelse(methodname==T, ols.out$method, ifelse(methodname=="Forward" , desc_variable_added, desc_removed_variable))
           )
-          Resultats$txt_selection_method<-ols.frame
+          Resultats[[txt_selection_method]]<-ols.frame
         }
 
         if(method %in% c(txt_aic_criterion,"AIC")){
@@ -229,7 +229,7 @@ regressions <-
                                 Method=ifelse(methodname==T, ols.out$method, ifelse(methodname=="Forward" , desc_variable_added, c(" ",desc_removed_variable)))
           )
 
-          Resultats$txt_selection_method_akaike<-ols.frame
+          Resultats[[txt_selection_method_akaike]]<-ols.frame
 
         }
 
@@ -240,8 +240,8 @@ regressions <-
             BF.out<-extractBF(BF.out)
             BF.out<-head(BF.out[order(BF.out[,1], decreasing=T), ])
             BF.out<-BF.out[,1:2]
-            Resultats$txt_selection_method_bayesian_factor<-BF.out
-          } else Resultats$txt_selection_method_bayesian_factor<-desc_selection_for_bayesian_factor_does_not_apply_to_complex_models
+            Resultats[[txt_selection_method_bayesian_factor]]<-BF.out
+          } else Resultats[[txt_selection_method_bayesian_factor]]<-desc_selection_for_bayesian_factor_does_not_apply_to_complex_models
         }
         rm( "dtrgeasieR", envir = .GlobalEnv)
       }
@@ -268,8 +268,8 @@ regressions <-
           hier<-paste0(hier,")")
           hier<-eval(parse(text=hier))
           attributes(hier)$heading[1]<-txt_hierarchical_models_variance_analysis_table
-          names(hier)<-c("ddl.resid", "SC.resid","ddl.effet", "SC", "F", "valeur.p")
-          Resultats$txt_hierarchical_model_analysis<-hier
+          names(hier)<-c(txt_df_residual, "SC.resid",txt_df_effect, "SC", "F", txt_p_dot_val)
+          Resultats[[txt_hierarchical_model_analysis]]<-hier
 
 
 
@@ -283,9 +283,9 @@ regressions <-
             rbind(modele_avec_outliers, c(significativite_modele ,valeur.p))->modele_avec_outliers
           }
           round(modele_avec_outliers,3)->modele_avec_outliers
-          c(txt_residual_error, "R.deux", "F", "Ddl(1)", "Ddl(2)","valeur.p")->dimnames(modele_avec_outliers)[[2]]
+          c(txt_residual_error, txt_r_dot_two, "F", txt_df_parenthesis_1, txt_df_parenthesis_2,txt_p_dot_val)->dimnames(modele_avec_outliers)[[2]]
           paste(txt_step, 1:length(modele_avec_outliers[,1]))->dimnames(modele_avec_outliers)[[1]]
-          Resultats$txt_hierarchical_models_complete_model_sig_at_each_step<-modele_avec_outliers
+          Resultats[[txt_hierarchical_models_complete_model_sig_at_each_step]]<-modele_avec_outliers
 
         }
 
@@ -302,7 +302,7 @@ regressions <-
 
           BF.hier<-data.frame(desc_fb_ratio_between_models=BF.hier, txt_bayesian_factor_of_model= BF.modele)
           dimnames(BF.hier)[[1]]<- unlist(as.character(formule.H1))
-          Resultats$txt_bayesian_approach_hierarchical_models<-BF.hier
+          Resultats[[txt_bayesian_approach_hierarchical_models]]<-BF.hier
         }
 
       }
@@ -312,7 +312,7 @@ regressions <-
         pf(summary(lm.r1)$fstatistic[1], summary(lm.r1)$fstatistic[2],summary(lm.r1)$fstatistic[3], lower.tail=F)->p.value #permet de savoir si le F est significatif
         c(significativite_modele , p.value)->modele.F # on combine les precedents
         round(modele.F,3)->modele.F # on arrondit les nombres a la 3e decimale
-        c(txt_residual_error, "R.deux", "F", "Ddl (num)", "Ddl (dnom)","valeur.p")->names(modele.F)# attribue le nom aux colonnes
+        c(txt_residual_error, txt_r_dot_two, "F", txt_df_parenthesis_num, txt_df_parenthesis_denom,txt_p_dot_val)->names(modele.F)# attribue le nom aux colonnes
         modele.F->Resultats$"Estimation  du modele global"
 
 
@@ -321,7 +321,7 @@ regressions <-
 
         beta<-coef(lm.r1)*sapply(data.frame(model.matrix(lm.r1)),sd) /sd(dtrgeasieR[,variables[1]])
         c("",round(beta[-1],5))->table$beta # fournit les betas qu on inclut a la table
-        names(table)<-c("b","erreur.standard","t","valeur.p","beta")
+        names(table)<-c("b",txt_error_dot_standard,"t",txt_p_dot_val,"beta")
 
         r_carre<- matrix(c(0,0,0),1)
         for(i in 1:length(mod)){
@@ -335,15 +335,15 @@ regressions <-
 
         }
 
-        dimnames(r_carre)<-list(ligne=NULL, c("R.deux", "Delta R.deux", "R.deux.aj"))
+        dimnames(r_carre)<-list(ligne=NULL, c(txt_r_dot_two, txt_delta_r_squared, txt_r_dot_two_adjusted))
         data.frame(table,r_carre)->table
         table[is.na(table)]<-""
-        table->Resultats$txt_beta_table
+        table->Resultats[[txt_beta_table]]
         if(length(pred)>1){
           ols.corr<-try(ols_correlations(lm.r1), silent=T)
           if(any(class(ols.corr)!='try-error')){
-          Resultats$txt_variables_contribution_to_model<-ols.corr
-          Resultats$txt_added_variables_graph <-ols_plot_added_variable(lm.r1)}
+          Resultats[[txt_variables_contribution_to_model]]<-ols.corr
+          Resultats[[txt_added_variables_graph]] <-ols_plot_added_variable(lm.r1)}
         }
       }
 
@@ -357,7 +357,7 @@ regressions <-
           BF.table<-rbind(BF.table, extractBF(BF.out)[1:2])
         }
         }
-        Resultats$txt_bayesian_factors<-BF.table
+        Resultats[[txt_bayesian_factors]]<-BF.table
 
       }
 
@@ -368,7 +368,7 @@ regressions <-
         (1-pt(abs(res_modele_robuste$coefficients[,3]), (length(dtrgeasieR[,1])-1-length(pred)), lower.tail=TRUE))*2->proba
         round(cbind(res_modele_robuste$coefficients, proba),3)->M_estimator
         data.frame(M_estimator)->M_estimator
-        noms<-c(txt_b_m_estimator, "SE", "t", "valeur.p")
+        noms<-c(txt_b_m_estimator, "SE", "t", txt_p_dot_val)
 
 
         if(n.boot>100){
@@ -383,14 +383,14 @@ regressions <-
           if(is.null(intervalle)){
             for(i in 1: length(lm.r1$coefficients)){boot.ci(bootResults, type = "perc", index = i)$percent[,4:5]->resultats
               rbind(intervalle, resultats)->intervalle}
-            noms<-c(noms, "Percentile.lim.inf", "Percentile.lim.sup")
+            noms<-c(noms, txt_percentile_inferior_limit_dot, txt_percentile_superior_limit_dot)
           } else{
-            noms<-c(noms, "Bca.lim.inf", "Bca.lim.sup")
+            noms<-c(noms, txt_bca_inferior_limit, txt_bca_superior_limit)
           }
           data.frame(M_estimator, round(intervalle,4))->M_estimator
         }
         names(M_estimator)<-noms
-        Resultats$txt_robusts_statistics<-M_estimator
+        Resultats[[txt_robusts_statistics]]<-M_estimator
       }
 
 
@@ -437,7 +437,7 @@ regressions <-
 
 
     if(any(outlier==  txt_complete_dataset)){
-      Resultats$txt_complete_dataset<-regressions.out(dtrgeasieR=data, modele=modele,  VC=VC, select.m=select.m, method=method, step=step, group=group, criteria=criteria , scale=scale,
+      Resultats[[txt_complete_dataset]]<-regressions.out(dtrgeasieR=data, modele=modele,  VC=VC, select.m=select.m, method=method, step=step, group=group, criteria=criteria , scale=scale,
                                                      sauvegarde=sauvegarde, n.boot=n.boot, param=param, rscale=rscale)
       if(!is.null(group))   {
         R1<-list()
@@ -451,7 +451,7 @@ regressions <-
           R1[[length(R1)+1]]<-resg
           names(R1)[length(R1)]<-names(G)[i]
         }
-        Resultats$txt_complete_dataset$txt_group_analysis<-R1
+        Resultats[[txt_complete_dataset]][[txt_group_analysis]]<-R1
       }
 
     }
@@ -504,19 +504,19 @@ regressions <-
         data[which(data$cook.d<= seuil_cook), ]->nettoyees
         data[which(data$cook.d>= seuil_cook), ]->outliers
         cbind(outliers[,variables],outliers$cook.d)->outliers
-        Resultats$"information"$desc_outliers_identified_on_4_div_n
+        Resultats$"information"[[desc_outliers_identified_on_4_div_n]]
       }
       nettoyees->>nettoyees
       length(data[,1])-length(nettoyees[,1])->N_retire # identifier le nombre d observations retirees sur la base de la distance de cook
       if(any(outlier== txt_identifying_outliers)){
         paste(N_retire/length(data[,1])*100,"%")->Pourcentage_retire # fournit le pourcentage retire
-        data.frame("N.retire"=N_retire, "Pourcent.obs.retirees"=Pourcentage_retire)->Resultats$txt_identified_outliers_synthesis
-        if(length(outliers)!=0) Resultats$txt_identifying_outliers$desc_identified_outliers<-outliers
+        data.frame("N.retire"=N_retire, txt_percent_removed_obs=Pourcentage_retire)->Resultats[[txt_identified_outliers_synthesis]]
+        if(length(outliers)!=0) Resultats[[txt_identifying_outliers]][[desc_identified_outliers]]<-outliers
 
       }
       if(any(outlier== txt_without_outliers)) {
         if(N_retire!=0 | all(outlier!=txt_complete_dataset)){
-          Resultats$txt_without_outliers<-regressions.out(dtrgeasieR=nettoyees, modele=modele,  VC=VC, select.m=select.m, method=method, step=step, group=group, criteria=criteria , scale=scale,
+          Resultats[[txt_without_outliers]]<-regressions.out(dtrgeasieR=nettoyees, modele=modele,  VC=VC, select.m=select.m, method=method, step=step, group=group, criteria=criteria , scale=scale,
                                                                      sauvegarde=sauvegarde, n.boot=n.boot, param=param, rscale=rscale)
 
           if(!is.null(group))   {
@@ -531,7 +531,7 @@ regressions <-
               R1[[length(R1)+1]]<-resg
               names(R1)[length(R1)]<-names(G)[i]
             }
-            Resultats$txt_without_outliers$txt_group_analysis<-R1
+            Resultats[[txt_without_outliers]][[txt_group_analysis]]<-R1
           }
 
 
@@ -560,9 +560,9 @@ regressions <-
 
 
     .add.history(data=data, command=Resultats$Call, nom=nom)
-    .add.result(Resultats=Resultats, name =paste("regressions.multiples", Sys.time() ))
-    if(sauvegarde)   if(sauvegarde) save(Resultats=Resultats, choix="Regressions.multiples", env=.e)
-    Resultats$txt_references<-ref1(packages)
+    .add.result(Resultats=Resultats, name =paste(txt_multiple_regressions_dot, Sys.time() ))
+    if(sauvegarde)   if(sauvegarde) save(Resultats=Resultats, choix=txt_multiple_regressions_dot, env=.e)
+    Resultats[[txt_references]]<-ref1(packages)
     if(html) ez.html(Resultats)
     return(Resultats)
   }

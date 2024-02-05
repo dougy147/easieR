@@ -62,7 +62,7 @@ fiabilite <-
 
       if(outlier==txt_without_outliers){
         inf<-VI.multiples(data[,X])
-        Resultats$txt_labeled_outliers<-inf$txt_labeled_outliers
+        Resultats[[txt_labeled_outliers]]<-inf[[txt_labeled_outliers]]
         data<-inf$data
       }
 
@@ -70,10 +70,10 @@ fiabilite <-
       if(choix %in% c(txt_cronbach_alpha,"alpha"))  {
         if(dial){
          writeLines(ask_variables_types_correlations)
-          type<-dlgList(c(txt_dichotomic_ordinal, "continues", "mixte"), preselect=NULL, multiple = FALSE, title=ask_variables_type)$res
+          type<-dlgList(c(txt_dichotomic_ordinal, txt_continuous, "mixte"), preselect=NULL, multiple = FALSE, title=ask_variables_type)$res
           if(length(type)==0) {Resultats<-fiabilite()
           return(Resultats)
-          }} else{if(is.null(ord)) type<-"continues" else type<-txt_dichotomic_ordinal}
+          }} else{if(is.null(ord)) type<-txt_continuous else type<-txt_dichotomic_ordinal}
 
         if(dial){
           writeLines(ask_are_there_inversed_items)
@@ -94,7 +94,7 @@ fiabilite <-
 
 
 
-          if(type=="continues"){
+          if(type==txt_continuous){
             if(!is.null(n.boot) && ((class(n.boot)!="numeric" & class(n.boot)!="integer") ||  n.boot%%1!=0 || n.boot<1)){
               msgBox(desc_bootstraps_number_must_be_positive)
               n.boot<-NULL
@@ -132,18 +132,18 @@ fiabilite <-
             psych::alpha(Matrice, keys=keys,n.obs=length(data[,1]))->cron
           }
 
-          round(cron$total,3)->Resultats$txt_cronbach_alpha_on_whole_scale
-          if(n.boot>1) cron$boot.ci->Resultats$txt_confidence_interval_on_bootstrap
+          round(cron$total,3)->Resultats[[txt_cronbach_alpha_on_whole_scale]]
+          if(n.boot>1) cron$boot.ci->Resultats[[txt_confidence_interval_on_bootstrap]]
           cron$total[,1]->a1
           cron$total[,6]->ase
-          data.frame(Lim.inf.IC.95=a1-1.96*ase, alpha=a1, Lim.sup.IC.95=a1+1.96*ase)->Resultats$txt_confidence_interval_on_standard_error
-          round(data.frame(cron$alpha.drop, cron$item.stats ),3)->Resultats$txt_fiability_by_removed_item
+          data.frame(Lim.inf.IC.95=a1-1.96*ase, alpha=a1, Lim.sup.IC.95=a1+1.96*ase)->Resultats[[txt_confidence_interval_on_standard_error]]
+          round(data.frame(cron$alpha.drop, cron$item.stats ),3)->Resultats[[txt_fiability_by_removed_item]]
 
       }
 
       if(choix==txt_intraclass_correlation| choix=="ICC"){psych::ICC(data[,X], missing=FALSE)->ICC.out
-        ICC.out[[1]]->Resultats$txt_intraclass_correlation
-        names(Resultats$txt_intraclass_correlation)<-c("type", "ICC", "F", "ddl1", "ddl2", "valeur.p", "lim.inf","lim.sup")
+        ICC.out[[1]]->Resultats[[txt_intraclass_correlation]]
+        names(Resultats[[txt_intraclass_correlation]])<-c("type", "ICC", "F", txt_df1, txt_df2, txt_p_dot_val, txt_inferior_limit,txt_ci_superior_limit)
         Resultats$"informations"<-paste(desc_number_of_judge_is, length(X), txt_and_the_number_of_obs, ICC.out$n.obs) }
     }
 
@@ -157,9 +157,9 @@ fiabilite <-
       data<-Y$data
       Y<-Y$X
       cohen.kappa(data[,c(X,Y)], w=NULL,n.obs=NULL,alpha=.05)->CK.out
-      dimnames(CK.out$confid)<-list(c(txt_non_pondered_coeff,txt_pondered_kappa),c("lim.inf",txt_estimation,"lim.sup"))
-      round(CK.out$confid,3)->Resultats$txt_kendall_coeff
-      CK.out$agree->Resultats$txt_agreement
+      dimnames(CK.out$confid)<-list(c(txt_non_pondered_coeff,txt_pondered_kappa),c(txt_inferior_limit,txt_estimation,txt_ci_superior_limit))
+      round(CK.out$confid,3)->Resultats[[txt_kendall_coeff]]
+      CK.out$agree->Resultats[[txt_agreement]]
       Resultats$information<-paste(desc_number_of_observations_is, CK.out$n.obs)
     }
 
@@ -182,7 +182,7 @@ fiabilite <-
 
 
     if(sauvegarde)save(Resultats=Resultats, choix=choix, env=.e)
-    ref1(packages)->Resultats$txt_references
+    ref1(packages)->Resultats[[txt_references]]
    if(html) try(ez.html(Resultats), silent=T)
     return(Resultats)
   }

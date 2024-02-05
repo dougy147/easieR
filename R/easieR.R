@@ -136,7 +136,7 @@ VI.multiples<-function(data, X){
                     preselect=c(txt_suppress_all_outliers), multiple = FALSE, title=ask_how_to_remove)$res
     if(length(suppr)==0) return(NULL)
     if(suppr==txt_suppress_all_outliers) {data[which(data$D.Mahalanobis<seuil),]->data
-      outliers->Resultats$txt_labeled_outliers}else{
+      outliers->Resultats[[txt_labeled_outliers]]}else{
         suppression<-"yes"
         outliers<-data.frame()
         while(suppression=="yes"){
@@ -149,7 +149,7 @@ VI.multiples<-function(data, X){
 
           }
         }
-        Resultats$txt_labeled_outliers<-outliers
+        Resultats[[txt_labeled_outliers]]<-outliers
       }
   }
   Resultats$data<-data
@@ -215,7 +215,7 @@ VI.multiples<-function(data, X){
   etend.y<-max.y-min.y
   y_breaks<-c(min.y, min.y+1/4*etend.y ,min.y+1/2*etend.y ,min.y+3/4*etend.y , max.y )
   y_labs<-as.character(round(exp(y_breaks),2))
-  reorder( c("moyen", "large", "ultra large"),levels(SBF$rscale))->levels(SBF$rscale)
+  reorder( c("moyen", txt_large, txt_ultrawide),levels(SBF$rscale))->levels(SBF$rscale)
   p1 <- ggplot(SBF, aes(x = n, y = log(BF), group=rscale)) + ylab(txt_bayesian_factors_10) +
     # p1 <- ggplot(SBF, aes(x = as.factor(n), y = log(BF), group=rscale)) + ylab(txt_bayesian_factors_10) +
     xlab("n")+ geom_line(aes(linetype=rscale))+ geom_point()
@@ -389,9 +389,9 @@ VI.multiples<-function(data, X){
     Resultats$n.boot<-n.boot
   }
   if(!is.null(rscale)){
-    if(dial & any(choix==txt_bayesian_factors)|| (is.numeric(rscale) & (rscale<0.1 | rscale>2)) || (!is.numeric(rscale) & rscale%in% c("moyen", "large", "ultralarge")==F)) {
+    if(dial & any(choix==txt_bayesian_factors)|| (is.numeric(rscale) & (rscale<0.1 | rscale>2)) || (!is.numeric(rscale) & rscale%in% c("moyen", txt_large, txt_ultrawide)==F)) {
       if(info) writeLines(ask_cauchy_apriori_distribution)
-      rscale<-dlgList(c("moyen", "large", "ultralarge"), preselect="moyen", multiple = F, title=ask_distribution_type)$res
+      rscale<-dlgList(c("moyen", txt_large, txt_ultrawide), preselect="moyen", multiple = F, title=ask_distribution_type)$res
       if(length(rscale)==0) {
         .ez.options(options=options, n.boot=NULL,param=param, non.param=non.param, robust=robust,
                     Bayes=Bayes, msg.options1=msg.options1, msg.options2=msg.options2, info=T, dial=T,
@@ -399,7 +399,7 @@ VI.multiples<-function(data, X){
       }
     }
     if(is.character(rscale)) {
-      ifelse(rscale=="moyen", rscale<-2^0.5/2, ifelse(rscale=="large", rscale<-1, ifelse(rscale=="ultralarge", rscale<-2^0.5, rscale<-rscale)))
+      ifelse(rscale=="moyen", rscale<-2^0.5/2, ifelse(rscale==txt_large, rscale<-1, ifelse(rscale==txt_ultrawide, rscale<-2^0.5, rscale<-rscale)))
       Resultats$rscalei<-T
     } else Resultats$rscalei<-F
 
@@ -495,10 +495,10 @@ VI.multiples<-function(data, X){
       shapiro.test(data[,"res"])->Shapiro_Wilk # realise le Shapiro-Wilk
       lillie.test(data[,"res"])->Lilliefors  # realise le Lilliefors
       round(data.frame(Shapiro_Wilk$statistic,Shapiro_Wilk$p.value, Lilliefors$statistic, Lilliefors$p.value),4)->normalite
-      names(normalite)<-c(txt_shapiro_wilk, "valeur.p SW", txt_lilliefors_d, "valeur.p Llfrs") # TODO translation
+      names(normalite)<-c(txt_shapiro_wilk, txt_p_dot_val_sw, txt_lilliefors_d, txt_p_dot_val_lilliefors) # TODO translation
       dimnames(normalite)[1]<-" "
 #      format(normalite, width = max(sapply(names(normalite), nchar)), justify = "centre")->normalite
-      n2$txt_normality_tests<-normalite}
+      n2[[txt_normality_tests]]<-normalite}
 
 
     #p1<-ggplot(data, aes(x=res))+geom_histogram(aes(y=..density..))
@@ -508,7 +508,7 @@ VI.multiples<-function(data, X){
                                       sd = sd(data[,"res"], na.rm = TRUE)))
     p1<-p1+theme(plot.title = element_text(size = 12))+labs(x = txt_residual_distribution)
     #print(p1)
-    n2$txt_residuals_distribution<-p1
+    n2[[txt_residuals_distribution]]<-p1
     p2<-ggplot(data, aes(sample=res))+stat_qq()
     p2<-p2+theme(plot.title = element_text(size = 12))+ggtitle("QQplot")
     n2$"QQplot"<-p2
@@ -523,7 +523,7 @@ VI.multiples<-function(data, X){
                  "kurtosis"=mardia.results$kurtosis,"p.kurtosis"=mardia.results$p.kurt )->n2
     } else {
       msgBox(desc_matrix_is_singular_mardia_cannot_be_performed)
-       n2<-data.frame(txt_shapiro_wilk=NULL, "valeur.p SW"=NULL, txt_lilliefors_d=NULL, "valeur.p Llfrs"=NULL) # TODO translation
+       n2<-data.frame(txt_shapiro_wilk=NULL, txt_p_dot_val_sw=NULL, txt_lilliefors_d=NULL, txt_p_dot_val_lilliefors=NULL) # TODO translation
       for(i in 1:length(X)){
         X[i]->Z
         .normalite(data=data, X=Z,Y=Y)->nor1
@@ -564,7 +564,7 @@ VI.multiples<-function(data, X){
         if(is.null(psych.desc[[i]])) paste(desc_no_obs_for_combination, paste(unlist(modalites[i,]), collapse=" & "))->Resultats[[i]] else   psych.desc[[i]]->Resultats[[i]]
         paste(unlist(modalites[i,]), collapse=" & ")->names(Resultats)[i]}
     #} else psych.desc-> Resultats$'Variables numeriques' # TODO translation ?
-    } else psych.desc-> Resultats$txt_numeric_variables # TODO translation ?
+    } else psych.desc-> Resultats[[txt_numeric_variables]] # TODO translation ?
 
 
 
@@ -610,8 +610,8 @@ VI.multiples<-function(data, X){
         })
 
         Resultats$Graphiques<-graphiques
-        Resultats$txt_graphics_informations[[1]]<-desc_graph_thickness_gives_density
-        Resultats$txt_graphics_informations[[2]]<-desc_red_dot_is_mean_error_is_sd
+        Resultats[[txt_graphics_informations]][[1]]<-desc_graph_thickness_gives_density
+        Resultats[[txt_graphics_informations]][[2]]<-desc_red_dot_is_mean_error_is_sd
       }
     }
 

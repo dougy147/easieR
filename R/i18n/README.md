@@ -33,6 +33,8 @@ To continue coding on easieR *with* strings displayed in place of placeholders, 
 
 # Did it break `easieR`?
 
+Apparently no.
+
 Testing same analysis on same dataset gave exact similar results for:
 
 - descriptive statistics
@@ -41,6 +43,7 @@ Testing same analysis on same dataset gave exact similar results for:
 - t.tests (comparison to norm, paired, independant(except with bootstraps and bayesian))
 - ANOVA (independant, repeated, mixt)
 - regressions (classic)
+- factor component analysis (partial testing on exploratory)
 
 
 Not working with:
@@ -49,10 +52,10 @@ Not working with:
 Not tested on :
 - correlations > matrix partial correlations removing outliers : just loading the scripts in current and official branch give "unused argument (X = c(X, Y, Z))" in VI.multiples
 - correlations > other correlations
-- t.test independant full analysis (robusts + bayesian not working) 
+- t.test > independant > full analysis (robusts + bayesian not working) 
 - ancova
 - regressions (logistics, mediation effect)
-- factor component analysis
+- factor compenent analysis
 - reliability and agreement
 
 ## easieR bugs?
@@ -109,6 +112,7 @@ load_fr_FR()
 
 - Reports correctly display placeholders
 - Redundancy in reports : "with/without outliers" works back.
+- Placeholders are not shown anymore in command-line output thanks to `for x in *.R; do sed -Ei "s/\\\$((txt|ask|desc)_([[:alpha:]]|[[:digit:]]|_|\.)*)/\[\[\1\]\]/g" $x; done`
 
 # Done
 
